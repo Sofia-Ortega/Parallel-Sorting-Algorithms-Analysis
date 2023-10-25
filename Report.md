@@ -1,14 +1,16 @@
 # CSCE 435 Group project
 
 ## 1. Group members:
-1. First
-2. Second
-3. Third
-4. Fourth
+1. Will Thompson
+2. Kirthivel Ramesh
+3. Sofia Ortega
+4. Sriabhinandan Venkatarama
 
 ---
 
 ## 2. _due 10/25_ Project topic
+
+Sorting Algorithms
 
 ## 2. _due 10/25_ Brief project description (what algorithms will you be comparing and on what architectures)
 
