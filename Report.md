@@ -18,7 +18,14 @@ Sorting Algorithms
 ## 2. _due 10/25_ Brief project description (what algorithms will you be comparing and on what architectures)
 
 For example:
-- Algorithm 1a (MPI + CUDA)
-- Algorithm 1b (MPI on each core)
-- Algorithm 2a (MPI + CUDA)
-- Algorithm 2b (MPI on each core)
+- Enumeration Sort (MPI + CUDA)
+  Pseudo-code:
+  
+- Odd-Even Transposition Sort (MPI + CUDA)
+  Pseudo-code:
+
+- Parallel Merge Sort (MPI + CUDA)
+  Pseudo-code:
+  
+- Hyper Quick Sort (MPI + CUDA)
+  Pseudo-code:
