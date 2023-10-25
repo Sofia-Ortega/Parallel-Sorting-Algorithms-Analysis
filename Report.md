@@ -7,6 +7,8 @@
 4. Sriabhinandan Venkatarama
 
 The team will be communicating primarily through **Discord**. 
+
+
 ---
 
 ## 2. _due 10/25_ Project topic
