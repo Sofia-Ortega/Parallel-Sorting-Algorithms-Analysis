@@ -19,28 +19,26 @@ Sorting Algorithms
 
 (what algorithms will you be comparing and on what architectures)
 
-- Enumeration Sort (MPI + CUDA)
+- Parallel Radix Sort (MPI + CUDA)
   
-  Pseudo-code: [Source](https://www.tutorialspoint.com/parallel_algorithm/parallel_algorithm_sorting.htm)
+  Pseudo-code: [Source](https://cs.stackexchange.com/questions/6871/how-does-the-parallel-radix-sort-work)
   
 ```
-procedure ENUM_SORTING (n)
+parallel_for part in 0..K-1
+  for i in indexes(part)
+    bucket = compute_bucket(a[i])
+    Cnt[part][bucket]++
 
-begin
-   for each process P1,j do
-      C[j] := 0;
-		
-   for each process Pi, j do
-	
-      if (A[i] < A[j]) or A[i] = A[j] and i < j) then
-         C[j] := 1;
-      else
-         C[j] := 0;
-			
-   for each process P1, j do
-      A[C[j]] := A[j];
-		
-end ENUM_SORTING
+base = 0
+for bucket in 0..R-1
+  for part in 0..K-1
+    Cnt[part][bucket] += base
+    base = Cnt[part][bucket]
+
+parallel_for part in 0..K-1
+  for i in indexes(part)
+    bucket = compute_bucket(a[i])
+    out[Cnt[part][bucket]++] = a[i]
 ```
   
 - Odd-Even Transposition Sort (MPI + CUDA)
