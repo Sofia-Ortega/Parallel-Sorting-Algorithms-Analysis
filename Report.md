@@ -17,7 +17,7 @@ Sorting Algorithms
 
 ## 2. Brief project description 
 
-(what algorithms will you be comparing and on what architectures)
+We will be comparing the performance of the following algorithms with a variety of differing array inputs. These array input will either be sorted, reversed, or randomly selected values. We will also be measuring how well each algorithm scales.
 
 - Parallel Radix Sort (MPI + CUDA)
   
