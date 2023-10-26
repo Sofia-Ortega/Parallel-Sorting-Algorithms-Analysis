@@ -41,7 +41,7 @@ parallel_for part in 0..K-1
     out[Cnt[part][bucket]++] = a[i]
 ```
   
-- Odd-Even Transposition Sort (MPI on multiple cores)
+- Odd-Even Transposition Sort (MPI + CUDA)
   
   Pseudo-code: [Source](https://ethz.ch/content/dam/ethz/special-interest/infk/chair-program-method/pm/documents/Verify%20This/challenge3.pdf)
 
