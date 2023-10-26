@@ -45,30 +45,39 @@ end ENUM_SORTING
   
 - Odd-Even Transposition Sort (MPI + CUDA)
   
-  Pseudo-code: [Source](https://www.tutorialspoint.com/parallel_algorithm/parallel_algorithm_sorting.htm)
+  Pseudo-code: [Source](https://ethz.ch/content/dam/ethz/special-interest/infk/chair-program-method/pm/documents/Verify%20This/challenge3.pdf)
 
 ```
-procedure ODD-EVEN_PAR (n) 
+process ODD-EVEN-PAR(n, id, myvalue)
+ // n … the length of the array to sort
+ // id … processors label (0 .. n-1)
+ // myvalue … the value in this process
+begin
+ for i := 0 to n-1 do
+ begin
+   // alternate between left and right partner
+   if i+id is even then
+     if id has a right neighbour
+       sendToRight(myvalue);
+       othervalue = receiveFromRight();
+       myvalue = min(myvalue, othervalue);
+     else
+       if id has a left neighbour
+         sendToLeft(myvalue);
+         othervalue = receiveFromLeft();
+         myvalue = max(myvalue, othervalue);
+  end for
+end ODD-EVEN-PAR
 
-begin 
-   id := process's label 
-	
-   for i := 1 to n do 
-   begin 
-	
-      if i is odd and id is odd then 
-         compare-exchange_min(id + 1); 
-      else 
-         compare-exchange_max(id - 1);
-			
-      if i is even and id is even then 
-         compare-exchange_min(id + 1); 
-      else 
-         compare-exchange_max(id - 1);
-			
-   end for
-	
-end ODD-EVEN_PAR
+for i := 0 to array.length-1
+ process[i] := new ODD-EVEN-PAR(n, i, array[i])
+end for
+
+start processes and wait for them to finish
+
+for i := 0 to array.length-1
+ array[i] := process[i].myvalue
+end for
 ```
 
 - Parallel Merge Sort (MPI + CUDA)
