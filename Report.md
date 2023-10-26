@@ -88,7 +88,7 @@ merge(A, lo, mid, hi)
   
 - Parallel Quick Sort (MPI + CUDA)
   
-  Pseudo-code: [Source](https://www.tutorialspoint.com/parallel_algorithm/parallel_algorithm_sorting.htm)
+  Pseudo-code: [Source](https://www3.cs.stonybrook.edu/~rezaul/Spring-2019/CSE613/CSE613-lecture-8.pdf)
 
 ```
 partition(A[q : r], x):
