@@ -73,20 +73,17 @@ end ODD-EVEN_PAR
 
 - Parallel Merge Sort (MPI + CUDA)
   
-  Pseudo-code: [Source](https://www.tutorialspoint.com/parallel_algorithm/parallel_algorithm_sorting.htm)
+  Pseudo-code: [Source](https://en.wikipedia.org/wiki/Merge_sort)
 
   ```
-  procedureparallelmergesort(id, n, data, newdata)
-
-  begin
-   data = sequentialmergesort(data)
-	
-      for dim = 1 to n
-         data = parallelmerge(id, dim, data)
-      endfor
-		
-   newdata = data
-  end
+  // Sort elements lo through hi (exclusive) of array A.
+  algorithm mergesort(A, lo, hi) is
+    if lo+1 < hi then  // Two or more elements.
+        mid := ⌊(lo + hi) / 2⌋
+        fork mergesort(A, lo, mid)
+        mergesort(A, mid, hi)
+        join
+        merge(A, lo, mid, hi)
   ```
   
 - Hyper Quick Sort (MPI + CUDA)
