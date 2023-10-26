@@ -75,49 +75,46 @@ end ODD-EVEN_PAR
   
   Pseudo-code: [Source](https://en.wikipedia.org/wiki/Merge_sort)
 
-  ```
-  // Sort elements lo through hi (exclusive) of array A.
-  algorithm mergesort(A, lo, hi) is
-    if lo+1 < hi then  // Two or more elements.
-        mid := ⌊(lo + hi) / 2⌋
-        fork mergesort(A, lo, mid)
-        mergesort(A, mid, hi)
-        join
-        merge(A, lo, mid, hi)
-  ```
+```
+// Sort elements lo through hi (exclusive) of array A.
+algorithm mergesort(A, lo, hi) is
+if lo+1 < hi then  // Two or more elements.
+mid := ⌊(lo + hi) / 2⌋
+fork mergesort(A, lo, mid)
+mergesort(A, mid, hi)
+join
+merge(A, lo, mid, hi)
+```
   
-- Hyper Quick Sort (MPI + CUDA)
+- Parallel Quick Sort (MPI + CUDA)
   
   Pseudo-code: [Source](https://www.tutorialspoint.com/parallel_algorithm/parallel_algorithm_sorting.htm)
 
 ```
-procedure HYPERQUICKSORT (B, n)
-begin
+partition(A[q : r], x):
+  n = r - q + 1
+  if n==1 return q
 
-   id := process’s label;
-	
-   for i := 1 to d do
-      begin
-      x := pivot;
-      partition B into B1 and B2 such that B1 ≤ x < B2;
-      if ith bit is 0 then
-		
-      begin
-         send B2 to the process along the ith communication link;
-         C := subsequence received along the ith communication link;
-         B := B1 U C;
-      endif
-      
-      else
-         send B1 to the process along the ith communication link;
-         C := subsequence received along the ith communication link;
-         B := B2 U C;
-         end else
-      end for
-		
-   sort B using sequential quicksort;
-	
-end HYPERQUICKSORT
+  array B[0: n-1], lessthan[0: n-1], greaterthan[0: n-1]
+  parallel for i = 0 to n -1:
+      B[i] = A[q + i]
+      if B[i] < x then lessthan[i] = 1 else lessthan[i] = 0
+      if B[i] > x then greaterthan[i] = 1 else greaterthan[i] = 0
+  lessthan[0: n-1] = prefixsum(lessthan[0: n-1])
+  greaterthan[0: n-1] = prefixsum(greaterthan[0: n-1])
+  k = q + lessthan[n-1], A[k] = x
+  parallel for i = 0 to n -1:
+      if B[i] < x then A[q + lessthan[i] - 1] = B[i]
+      else if B[i] > x then A[k + greaterthan[i]] = B[i]
+  return k
+  
+quicksort(A[q : r]):
+  select random element x from A[q : r]
+  k = partition(A[q : r], x)
+  fork quicksort(A[q : k - 1])
+  quicksort(A[k + 1 : r])
+  sync
 
+where each quicksort call and each partition call are done in parallel.
 ```
   
