@@ -1,0 +1,11 @@
+Sorted array times:
+	Parallel - 0.30758
+	Sequential - 0.45725
+Random array times:
+	Parallel - 0.34506
+	Sequential - 2.79184
+Reverse sorted  array times:
+	Parallel - 0.32216
+	Sequential - 0.53807
+JOBID        NAME                 USER                     PARTITION              NODES  CPUS  STATE        TIME         TIME_LEFT    START_TIME         REASON                   NODELIST
+9149632      JobName              will.t4221               short                  16     64    RUNNING      0:10         1:59:50      2023-10-27T20:16:2 None                     c[041-043,055,082,087,091-093,099-101,107,110-112]

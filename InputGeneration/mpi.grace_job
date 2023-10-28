@@ -17,12 +17,13 @@
 #
 ##First Executable Line
 #
-processes=$2
+processes=$1
+values=$2
 
 module load intel/2020b       # load Intel software stack
 module load CMake/3.12.1
 
-CALI_CONFIG="spot(output=output-${processes}.cali)" \
-mpirun -np $processes ./inputgen
+CALI_CONFIG="spot(output=caliper-${processes}.cali)" \
+mpirun -np $processes ./inputgen $values 
 
 squeue -j $SLURM_JOBID
