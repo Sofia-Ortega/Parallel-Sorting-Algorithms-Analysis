@@ -1,0 +1,4 @@
+[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+Time for sorted array: 0.00258423
+JOBID        NAME                 USER                     PARTITION              NODES  CPUS  STATE        TIME         TIME_LEFT    START_TIME         REASON                   NODELIST
+9148945      JobName              will.t4221               short                  16     64    RUNNING      0:05         1:59:55      2023-10-27T16:03:3 None                     c[041-042,055,082,087,091-093,099-101,107,110-113]

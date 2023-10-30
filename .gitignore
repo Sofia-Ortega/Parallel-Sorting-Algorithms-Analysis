@@ -1,0 +1,3 @@
+InputGeneration/output.*
+InputGeneration/*.o
+InputGeneration/inputgen
