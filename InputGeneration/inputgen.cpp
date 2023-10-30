@@ -21,25 +21,30 @@ void printVals(T *vals, int count)
 	std::cout << "[";
 	for (int i = 0; i < count - 1; ++i)
 	{
-		std::cout << vals[i] << ", ";
+		printf("%.3f, ", vals[i]);
+		//std::cout << vals[i] << ", ";
 	}
 	std::cout << vals[count-1] << "]" << std::endl;
 }
 
-void fillValsRandParallel(double *arr, int valsPerProc)
+void fillValsRandParallel(double *arr, int valsPerProc, int seed)
 {
-    srand((unsigned) time(NULL));
+    srand((unsigned)seed);
 	for (int i = 0; i < valsPerProc; ++i)
 	{
-		arr[i] = (double) (rand() % 1000000);
+		double randVal = (double)(rand() % 1000000);
+		randVal += (randVal / 1000000);
+		arr[i] = randVal;
 	}
 }
 
-void fillValsRandSequential(double *arr, int count)
+void fillValsRandSequential(double *arr, int count, int seed)
 {
-    srand((unsigned) time(NULL));
+    srand((unsigned) seed);
 	for (int i = 0; i < count; ++i)
 	{
+		double randVal = (double)(rand() % 1000000);
+		randVal += (randVal / 1000000);
 		arr[i] = (double) (rand() % 1000000);
 	}
 }
@@ -76,6 +81,43 @@ void fillValsReverseSequential(double *arr, int count)
 	}
 }
 
+void genValues(int taskid, int numprocs, int numOfValues, bool isDoubles, void *out, int option = 0)
+{
+	int valsPerProc = numOfValues / numprocs;
+	
+	if (isDoubles)
+	{
+		double *inputPerProcRand; 
+		double *inputPerProcSorted; 
+		double *inputPerProcReverse;
+
+		if (option == 0)
+		{
+			inputPerProcRand = new double[valsPerProc];
+			fillValsRandParallel(inputPerProcRand, valsPerProc, 10 + taskid);
+			MPI_Gather(inputPerProcRand, valsPerProc, MPI_DOUBLE, (double*)out, valsPerProc, MPI_DOUBLE, ROOT, MPI_COMM_WORLD);
+		}
+		else if (option == 1)
+		{
+			int startVal = (taskid * valsPerProc);
+			inputPerProcSorted = new double[valsPerProc];
+			fillValsSortedParallel(inputPerProcSorted, startVal, valsPerProc);
+			MPI_Gather(inputPerProcSorted, valsPerProc, MPI_DOUBLE, (double*)out, valsPerProc, MPI_DOUBLE, ROOT, MPI_COMM_WORLD);
+		}
+		else
+		{
+			int startVal = ((numprocs-1) * valsPerProc) - (taskid * valsPerProc);
+			inputPerProcReverse = new double[valsPerProc];
+			fillValsReverseParallel(inputPerProcReverse, startVal, valsPerProc);
+			MPI_Gather(inputPerProcReverse, valsPerProc, MPI_DOUBLE, (double*)out, valsPerProc, MPI_DOUBLE, ROOT, MPI_COMM_WORLD);
+		}
+	}
+	else
+	{
+	
+	}
+}
+
 int main (int argc, char *argv[])
 {
 	CALI_CXX_MARK_FUNCTION;
@@ -83,6 +125,8 @@ int main (int argc, char *argv[])
 	char * createSortedArray = "sorted_array_time";
 
 	int numberOfVals = atoi(argv[1]);
+	bool isDoubles = (atoi(argv[2]) == 1);
+	int option = atoi(argv[3]);
 
 	int taskid;
 	int numprocs;
@@ -92,23 +136,48 @@ int main (int argc, char *argv[])
 	MPI_Comm_size(MPI_COMM_WORLD, &numprocs);
 
 	// Generate sorted array of doubles
+	/*
 	int valsPerProc = numberOfVals / numprocs;
 	double *inputPerProcRand = new double[valsPerProc];
 	double *inputPerProcSorted = new double[valsPerProc];
 	double *inputPerProcReverse = new double[valsPerProc];
+	*/
 
-	int startVal = ((numprocs-1) * valsPerProc) - (taskid * valsPerProc);
+	//int startVal = ((numprocs-1) * valsPerProc) - (taskid * valsPerProc);
+	void *values;
 	
-	double *inputValsRand = nullptr;
-	double *inputValsSorted = nullptr;
-	double *inputValsReverse = nullptr;
+	//double *inputValsRand = nullptr;
+	//double *inputValsSorted = nullptr;
+	//double *inputValsReverse = nullptr;
+	double test;
 	if (taskid == ROOT)
 	{
-		inputValsRand = new double[numberOfVals];	
-		inputValsSorted = new double[numberOfVals];	
-		inputValsReverse = new double[numberOfVals];	
+		if (isDoubles) values = new double[numberOfVals];	
+		else values = new int[numberOfVals];
+		test = MPI_Wtime();
+	}
+	
+	double genValuesTime = MPI_Wtime();
+	genValues(taskid, numprocs, numberOfVals, isDoubles, values, option);
+	genValuesTime = MPI_Wtime() - genValuesTime;
+
+	if (taskid == ROOT)
+	{
+		test = MPI_Wtime() - test;
+		double *valsSeqRand = new double[numberOfVals];
+		double randArrayTimeSeq = MPI_Wtime();
+		fillValsRandSequential(valsSeqRand, numberOfVals, numprocs*3);
+		randArrayTimeSeq = MPI_Wtime() - randArrayTimeSeq;
+
+		printf("genValues Parallel Time: %.3f\n", genValuesTime);
+		printf("genValues Sequence Time: %.3f\n", randArrayTimeSeq);
+		printf("test Time: %.3f\n", test);
+
+		//printVals<double>((double*)values, numberOfVals);
+		delete[] valsSeqRand;
 	}
 
+	/*
 	// Create sorted values array in parallel
 
 	double sortedArrayTime = MPI_Wtime();
@@ -140,9 +209,11 @@ int main (int argc, char *argv[])
 	MPI_Gather(inputPerProcReverse, valsPerProc, MPI_DOUBLE, inputValsReverse, valsPerProc, MPI_DOUBLE, ROOT, MPI_COMM_WORLD);
 
 	reverseArrayTime = MPI_Wtime() - reverseArrayTime;
-
+	*/
+	/*
 	if (taskid == ROOT)
 	{
+		
 		// Create sorted array sequentially
 		double *valsSeqSorted = new double[numberOfVals];
 		double sortedArrayTimeSeq = MPI_Wtime();
@@ -169,6 +240,7 @@ int main (int argc, char *argv[])
 		delete[] inputValsRand;
 		delete[] inputValsSorted;
 	}
+	*/
 
 	// Create caliper ConfigManager object
 	cali::ConfigManager mgr;

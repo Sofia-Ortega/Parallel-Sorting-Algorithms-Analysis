@@ -1,0 +1,4 @@
+genValues Time: 0.010
+[442968, 281961, 235150, 393839, 442968, 281961, 235150, 393839, 442968, 281961, 235150, 393839, 442968, 281961, 235150, 393839]
+JOBID        NAME                 USER                     PARTITION              NODES  CPUS  STATE        TIME         TIME_LEFT    START_TIME         REASON                   NODELIST
+9154465      JobName              will.t4221               short                  16     64    RUNNING      0:04         1:59:56      2023-10-30T10:52:4 None                     c[288-291,293,295-298,304,307-312]
