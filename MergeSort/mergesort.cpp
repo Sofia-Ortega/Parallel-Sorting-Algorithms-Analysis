@@ -1,4 +1,4 @@
-#include "inputgen.h"
+#include "../InputGeneration/inputgen.h"
 
 bool isSorted(double *arr, int count)
 {

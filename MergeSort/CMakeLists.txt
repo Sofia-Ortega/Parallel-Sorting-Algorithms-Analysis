@@ -6,7 +6,7 @@ find_package(adiak REQUIRED)
 
 set(SOURCE_FILES
 	mergesort.cpp
-	inputgen.cpp)
+	../InputGeneration/inputgen.cpp)
 
 add_executable(mergesort ${SOURCE_FILES})
 
