@@ -1,3 +1,9 @@
 InputGeneration/output.*
 InputGeneration/*.o
 InputGeneration/inputgen
+MergeSort/CMakeFiles/
+MergeSort/CMakeCache.txt
+MergeSort/Makefile
+MergeSort/cmake_install.cmake
+MergeSort/mergesort
+InputGeneration/CMakeFiles/inputgen.dir/main.cpp.o
