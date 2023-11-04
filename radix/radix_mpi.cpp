@@ -374,7 +374,7 @@ int main(int argc, char** argv)
     printf("%f elements/s\n", n_total / elapsed);
 
     for(int i = 0; i < n_total; i++) {
-      printf("%i, " a[i]);
+      printf("%i, ", a[i]);
     }
     printf("\n");
   }
