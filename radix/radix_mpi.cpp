@@ -145,12 +145,12 @@ bool check_sorted(const int P, const int rank, int *a, int *n, checkSortedPacket
       MPI_Recv(&buff, SORTED_PACKET_SIZE, MPI_INT, p, CHECK_SORTED, MPI_COMM_WORLD, &stat);
 
       // if array of process is not sorted, or if the combination between the process' arrays does not match
-      if(!buff->isSorted || maxOfPrevProcess > buff->min) {
+      if(!buff.isSorted || maxOfPrevProcess > buff.min) {
         printf("Error in Sorting in process %i", rank);
         return false;
       }
 
-      maxOfPrevProcess = buff->max; // update max
+      maxOfPrevProcess = buff.max; // update max
 
     }
 
