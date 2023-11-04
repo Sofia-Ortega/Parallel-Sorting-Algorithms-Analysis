@@ -1,11 +1,9 @@
 /**
  * -------------------- SOURCE -----------------------------------
  * Code: https://www.geeksforgeeks.org/implementation-of-quick-sort-using-mpi-omp-and-posix-thread/
- * Report: https://andreask.cs.illinois.edu/Teaching/HPCFall2012/Projects/yourii-report.pdf
- * Author: Yourii Martiak
- * University: New York University
+ * Author: Ashutosh Soni
+ * University: MNIT Jaipur
  * Date: December 20, 2012
- *
  */
 
 #include <mpi.h>
