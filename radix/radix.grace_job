@@ -19,8 +19,8 @@
 #
 ##First Executable Line
 
-num_vals=$1
-input_file=$2
+input_file=$1
+num_vals=$2
 processes=$3
 
 module load intel/2020b       # load Intel software stack
