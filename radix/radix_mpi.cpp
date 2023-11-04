@@ -298,6 +298,8 @@ int main(int argc, char** argv)
   int n = n_total/size;
   if (n < 1) {
     if (rank == 0) {
+      printf("Number of elements: %i", n_total);
+      printf("Size: %i", size);
       usage("Number of elements must be >= number of processes!");
     }
     MPI_Finalize();

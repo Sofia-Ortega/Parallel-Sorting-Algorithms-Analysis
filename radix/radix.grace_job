@@ -22,12 +22,11 @@
 num_vals=$1
 input_file=$2
 processes=$3
-#
-module load CUDA                #load CUDA module
-module load GCCcore/7.3.0
-#
+
+module load intel/2020b       # load Intel software stack
+module load CMake/3.12.1
 
 CALI_CONFIG="spot(output=${num_vals}-${processes}.cali)" \
-mpirun -np $processes ./radixmpi $input_file $num_vals
+mpirun -np $processes ./radixmpi $input_file $num_vals 1
 
 squeue -j $SLURM_JOBID
