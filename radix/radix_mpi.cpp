@@ -270,6 +270,10 @@ int* radix_sort(int *a, List* buckets, const int P, const int rank, int * n) {
 
 int main(int argc, char** argv)
 {
+  // argv:
+  // 0         1               2
+  // radix_mpi input_file_name number_of_elements_to_sort
+
   int rank, size;
   int print_results = 0;
 
