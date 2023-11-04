@@ -45,7 +45,7 @@ struct list {
 int add_item(List* list, int item) {
   if (list->length >= list->capacity) {
     size_t new_capacity = list->capacity*2;
-    int* temp = realloc(list->array, new_capacity*sizeof(int));
+    int* temp = (int*)realloc(list->array, new_capacity*sizeof(int));
     if (!temp) {
       printf("ERROR: Could not realloc for size %d!\n", (int) new_capacity); 
       return 0;
@@ -204,7 +204,7 @@ int* radix_sort(int *a, List* buckets, const int P, const int rank, int * n) {
 
     // reallocate array if newly calculated size is larger
     if (new_size > *n) {
-      int* temp = realloc(a, new_size*sizeof(int));
+      int* temp = (int*)realloc(a, new_size*sizeof(int));
       if (!a) {
         if (rank == 0) {
           printf("ERROR: Could not realloc for size %d!\n", new_size); 
@@ -319,15 +319,15 @@ int main(int argc, char** argv)
   }
 
   const int s = n * rank;
-  int* a = malloc(sizeof(int) * n);
+  int* a = (int*)malloc(sizeof(int) * n);
 
   int b_capacity = n / B;
   if (b_capacity < B) {
     b_capacity = B;
   }
-  List* buckets = malloc(B*sizeof(List));
+  List* buckets = (List*)malloc(B*sizeof(List));
   for (int j = 0; j < B; j++) {
-    buckets[j].array = malloc(b_capacity*sizeof(int));
+    buckets[j].array = (int*)malloc(b_capacity*sizeof(int));
     buckets[j].capacity = B;
   }
 
@@ -371,7 +371,7 @@ int main(int argc, char** argv)
   }
 
   // store number of items per each process after the sort
-  int* p_n = malloc(size*sizeof(int));
+  int* p_n = (int*)malloc(size*sizeof(int));
 
   // first store our own number
   p_n[rank] = n;
