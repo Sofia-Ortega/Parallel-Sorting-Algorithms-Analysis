@@ -373,10 +373,6 @@ int main(int argc, char** argv)
     printf("%d elements sorted\n", n_total);
     printf("%f elements/s\n", n_total / elapsed);
 
-    for(int i = 0; i < n_total; i++) {
-      printf("%i, ", a[i]);
-    }
-    printf("\n");
   }
 
   // store number of items per each process after the sort
