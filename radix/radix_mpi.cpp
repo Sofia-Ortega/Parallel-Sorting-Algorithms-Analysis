@@ -32,6 +32,7 @@
 #define COUNTS_TAG_NUM  B + 1 
 #define PRINT_TAG_NUM  COUNTS_TAG_NUM + 1 
 #define NUM_TAG PRINT_TAG_NUM + 1
+#define CHECK_SORTED NUM_TAG + 1
 
 // structure encapsulating buckets with arrays of elements
 typedef struct list List;
@@ -40,6 +41,12 @@ struct list {
   size_t length;
   size_t capacity;
 };
+
+struct checkSortedPacket {
+  bool isSorted;
+  int min;
+  int max;
+}
 
 // add item to a dynamic array encapsulated in a structure
 int add_item(List* list, int item) {
@@ -69,6 +76,12 @@ void usage(char* message) {
 }
 
 // print resulting array while gathering information from all processes
+/**
+ * P: total number of sorted values 
+ * rank: MPI rank
+ * a: array elements in your own process
+ * n: array containing the number of sorted elements in each process
+*/
 void print_array(const int P, const int rank, int *a, int *n) {
   if (rank == 0) {
     // print array for rank 0 first
@@ -89,6 +102,73 @@ void print_array(const int P, const int rank, int *a, int *n) {
     // if not rank 0, send your data to other processes
     MPI_Send(a, n[rank], MPI_INT, 0, PRINT_TAG_NUM, MPI_COMM_WORLD); 
   }
+}
+
+// check if resulting array is sorted correctly while gathering information from all processes
+/**
+ * P: total number of sorted values 
+ * rank: MPI rank
+ * a: array elements in your own process
+ * n: array containing the number of sorted elements in each process
+ * sortedPacket: packet to be sent to rank 0 to determine if sorted - [bool isSorted, int min, int max]
+*/
+bool check_sorted(const int P, const int rank, int *a, int *n, checkSortedPacket *sortedPacket) {
+
+  // check if own array is sorted
+  bool isSorted = true;
+  int sizeOfA = n[rank];
+  for(int i = 1; i < sizeOfA; i++)  {
+    if(a[i - 1] > a[i]) {
+      isSorted = false;
+      break;
+    }
+  }
+
+
+  if (rank == 0) {
+    // check if own array is sorted
+    if(!isSorted) {
+      printf("Error in Sorting in process %i", rank);
+    }
+
+    // rank 0 last element
+    // should be less than the first element of the next process
+    int maxOfPrevProcess = a[sizeOfA - 1]; 
+
+    // then receive and print from others
+    for (int p = 1; p < P; p++) {
+
+      MPI_Status stat;
+
+      checkSortedPacket buff; // receive sorted packet
+
+      MPI_Recv(&buff, SORTED_PACKET_SIZE, MPI_INT, p, CHECK_SORTED, MPI_COMM_WORLD, &stat);
+
+      // if array of process is not sorted, or if the combination between the process' arrays does not match
+      if(!buff->isSorted || maxOfPrevProcess > buff->min) {
+        printf("Error in Sorting in process %i", rank);
+        return false;
+      }
+
+      maxOfPrevProcess = buff->max; // update max
+
+    }
+
+    return true;
+
+  } else {
+
+    // if not rank 0 ,send packet
+
+    sortedPacket->isSorted = isSorted;
+    sortedPacket->min = a[0];
+    sortedPacket->max = a[n[rank] - 1];
+
+
+    MPI_Send(sortedPacket, 3, MPI_INT, 0, CHECK_SORTED, MPI_COMM_WORLD); 
+  }
+
+  return isSorted;
 }
 
 // Initialize array with numbers read from a file
@@ -412,6 +492,11 @@ int main(int argc, char** argv)
          &stat);
     }
   }
+
+  // check if result is correctly sorted
+  checkSortedPacket* isSortedPacket = (checkSortedPacket*)malloc(sizeof(checkSortedPacket));
+  check_sorted(size, rank, &a[0], p_n, isSortedPacket);
+
   
   // print results
   if (print_results) {
@@ -428,6 +513,7 @@ int main(int argc, char** argv)
   free(buckets);
   free(a);
   free(p_n);
+  free(isSortedPacket);
 
   return 0;
 }

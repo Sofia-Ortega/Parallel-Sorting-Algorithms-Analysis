@@ -27,6 +27,6 @@ module load intel/2020b       # load Intel software stack
 module load CMake/3.12.1
 
 CALI_CONFIG="spot(output=${num_vals}-${processes}.cali)" \
-mpirun -np $processes ./radixmpi $input_file $num_vals 1
+mpirun -np $processes ./radixmpi $input_file $num_vals 0
 
 squeue -j $SLURM_JOBID
