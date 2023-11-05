@@ -286,8 +286,8 @@ int* radix_sort(int *a, List* buckets, const int P, const int rank, int * n) {
 int main(int argc, char** argv)
 {
   // argv:
-  // 0         1               2
-  // radix_mpi input_file_name number_of_elements_to_sort
+  // 0         1                           2
+  // radix_mpi number_of_elements_to_sort [printArray]
 
   int rank, size;
   int print_results = 0;
@@ -299,17 +299,17 @@ int main(int argc, char** argv)
   MPI_Comm_size(MPI_COMM_WORLD, &size);
 
   // check for correct number of arguments
-  if (argc < 3)
+  if (argc < 2)
   {
     if (rank == 0) usage("Not enough arguments!");
     MPI_Finalize();
     return EXIT_FAILURE;
-  } else if (argc > 3) {
-    print_results = atoi(argv[3]);
+  } else if (argc > 2) {
+    print_results = atoi(argv[2]);
   }
 
   // initialize vars and allocate memory
-  int n_total = atoi(argv[2]);
+  int n_total = atoi(argv[1]);
   int n = n_total/size;
   if (n < 1) {
     if (rank == 0) {
