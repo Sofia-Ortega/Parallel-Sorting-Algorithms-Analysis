@@ -1,6 +1,6 @@
 
 /**
- * -------------------- SOURCE -----------------------------------
+ * -------------------- Adapted From -----------------------------------
  * Code: https://github.com/ym720/p_radix_sort_mpi/blob/master/p_radix_sort_mpi/p_radix_sort.c
  * Report: https://andreask.cs.illinois.edu/Teaching/HPCFall2012/Projects/yourii-report.pdf
  * Author: Yourii Martiak
@@ -20,7 +20,9 @@
 #include <stdlib.h>
 #include <time.h>
 #include <string.h>
+
 #include "timing.h"
+#include "inputgen.h"
 
 // global constants definitions
 #define b 32           // number of bits for integer
@@ -32,6 +34,7 @@
 #define COUNTS_TAG_NUM  B + 1 
 #define PRINT_TAG_NUM  COUNTS_TAG_NUM + 1 
 #define NUM_TAG PRINT_TAG_NUM + 1
+#define CHECK_SORTED NUM_TAG + 1
 
 // structure encapsulating buckets with arrays of elements
 typedef struct list List;
@@ -45,7 +48,7 @@ struct list {
 int add_item(List* list, int item) {
   if (list->length >= list->capacity) {
     size_t new_capacity = list->capacity*2;
-    int* temp = realloc(list->array, new_capacity*sizeof(int));
+    int* temp = (int*)realloc(list->array, new_capacity*sizeof(int));
     if (!temp) {
       printf("ERROR: Could not realloc for size %d!\n", (int) new_capacity); 
       return 0;
@@ -69,9 +72,17 @@ void usage(char* message) {
 }
 
 // print resulting array while gathering information from all processes
+/**
+ * P: total number of sorted values 
+ * rank: MPI rank
+ * a: array elements in your own process
+ * n: array containing the number of sorted elements in each process
+*/
 void print_array(const int P, const int rank, int *a, int *n) {
   if (rank == 0) {
+
     // print array for rank 0 first
+    printf("\nProcess 0 with %i elements\n", n[rank]);
     for (int i = 0; i < n[rank]; i++) {
       printf("%d\n", a[i]);
     } 
@@ -81,6 +92,7 @@ void print_array(const int P, const int rank, int *a, int *n) {
       int a_size = n[p];
       int buff[a_size];
       MPI_Recv(buff, a_size, MPI_INT, p, PRINT_TAG_NUM, MPI_COMM_WORLD, &stat);
+      printf("\nProcess %i with %i elements\n", p, a_size);
       for (int i = 0; i < a_size; i++) {
         printf("%d\n", buff[i]);
       } 
@@ -91,8 +103,11 @@ void print_array(const int P, const int rank, int *a, int *n) {
   }
 }
 
+
 // Initialize array with numbers read from a file
+// initialize array 
 int init_array(char* file, const int begin, const int n, int *a) {
+
 
   // open file in read-only mode and check for errors
   FILE *file_ptr;
@@ -204,7 +219,7 @@ int* radix_sort(int *a, List* buckets, const int P, const int rank, int * n) {
 
     // reallocate array if newly calculated size is larger
     if (new_size > *n) {
-      int* temp = realloc(a, new_size*sizeof(int));
+      int* temp = (int*)realloc(a, new_size*sizeof(int));
       if (!a) {
         if (rank == 0) {
           printf("ERROR: Could not realloc for size %d!\n", new_size); 
@@ -270,6 +285,15 @@ int* radix_sort(int *a, List* buckets, const int P, const int rank, int * n) {
 
 int main(int argc, char** argv)
 {
+  // argv:
+  // 0          1                           2 
+  // radix_mpi  number_of_elements_to_sort [optional: printArray]
+
+  CALI_CXX_MARK_FUNCTION;
+
+  const char* createSortedArray = "sorted_array_time";
+  const char* sorting = "sorting_time";
+
   int rank, size;
   int print_results = 0;
 
@@ -280,24 +304,32 @@ int main(int argc, char** argv)
   MPI_Comm_size(MPI_COMM_WORLD, &size);
 
   // check for correct number of arguments
-  if (argc < 3)
+  if (argc < 2)
   {
     if (rank == 0) usage("Not enough arguments!");
     MPI_Finalize();
     return EXIT_FAILURE;
-  } else if (argc > 3) {
-    print_results = atoi(argv[3]);
+  } else if (argc > 2) {
+    print_results = atoi(argv[2]);
   }
 
   // initialize vars and allocate memory
-  int n_total = atoi(argv[2]);
+  int n_total = atoi(argv[1]);
   int n = n_total/size;
   if (n < 1) {
     if (rank == 0) {
+      printf("Number of elements: %i\n", n_total);
+      printf("Size: %i\n", size);
       usage("Number of elements must be >= number of processes!");
     }
     MPI_Finalize();
     return EXIT_FAILURE;
+  }
+
+  if(rank == 0) {
+    printf("n_total: %i\n", n_total);
+    printf("size: %i\n", size);
+    printf("print_results: %i", print_results);
   }
 
   int remainder = B % size;   // in case number of buckets is not divisible
@@ -319,28 +351,32 @@ int main(int argc, char** argv)
   }
 
   const int s = n * rank;
-  int* a = malloc(sizeof(int) * n);
+  int* a = (int*)malloc(sizeof(int) * n);
 
   int b_capacity = n / B;
   if (b_capacity < B) {
     b_capacity = B;
   }
-  List* buckets = malloc(B*sizeof(List));
+  List* buckets = (List*)malloc(B*sizeof(List));
   for (int j = 0; j < B; j++) {
-    buckets[j].array = malloc(b_capacity*sizeof(int));
+    buckets[j].array = (int*)malloc(b_capacity*sizeof(int));
     buckets[j].capacity = B;
   }
 
   // initialize local array
-  if (init_array(argv[1], s, n, &a[0]) != EXIT_SUCCESS) {
-    printf("File %s could not be opened!\n", argv[1]);
-    MPI_Finalize();
-    return EXIT_FAILURE;
-  }
+  CALI_MARK_BEGIN(createSortedArray);
+  fillValsRandParallel(a, n, 10 + rank);
+  CALI_MARK_END(createSortedArray);
 
   // let all processes get here
   MPI_Barrier(MPI_COMM_WORLD);
 
+  if(print_results) {
+    for(int i = 0; i < n; i++) {
+      printf("Rank %i: %i\n", rank, a[i]);
+    }
+  }
+  
   // take a timestamp before the sort starts
   timestamp_type time1, time2;
   if (rank == 0) {
@@ -348,14 +384,16 @@ int main(int argc, char** argv)
   }
 
   // then run the sorting algorithm
+  CALI_MARK_BEGIN(sorting);
   a = radix_sort(&a[0], buckets, size, rank, &n);
+  CALI_MARK_END(sorting);
 
   if (a == NULL) {
     printf("ERROR: Sort failed, exiting ...\n");
     MPI_Finalize();
     return EXIT_FAILURE;
   }
- 
+
   // wait for all processes to finish before printing results 
   MPI_Barrier(MPI_COMM_WORLD);
 
@@ -368,49 +406,42 @@ int main(int argc, char** argv)
     printf("%f s\n", elapsed);
     printf("%d elements sorted\n", n_total);
     printf("%f elements/s\n", n_total / elapsed);
+
   }
 
-  // store number of items per each process after the sort
-  int* p_n = malloc(size*sizeof(int));
 
-  // first store our own number
-  p_n[rank] = n;
-
-  // communicate number of items among other processes
-  MPI_Request req;
-  MPI_Status stat;
-
-  for (int i = 0; i < size; i++) {
-    if (i != rank) {
-      MPI_Isend(
-          &n,
-          1,
-          MPI_INT,
-          i,
-          NUM_TAG,
-          MPI_COMM_WORLD,
-          &req);
+  // check if sorted
+  if(rank == 0) {
+    if(print_results) printf("%i\n", a[0]);
+    for(int i = 1; i < n_total; i++) {
+      if(a[i - 1] > a[i]) {
+        printf("ERROR in sorting at index [%i, %i]; [%i > %i]\n", i-1, i, a[i - 1], a[i]);
+      }
+      if(print_results) printf("%i\n", a[i]);
     }
+    printf("[PASSED] Sorted Array Checked\n");
   }
 
-  for (int i = 0; i < size; i++) {
-    if (i != rank) {
-      MPI_Recv(
-         &p_n[i],
-         1,
-         MPI_INT,
-         i,
-         NUM_TAG,
-         MPI_COMM_WORLD,
-         &stat);
-    }
-  }
+  // create caliper ConfigManager object
+  cali::ConfigManager mgr;
+  mgr.start();
+
+  adiak::init(NULL);
+  adiak::user();
+  adiak::launchdate();
+  adiak::libraries();
+  adiak::cmdline();
+  adiak::clustername();
+  adiak::value("num_processes", size);
+  adiak::value("total_elements_sorted", n_total);
+  adiak::value("array_per_process", n);
+  adiak::value("program_name", "radix_sort");
+  adiak::value("datatype_size", sizeof(int));
+
+  // Flush Caliper output before finalizing MPI
+  mgr.stop();
+  mgr.flush();
   
-  // print results
-  if (print_results) {
-    print_array(size, rank, &a[0], p_n);
-  }
-
   // release MPI resources
   MPI_Finalize();
 
@@ -420,7 +451,6 @@ int main(int argc, char** argv)
   }
   free(buckets);
   free(a);
-  free(p_n);
 
   return 0;
 }
