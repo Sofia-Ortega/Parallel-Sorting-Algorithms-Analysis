@@ -422,7 +422,10 @@ int main(int argc, char** argv)
     printf("[PASSED] Sorted Array Checked\n");
   }
 
-  
+  // create caliper ConfigManager object
+  cali::ConfigManager mgr;
+  mgr.start();
+
   adiak::init(NULL);
   adiak::user();
   adiak::launchdate();
