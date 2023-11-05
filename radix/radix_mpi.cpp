@@ -78,7 +78,9 @@ void usage(char* message) {
 */
 void print_array(const int P, const int rank, int *a, int *n) {
   if (rank == 0) {
+
     // print array for rank 0 first
+    printf("\nProcess 0 with %i elements\n", n[rank]);
     for (int i = 0; i < n[rank]; i++) {
       printf("%d\n", a[i]);
     } 
@@ -88,6 +90,7 @@ void print_array(const int P, const int rank, int *a, int *n) {
       int a_size = n[p];
       int buff[a_size];
       MPI_Recv(buff, a_size, MPI_INT, p, PRINT_TAG_NUM, MPI_COMM_WORLD, &stat);
+      printf("\nProcess %i with %i elements\n", p, a_size);
       for (int i = 0; i < a_size; i++) {
         printf("%d\n", buff[i]);
       } 
@@ -98,71 +101,6 @@ void print_array(const int P, const int rank, int *a, int *n) {
   }
 }
 
-// check if resulting array is sorted correctly while gathering information from all processes
-/**
- * P: total number of sorted values 
- * rank: MPI rank
- * a: array elements in your own process
- * n: array containing the number of sorted elements in each process
- * sortedPacket: packet to be sent to rank 0 to determine if sorted - [bool isSorted, int min, int max]
-*/
-bool check_sorted(const int P, const int rank, int *a, int *n, int *sortedPacket) {
-
-  // check if own array is sorted
-  int isSorted = 1;
-  int sizeOfA = n[rank];
-  for(int i = 1; i < sizeOfA; i++)  {
-    if(a[i - 1] > a[i]) {
-      isSorted = 0;
-      break;
-    }
-  }
-
-
-  if (rank == 0) {
-    // check if own array is sorted
-    if(!isSorted) {
-      printf("Error in Sorting in process %i", rank);
-    }
-
-    // rank 0 last element
-    // should be less than the first element of the next process
-    int maxOfPrevProcess = a[sizeOfA - 1]; 
-
-    // then receive and print from others
-    for (int p = 1; p < P; p++) {
-
-      MPI_Status stat;
-
-      int buff[3]; // receive sorted packet
-
-      MPI_Recv(&buff, 3, MPI_INT, p, CHECK_SORTED, MPI_COMM_WORLD, &stat);
-
-      // if array of process is not sorted, or if the combination between the process' arrays does not match
-      if(!buff[0] || maxOfPrevProcess > buff[1]) {
-        printf("Error in Sorting in process %i", rank);
-        return false;
-      }
-
-      maxOfPrevProcess = buff[2]; // update max
-
-    }
-
-    return true;
-
-  } else {
-
-    // if not rank 0 ,send packet
-
-    sortedPacket[0] = isSorted;
-    sortedPacket[1] = a[0];
-    sortedPacket[2] = a[n[rank] - 1];
-
-    MPI_Send(sortedPacket, 3, MPI_INT, 0, CHECK_SORTED, MPI_COMM_WORLD); 
-  }
-
-  return isSorted;
-}
 
 // Initialize array with numbers read from a file
 int init_array(char* file, const int begin, const int n, int *a) {
@@ -379,6 +317,11 @@ int main(int argc, char** argv)
     return EXIT_FAILURE;
   }
 
+  if(rank == 0) {
+    printf("n_total: %i\n", n_total);
+    printf("size: %i\n", size);
+  }
+
   int remainder = B % size;   // in case number of buckets is not divisible
   if (remainder > 0) {
     if (rank == 0) {
@@ -419,7 +362,7 @@ int main(int argc, char** argv)
 
   // let all processes get here
   MPI_Barrier(MPI_COMM_WORLD);
-
+  
   // take a timestamp before the sort starts
   timestamp_type time1, time2;
   if (rank == 0) {
@@ -434,7 +377,7 @@ int main(int argc, char** argv)
     MPI_Finalize();
     return EXIT_FAILURE;
   }
- 
+
   // wait for all processes to finish before printing results 
   MPI_Barrier(MPI_COMM_WORLD);
 
@@ -486,9 +429,15 @@ int main(int argc, char** argv)
     }
   }
 
-  // check if result is correctly sorted
-  int* isSortedPacket = (int*)malloc(sizeof(int) * 3);
-  check_sorted(size, rank, &a[0], p_n, isSortedPacket);
+
+  // check if sorted
+  if(rank == 0) {
+    for(int i = 1; i < n_total; i++) {
+      if(a[i - 1] > a[i]) {
+        printf("ERROR in sorting at index [%i, %i]; [%i > %i]\n", i-1, i, a[i - 1], a[i]);
+      }
+    }
+  }
 
   
   // print results
@@ -506,7 +455,6 @@ int main(int argc, char** argv)
   free(buckets);
   free(a);
   free(p_n);
-  free(isSortedPacket);
 
   return 0;
 }
