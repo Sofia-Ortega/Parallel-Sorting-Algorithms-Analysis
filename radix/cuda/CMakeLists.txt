@@ -5,7 +5,12 @@ project(radix LANGUAGES CUDA CXX)
 find_package(caliper REQUIRED)
 find_package(adiak REQUIRED)
 
-add_executable(radix radix_sort.cu)
+set(SOURCE_FILES
+  main.cu
+  radix_sort.cu 
+  scan.cu)
+
+add_executable(radix ${SOURCE_FILES})
 
 message(STATUS "CUDA includes : ${CUDA_INCLUDE_DIRS}")
 message(STATUS "Caliper includes : ${caliper_INCLUDE_DIR}")
