@@ -286,8 +286,8 @@ int* radix_sort(int *a, List* buckets, const int P, const int rank, int * n) {
 int main(int argc, char** argv)
 {
   // argv:
-  // 0         1                           2
-  // radix_mpi number_of_elements_to_sort [printArray]
+  // 0         1               2
+  // radix_mpi input_file_name number_of_elements_to_sort
 
   int rank, size;
   int print_results = 0;
@@ -313,8 +313,8 @@ int main(int argc, char** argv)
   int n = n_total/size;
   if (n < 1) {
     if (rank == 0) {
-      printf("Number of elements: %i", n_total);
-      printf("Size: %i", size);
+      printf("Number of elements: %i\n", n_total);
+      printf("Size: %i\n", size);
       usage("Number of elements must be >= number of processes!");
     }
     MPI_Finalize();
@@ -324,6 +324,7 @@ int main(int argc, char** argv)
   if(rank == 0) {
     printf("n_total: %i\n", n_total);
     printf("size: %i\n", size);
+    printf("print_results: %i", print_results);
   }
 
   int remainder = B % size;   // in case number of buckets is not divisible
@@ -363,8 +364,10 @@ int main(int argc, char** argv)
   // let all processes get here
   MPI_Barrier(MPI_COMM_WORLD);
 
-  for(int i = 0; i < n; i++) {
-    printf("Rank %i: %i\n", rank, a[i]);
+  if(print_results) {
+    for(int i = 0; i < n; i++) {
+      printf("Rank %i: %i\n", rank, a[i]);
+    }
   }
   
   // take a timestamp before the sort starts
@@ -397,61 +400,20 @@ int main(int argc, char** argv)
 
   }
 
-  // store number of items per each process after the sort
-  int* p_n = (int*)malloc(size*sizeof(int));
-
-  // first store our own number
-  p_n[rank] = n;
-
-  // communicate number of items among other processes
-  MPI_Request req;
-  MPI_Status stat;
-
-  for (int i = 0; i < size; i++) {
-    if (i != rank) {
-      MPI_Isend(
-          &n,
-          1,
-          MPI_INT,
-          i,
-          NUM_TAG,
-          MPI_COMM_WORLD,
-          &req);
-    }
-  }
-
-  for (int i = 0; i < size; i++) {
-    if (i != rank) {
-      MPI_Recv(
-         &p_n[i],
-         1,
-         MPI_INT,
-         i,
-         NUM_TAG,
-         MPI_COMM_WORLD,
-         &stat);
-    }
-  }
-
 
   // check if sorted
   if(rank == 0) {
-    printf("%i\n", a[0]);
+    if(print_results) printf("%i\n", a[0]);
     for(int i = 1; i < n_total; i++) {
       if(a[i - 1] > a[i]) {
         printf("ERROR in sorting at index [%i, %i]; [%i > %i]\n", i-1, i, a[i - 1], a[i]);
       }
-      printf("%i\n", a[i]);
+      if(print_results) printf("%i\n", a[i]);
     }
-    printf("Sorted Array Checked\n");
+    printf("[PASSED] Sorted Array Checked\n");
   }
 
   
-  // print results
-  if (print_results || true) {
-    print_array(size, rank, &a[0], p_n);
-  }
-
   // release MPI resources
   MPI_Finalize();
 
@@ -461,7 +423,6 @@ int main(int argc, char** argv)
   }
   free(buckets);
   free(a);
-  free(p_n);
 
   return 0;
 }
