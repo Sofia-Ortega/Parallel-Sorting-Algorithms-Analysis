@@ -24,7 +24,7 @@ option=$3
 module load intel/2020b       # load Intel software stack
 module load CMake/3.12.1
 
-CALI_CONFIG="spot(output=caliper-${processes}.cali)" \
+CALI_CONFIG="spot(output=caliper-${processes}-${values}.cali)" \
 mpirun -np $processes ./mergesort $values $option
 
 squeue -j $SLURM_JOBID
