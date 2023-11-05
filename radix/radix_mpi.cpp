@@ -20,7 +20,9 @@
 #include <stdlib.h>
 #include <time.h>
 #include <string.h>
+
 #include "timing.h"
+#include "inputgen.h"
 
 // global constants definitions
 #define b 32           // number of bits for integer
@@ -103,7 +105,9 @@ void print_array(const int P, const int rank, int *a, int *n) {
 
 
 // Initialize array with numbers read from a file
+// initialize array 
 int init_array(char* file, const int begin, const int n, int *a) {
+
 
   // open file in read-only mode and check for errors
   FILE *file_ptr;
@@ -354,11 +358,8 @@ int main(int argc, char** argv)
   }
 
   // initialize local array
-  if (init_array(argv[1], s, n, &a[0]) != EXIT_SUCCESS) {
-    printf("File %s could not be opened!\n", argv[1]);
-    MPI_Finalize();
-    return EXIT_FAILURE;
-  }
+  bool isDoubles = false;
+  genValues(rank, size, n_total, isDoubles, a);
 
   // let all processes get here
   MPI_Barrier(MPI_COMM_WORLD);

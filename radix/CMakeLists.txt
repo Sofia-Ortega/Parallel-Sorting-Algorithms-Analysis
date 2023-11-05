@@ -4,7 +4,12 @@ find_package(MPI REQUIRED)
 find_package(caliper REQUIRED)
 find_package(adiak REQUIRED)
 
-add_executable(radixmpi radix_mpi.cpp)
+set(SOURCE_FILES
+  radix_mpi.cpp
+  inputgen.cpp
+)
+
+add_executable(radixmpi ${SOURCE_FILES})
 
 message(STATUS "MPI includes : ${MPI_INCLUDE_PATH}")
 message(STATUS "Caliper includes : ${caliper_INCLUDE_DIR}")
