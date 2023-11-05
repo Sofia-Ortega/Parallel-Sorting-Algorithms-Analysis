@@ -150,7 +150,7 @@ bool check_sorted(const int P, const int rank, int *a, int *n, int *sortedPacket
         return false;
       }
 
-      maxOfPrevProcess = buff.max; // update max
+      maxOfPrevProcess = buff[2]; // update max
 
     }
 
