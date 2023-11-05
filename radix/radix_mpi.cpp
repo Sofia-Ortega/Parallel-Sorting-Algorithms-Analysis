@@ -289,6 +289,11 @@ int main(int argc, char** argv)
   // 0         1               2
   // radix_mpi input_file_name number_of_elements_to_sort
 
+  CALI_CXX_MARK_FUNCTION;
+
+  const char* createSortedArray = "sorted_array_time";
+  const char* sorting = "sorting_time";
+
   int rank, size;
   int print_results = 0;
 
@@ -359,7 +364,9 @@ int main(int argc, char** argv)
   }
 
   // initialize local array
+  CALI_MARK_BEGIN(createSortedArray);
   fillValsRandParallel(a, n, 10 + rank);
+  CALI_MARK_END(createSortedArray);
 
   // let all processes get here
   MPI_Barrier(MPI_COMM_WORLD);
@@ -377,7 +384,9 @@ int main(int argc, char** argv)
   }
 
   // then run the sorting algorithm
+  CALI_MARK_BEGIN(sorting);
   a = radix_sort(&a[0], buckets, size, rank, &n);
+  CALI_MARK_END(sorting);
 
   if (a == NULL) {
     printf("ERROR: Sort failed, exiting ...\n");
@@ -413,6 +422,22 @@ int main(int argc, char** argv)
     printf("[PASSED] Sorted Array Checked\n");
   }
 
+  
+  adiak::init(NULL);
+  adiak::user();
+  adiak::launchdate();
+  adiak::libraries();
+  adiak::cmdline();
+  adiak::clustername();
+  adiak::value("num_processes", size);
+  adiak::value("total_elements_sorted", n_total);
+  adiak::value("array_per_process", n);
+  adiak::value("program_name", "radix_sort");
+  adiak::value("datatype_size", sizeof(int));
+
+  // Flush Caliper output before finalizing MPI
+  mgr.stop();
+  mgr.flush();
   
   // release MPI resources
   MPI_Finalize();
