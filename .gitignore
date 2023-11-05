@@ -6,4 +6,9 @@ MergeSort/CMakeCache.txt
 MergeSort/Makefile
 MergeSort/cmake_install.cmake
 MergeSort/mergesort
+MergeSort/CUDA/CMakeFiles/
+MergeSort/CUDA/CMakeCache.txt
+MergeSort/CUDA/Makefile
+MergeSort/CUDA/cmake_install.cmake
+MergeSort/CUDA/mergesort
 InputGeneration/CMakeFiles/inputgen.dir/main.cpp.o

@@ -67,41 +67,6 @@ void merge(double *arr, int left, int mid, int right)
 /*
  * This mergeSort function was found on geeksforgeeks.org
  *
- * Link: geeksforgeeks.org/in-place-merge-sort
- * 
- */
-void mergeInPlace(double *arr, int left, int mid, int right)
-{
-	int start = mid + 1;
-
-	if (arr[mid] <= arr[start]) return;
-
-	while (left <= mid && start <= right)
-	{
-		if (arr[left] <= arr[start]) ++left;
-		else
-		{
-			int value = arr[start];
-			int index = start;
-
-			while (index != left)
-			{
-				arr[index] = arr[index - 1];
-				--index;
-			}
-
-			arr[left] = value;
-
-			++left;
-			++mid;
-			++start;
-		}
-	}
-}
-
-/*
- * This mergeSort function was found on geeksforgeeks.org
- *
  * Link: geeksforgeeks.org/merge-sort
  * 
  */
@@ -146,7 +111,7 @@ void mergeParallel(double *arr1, double *arr2, double *arr3, int size)
 /*
  * This mergeSort function was found on selkie-macalester.org
  *
- * Link: geeksforgeeks.org/merge-sort
+ * Link: selkie-macalester.org/csinparallel/modules/MPIProgramming/build/html/mergeSort/mergeSort.html
  * 
  */
 double* mergeSortParallel(int height, int id, double *localArray, int size, MPI_Comm comm, double *globalArray)
@@ -261,6 +226,13 @@ int main (int argc, char *argv[])
 	}
 
 	/* ********** Parallel Mergesort ********** */
+	/*
+	 * A lot of the code below was found from the same
+	 * link used for the MPI mergesort.
+	 *
+	 * url: Link: selkie-macalester.org/csinparallel/modules/MPIProgramming/build/html/mergeSort/mergeSort.html
+	 *
+	 */
 
 	genValuesTimes = MPI_Wtime();
 	// TODO time the input gen
