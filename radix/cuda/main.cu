@@ -23,7 +23,7 @@
 using namespace std;
 
 const char* create_array = "create_array";
-const char* radix_sort = "radix_sort";
+const char* radix_sort_region = "radix_sort";
 const char* cudaMemcpy_host_to_device = "cudaMemcpy_host_to_device";
 const char* cudaMemcpy_device_to_host = "cudaMemcpy_device_to_host";
 
@@ -41,9 +41,9 @@ void radixsort_gpu(unsigned int* h_in, unsigned int num, unsigned int num_thread
     cudaMemcpy(d_in, h_in, sizeof(unsigned int) * num, cudaMemcpyHostToDevice);
     CALI_MARK_END(cudaMemcpy_host_to_device);
 
-    CALI_MARK_BEGIN(radix_sort);
+    CALI_MARK_BEGIN(radix_sort_region);
     radix_sort(d_out, d_in, num, num_threads);
-    CALI_MARK_END(radix_sort);
+    CALI_MARK_END(radix_sort_region);
 
     CALI_MARK_BEGIN(cudaMemcpy_device_to_host);
     cudaMemcpy(out_gpu, d_out, sizeof(unsigned int) * num, cudaMemcpyDeviceToHost);
