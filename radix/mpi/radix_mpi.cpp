@@ -286,8 +286,8 @@ int* radix_sort(int *a, List* buckets, const int P, const int rank, int * n) {
 int main(int argc, char** argv)
 {
   // argv:
-  // 0         1               2
-  // radix_mpi input_file_name number_of_elements_to_sort
+  // 0          1                           2 
+  // radix_mpi  number_of_elements_to_sort [optional: printArray]
 
   CALI_CXX_MARK_FUNCTION;
 

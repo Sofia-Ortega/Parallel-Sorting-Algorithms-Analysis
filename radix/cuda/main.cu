@@ -14,7 +14,9 @@
 #include <math.h>
 #include <time.h>
 
-#include "sort.h"
+#include "radix_sort.h"
+#include "inputgen.h"
+
 using namespace std;
 
 void radixsort_gpu(unsigned int* h_in, unsigned int num)
@@ -36,34 +38,55 @@ void radixsort_gpu(unsigned int* h_in, unsigned int num)
     delete[] out_gpu;
 }
 
-int main()
+int main(int argc, char** argv)
 {
+    // argv:
+
+    // 0          1                 2
+    // radix_cuda num_vals_to_sort  [optional: printArray]
     struct timespec start, stop;
-    for (int i = 0; i <= 18;)
-    {
-        i = i + 2;
-        int num = pow(2,i);
-        int linecount = 0;
-        string filename = "../RandomNumbers/" + std::to_string(i) + ".txt";
-        unsigned int* numbers = new unsigned int[num];
-        //int numbers[num];
-        //Create an input file stream
-        fstream file(filename);
-        for(int m=0; m<num; m++)
-        {
-            file >> numbers[linecount];
-            linecount++;
-        }
-        //Close the file stream
-        file.close();
 
-        clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &start);
-        radixsort_gpu(numbers, num);
-        clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &stop);
-        double dt = (stop.tv_sec - start.tv_sec) * 1e6 + (stop.tv_nsec - start.tv_nsec) / 1e3;    // in microseconds
-        printf("@time of CUDA run:\t\t\t[%.3f] microseconds\n", dt);
-
-        delete[] numbers;
-
+    if(argc != 2 || argc != 3) {
+      printf("Incorrect argument usage\n");
+      printf("radix_cuda num_vals_to_sort [optional: print_array]\n");
     }
+    
+
+    // initialize local array
+    int n_values = atoi(argv[1]);
+    bool printArray = false;
+
+    if(argc == 3) {
+      printArray = atoi(argv[2]);
+    }
+
+    unsigned int* numbers = new unsigned int[n_values];
+    fillValsRandParallel(numbers, n_values, 10);
+
+    printf("Sorting %i values", n_values);
+
+    // print array
+    if(printArray) {
+      for(int i = 0; i < n_values; i++) {
+        printf("%i\n", numbers[i]);
+      }
+    }
+
+
+
+    clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &start);
+    radixsort_gpu(numbers, n_values);
+    clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &stop);
+    double dt = (stop.tv_sec - start.tv_sec) * 1e6 + (stop.tv_nsec - start.tv_nsec) / 1e3;    // in microseconds
+    printf("@time of CUDA run:\t\t\t[%.3f] microseconds\n", dt);
+
+    // print array
+    if(printArray) {
+      for(int i = 0; i < n_values; i++) {
+        printf("%i\n", numbers[i]);
+      }
+    }
+
+    delete[] numbers;
+
 }
