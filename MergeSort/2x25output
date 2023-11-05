@@ -1,0 +1,6 @@
+Array is sorted
+genValues Time: 0.345
+mergesort Time: 14.124
+sortcheck Time: 0.087
+JOBID        NAME                 USER                     PARTITION              NODES  CPUS  STATE        TIME         TIME_LEFT    START_TIME         REASON                   NODELIST
+9157203      JobName              will.t4221               short                  4      16    RUNNING      0:19         1:59:41      2023-10-30T23:59:3 None                     c[013,027,029,035]
