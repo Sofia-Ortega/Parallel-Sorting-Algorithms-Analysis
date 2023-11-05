@@ -1,6 +1,10 @@
 
 // ADAPTED FROM: https://github.com/jackfly/radix-sort-cuda/blob/master/cuda_implementation/main.cu
 
+#include <caliper/cali.h>
+#include <caliper/cali-manager.h>
+#include <adiak.hpp>
+
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
 
@@ -18,6 +22,12 @@
 
 using namespace std;
 
+const char* create_array = "create_array";
+const char* radix_sort = "radix_sort";
+const char* cudaMemcpy_host_to_device = "cudaMemcpy_host_to_device";
+const char* cudaMemcpy_device_to_host = "cudaMemcpy_device_to_host";
+
+
 void radixsort_gpu(unsigned int* h_in, unsigned int num, unsigned int num_threads, bool printArray = false)
 {
     unsigned int* out_gpu = new unsigned int[num];
@@ -26,14 +36,21 @@ void radixsort_gpu(unsigned int* h_in, unsigned int num, unsigned int num_thread
     unsigned int* d_out;
     cudaMalloc(&d_in, sizeof(unsigned int) * num);
     cudaMalloc(&d_out, sizeof(unsigned int) * num);
+
+    CALI_MARK_BEGIN(cudaMemcpy_host_to_device);
     cudaMemcpy(d_in, h_in, sizeof(unsigned int) * num, cudaMemcpyHostToDevice);
+    CALI_MARK_END(cudaMemcpy_host_to_device);
 
+    CALI_MARK_BEGIN(radix_sort);
     radix_sort(d_out, d_in, num, num_threads);
+    CALI_MARK_END(radix_sort);
 
+    CALI_MARK_BEGIN(cudaMemcpy_device_to_host);
     cudaMemcpy(out_gpu, d_out, sizeof(unsigned int) * num, cudaMemcpyDeviceToHost);
+    CALI_MARK_END(cudaMemcpy_device_to_host);
 
     if(printArray) {
-      printf("Sorted:\n");
+      printf("------------- Sorted: ----------------\n");
       for(int i = 0; i < num; i++) {
         printf("%i\n", out_gpu[i]);
       }
@@ -63,10 +80,14 @@ void radixsort_gpu(unsigned int* h_in, unsigned int num, unsigned int num_thread
 
 int main(int argc, char** argv)
 {
+
     // argv:
     // 0          1            2                 3
     // radix_cuda num_threasds num_vals_to_sort  [optional: printArray]
     struct timespec start, stop;
+
+    CALI_CXX_MARK_FUNCTION;
+
 
     // get user input
     if(argc != 3 && argc != 4) {
@@ -85,6 +106,9 @@ int main(int argc, char** argv)
 
     printf("Sorting %i values with %i threads\n", n_values, num_threads);
 
+    // create caliper ConfigManager object
+    cali::ConfigManager mgr;
+    mgr.start();
 
     // initialize local array
     unsigned int* numbers = new unsigned int[n_values];
@@ -108,5 +132,22 @@ int main(int argc, char** argv)
     printf("@time of CUDA run:\t\t\t[%.3f] microseconds\n", dt);
 
     delete[] numbers;
+
+    adiak::init(NULL);
+    adiak::user();
+    adiak::launchdate();
+    adiak::libraries();
+    adiak::cmdline();
+    adiak::clustername();
+    adiak::value("num_threads", num_threads);
+    adiak::value("num_blocks", num_threads / n_values);
+    adiak::value("num_vals", n_values);
+    adiak::value("program_name", "cuda_radix_sort");
+    adiak::value("datatype_size", sizeof(int));
+
+    // Flush Caliper output
+    mgr.stop();
+    mgr.flush();
+
 
 }
