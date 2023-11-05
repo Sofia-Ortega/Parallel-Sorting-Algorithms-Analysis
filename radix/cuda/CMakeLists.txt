@@ -7,8 +7,7 @@ find_package(adiak REQUIRED)
 
 set(SOURCE_FILES
   main.cu
-  radix_sort.cu 
-  scan.cu)
+  radix_sort.cu)
 
 add_executable(radix_cuda ${SOURCE_FILES})
 

@@ -9,7 +9,7 @@
 sbatch radix.grace_job  <n> <p>
 ```
 
-- `n`: number of numbers found in input_file
+- `n`: how many numbers you want to sort 
 - `p`: number of processes
 
 # Adapted From 
