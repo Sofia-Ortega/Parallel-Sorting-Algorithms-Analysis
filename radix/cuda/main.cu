@@ -61,7 +61,10 @@ int main(int argc, char** argv)
     }
 
     unsigned int* numbers = new unsigned int[n_values];
-    fillValsRandParallel(numbers, n_values, 10);
+
+    for(int i = 0; i < n_values; i++) {
+      numbers[i] = (rand() % 10000) + 1
+    }
 
     printf("Sorting %i values", n_values);
 
