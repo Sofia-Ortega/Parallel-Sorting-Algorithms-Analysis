@@ -226,48 +226,6 @@ int main() {
 	printf("Array size = %d\n", WSIZE * LOOPS);
 	printf("Time elapsed = %fseconds\n", totalTime);
 
-	/* Serial Radix Sort */
-
-	unsigned int hdata_s[WSIZE];
-	totalTime = 0;
-
-	for (int lcount = 0; lcount < LOOPS; lcount++)
-	{
-		srand(time(NULL));
-		// Array elements have value in range of 1024
-		unsigned int range = 1U << UPPER_BIT;
-
-		// Fill array with random elements
-		// Range = 1024
-		for (int i = 0; i < WSIZE; i++)
-		{
-			hdata_s[i] = i;
-		}
-
-		// Copy data from host to device
-		cudaMemcpyToSymbol(ddata_s, hdata_s, WSIZE * sizeof(unsigned int));
-
-		// Execution time measurement, that point starts the clock
-		high_resolution_clock::time_point t1 = high_resolution_clock::now();
-		serialRadix <<< 1, 1 >>>();
-		// Make kernel function synchronous
-		cudaDeviceSynchronize();
-		// Execution time measurement, that point stops the clock
-		high_resolution_clock::time_point t2 = high_resolution_clock::now();
-
-		// Execution time measurement, that is the result
-		auto duration = duration_cast<milliseconds>(t2 - t1).count();
-
-		// Summination of each loops' execution time
-		totalTime += (float)duration / 1000.00;
-
-		// Copy data from device to host
-		cudaMemcpyFromSymbol(hdata_s, ddata_s, WSIZE * sizeof(unsigned int));
-	}
-
-	printf("\nSerial Radix Sort:\n");
-	printf("Array size = %d\n", WSIZE * LOOPS);
-	printf("Time elapsed = %fseconds\n\n", totalTime);
 
 	return 0;
 }
