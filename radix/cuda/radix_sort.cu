@@ -183,9 +183,10 @@ __global__ void gpu_glbl_shuffle(unsigned int* d_out,
 
 void radix_sort(unsigned int* const d_out,
     unsigned int* const d_in,
-    unsigned int d_in_len)
+    unsigned int d_in_len,
+    unsigned int num_threads)
 {
-    unsigned int block_sz = MAX_BLOCK_SZ;
+    unsigned int block_sz = num_threads;
     unsigned int max_elems_per_block = block_sz;
     unsigned int grid_sz = d_in_len / max_elems_per_block;
     

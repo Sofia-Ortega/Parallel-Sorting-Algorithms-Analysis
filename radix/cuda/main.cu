@@ -15,11 +15,10 @@
 #include <time.h>
 
 #include "radix_sort.h"
-#include "inputgen.h"
 
 using namespace std;
 
-void radixsort_gpu(unsigned int* h_in, unsigned int num)
+void radixsort_gpu(unsigned int* h_in, unsigned int num, unsigned int num_threads, bool printArray = false)
 {
     unsigned int* out_gpu = new unsigned int[num];
     
@@ -29,9 +28,33 @@ void radixsort_gpu(unsigned int* h_in, unsigned int num)
     cudaMalloc(&d_out, sizeof(unsigned int) * num);
     cudaMemcpy(d_in, h_in, sizeof(unsigned int) * num, cudaMemcpyHostToDevice);
 
-    radix_sort(d_out, d_in, num);
+    radix_sort(d_out, d_in, num, num_threads);
 
     cudaMemcpy(out_gpu, d_out, sizeof(unsigned int) * num, cudaMemcpyDeviceToHost);
+
+    if(printArray) {
+      printf("Sorted:\n");
+      for(int i = 0; i < num; i++) {
+        printf("%i\n", out_gpu[i]);
+      }
+      printf("--------------\n");
+    }
+
+    // check if sorted
+    bool isSorted = true;
+    for(int i = 1; i < num; i++) {
+      if (out_gpu[i - 1] > out_gpu[i]) {
+        isSorted = false;
+        break;
+      }
+    }
+
+    if(isSorted) {
+      printf("[SUCCESS] Output Sorted\n");
+    } else {
+      printf("[FAILED] Output NOT Sorted\n");
+    }
+
     cudaFree(d_out);
     cudaFree(d_in);
 
@@ -46,9 +69,10 @@ int main(int argc, char** argv)
     // radix_cuda num_vals_to_sort  [optional: printArray]
     struct timespec start, stop;
 
-    if(argc != 2 || argc != 3) {
+    if(argc != 2 && argc != 3) {
       printf("Incorrect argument usage\n");
       printf("radix_cuda num_vals_to_sort [optional: print_array]\n");
+      return -1;
     }
     
 
@@ -63,10 +87,12 @@ int main(int argc, char** argv)
     unsigned int* numbers = new unsigned int[n_values];
 
     for(int i = 0; i < n_values; i++) {
-      numbers[i] = (rand() % 10000) + 1
+      numbers[i] = (rand() % 10000) + 1;
     }
 
-    printf("Sorting %i values", n_values);
+    int num_threads = 2;
+
+    printf("Sorting %i values with %i threads\n", n_values, num_threads);
 
     // print array
     if(printArray) {
@@ -75,20 +101,11 @@ int main(int argc, char** argv)
       }
     }
 
-
-
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &start);
-    radixsort_gpu(numbers, n_values);
+    radixsort_gpu(numbers, n_values, num_threads, printArray);
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &stop);
     double dt = (stop.tv_sec - start.tv_sec) * 1e6 + (stop.tv_nsec - start.tv_nsec) / 1e3;    // in microseconds
     printf("@time of CUDA run:\t\t\t[%.3f] microseconds\n", dt);
-
-    // print array
-    if(printArray) {
-      for(int i = 0; i < n_values; i++) {
-        printf("%i\n", numbers[i]);
-      }
-    }
 
     delete[] numbers;
 

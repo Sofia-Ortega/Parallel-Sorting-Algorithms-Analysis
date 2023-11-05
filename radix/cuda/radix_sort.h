@@ -8,6 +8,7 @@
 
 void radix_sort(unsigned int* const d_out,
     unsigned int* const d_in,
-    unsigned int d_in_len);
+    unsigned int d_in_len,
+    unsigned int num_threads);
 
 #endif
