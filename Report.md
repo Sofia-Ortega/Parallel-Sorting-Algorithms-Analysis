@@ -126,4 +126,3 @@ quicksort(A[q : r]):
 
 where each quicksort call and each partition call are done in parallel.
 ```
-  
