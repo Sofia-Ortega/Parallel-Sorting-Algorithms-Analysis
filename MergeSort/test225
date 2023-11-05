@@ -1,0 +1,14 @@
+Array is sorted
+Sequential Mergesort:
+	genValues Time: 0.161
+	mergesort Time: 14.325
+	sortcheck Time: 0.094
+Array is sorted
+Parallel Mergesort:
+	genValues Time: 0.079
+	Root Time: 1.408
+	Proc Time: 0.000
+	Mergesort Time: 1.408
+	Sortcheck Time: 0.094
+JOBID        NAME                 USER                     PARTITION              NODES  CPUS  STATE        TIME         TIME_LEFT    START_TIME         REASON                   NODELIST
+9166723      JobName              will.t4221               short                  4      16    RUNNING      0:24         1:59:36      2023-11-02T23:05:2 None                     c[013,020,029,036]
