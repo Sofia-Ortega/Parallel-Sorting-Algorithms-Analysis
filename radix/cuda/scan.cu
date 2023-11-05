@@ -1,247 +1,301 @@
-#include "radix_sort.h"
+// ADAPTED FROM: https://github.com/jackfly/radix-sort-cuda/blob/master/cuda_implementation/scan.cu
+
+
+#include "scan.h"
 
 #define MAX_BLOCK_SZ 1024
 #define NUM_BANKS 32
 #define LOG_NUM_BANKS 5
 
-
 #define CONFLICT_FREE_OFFSET(n) ((n) >> LOG_NUM_BANKS)
+// according to https://www.mimuw.edu.pl/~ps209291/kgkp/slides/scan.pdf
 
-__global__ void gpu_radix_sort_local(unsigned int* d_out_sorted,
-    unsigned int* d_prefix_sums,
-    unsigned int* d_block_sums,
-    unsigned int input_shift_width,
-    unsigned int* d_in,
-    unsigned int d_in_len,
-    unsigned int max_elems_per_block)
+
+__global__
+void gpu_sum_scan_blelloch(unsigned int* const d_out,
+    const unsigned int* const d_in,
+    unsigned int* const d_block_sums,
+    const size_t numElems)
 {
+    extern __shared__ unsigned int s_out[];
 
-    extern __shared__ unsigned int shmem[];
-    unsigned int* s_data = shmem;
-    // s_mask_out[] will be scanned in place
-    unsigned int s_mask_out_len = max_elems_per_block + (max_elems_per_block >> LOG_NUM_BANKS);
-    unsigned int* s_mask_out = &s_data[max_elems_per_block];
-    unsigned int* s_merged_scan_mask_out = &s_mask_out[s_mask_out_len];
-    unsigned int* s_mask_out_sums = &s_merged_scan_mask_out[max_elems_per_block];
-    unsigned int* s_scan_mask_out_sums = &s_mask_out_sums[4];
+    unsigned int glbl_tid = blockDim.x * blockIdx.x + threadIdx.x;
 
-    unsigned int thid = threadIdx.x;
-
-    unsigned int cpy_idx = max_elems_per_block * blockIdx.x + thid;
-    if (cpy_idx < d_in_len)
-        s_data[thid] = d_in[cpy_idx];
-    else
-        s_data[thid] = 0;
+    s_out[threadIdx.x] = 0;
+    s_out[threadIdx.x + blockDim.x] = 0;
 
     __syncthreads();
 
-    unsigned int t_data = s_data[thid];
-    unsigned int t_2bit_extract = (t_data >> input_shift_width) & 3;
 
-    for (unsigned int i = 0; i < 4; ++i)
+    unsigned int cpy_idx = 2 * blockIdx.x * blockDim.x + threadIdx.x;
+    if (cpy_idx < numElems)
     {
-        // Zero out s_mask_out
-        s_mask_out[thid] = 0;
-        
-        if (thid + max_elems_per_block < s_mask_out_len)
-            s_mask_out[thid + max_elems_per_block] = 0;
-        __syncthreads();
+        s_out[threadIdx.x] = d_in[cpy_idx];
+        if (cpy_idx + blockDim.x < numElems)
+            s_out[threadIdx.x + blockDim.x] = d_in[cpy_idx + blockDim.x];
+    }
 
-        // build bit mask output
-        bool val_equals_i = false;
-        if (cpy_idx < d_in_len)
+    __syncthreads();
+
+    // Upsweep step
+
+    unsigned int max_steps = 11; 
+
+    unsigned int r_idx = 0;
+    unsigned int l_idx = 0;
+    unsigned int sum = 0; // global sum can be passed to host if needed
+    unsigned int t_active = 0;
+    for (int s = 0; s < max_steps; ++s)
+    {
+        t_active = 0;
+
+        // calculate necessary indexes
+        // right index must be (t+1) * 2^(s+1)) - 1
+        r_idx = ((threadIdx.x + 1) * (1 << (s + 1))) - 1;
+        if (r_idx >= 0 && r_idx < 2048)
+            t_active = 1;
+
+        if (t_active)
         {
-            val_equals_i = t_2bit_extract == i;
-            s_mask_out[thid + CONFLICT_FREE_OFFSET(thid)] = val_equals_i;
+            // left index must be r_idx - 2^s
+            l_idx = r_idx - (1 << s);
+
+            // do the actual add operation
+            sum = s_out[l_idx] + s_out[r_idx];
         }
         __syncthreads();
 
-        // scan bit mask output
-        // Upsweep/Reduce step
-        bool t_active = thid < (blockDim.x / 2);
-        int offset = 1;
-        for (int d = max_elems_per_block >> 1; d > 0; d >>= 1)
+        if (t_active)
+            s_out[r_idx] = sum;
+        __syncthreads();
+    }
+
+    // Copy last element (total sum of block) to block sums array
+    if (threadIdx.x == 0)
+    {
+        d_block_sums[blockIdx.x] = s_out[r_idx];
+        s_out[r_idx] = 0;
+    }
+
+    __syncthreads();
+
+    // Downsweep step
+
+    for (int s = max_steps - 1; s >= 0; --s)
+    {
+        // calculate necessary indexes
+        // right index must be (t+1) * 2^(s+1)) - 1
+        r_idx = ((threadIdx.x + 1) * (1 << (s + 1))) - 1;
+        if (r_idx >= 0 && r_idx < 2048)
         {
-            __syncthreads();
-
-            if (t_active && (thid < d))
-            {
-                int ai = offset * ((thid << 1) + 1) - 1;
-                int bi = offset * ((thid << 1) + 2) - 1;
-                ai += CONFLICT_FREE_OFFSET(ai);
-                bi += CONFLICT_FREE_OFFSET(bi);
-
-                s_mask_out[bi] += s_mask_out[ai];
-            }
-            offset <<= 1;
+            t_active = 1;
         }
 
-        // Save the total sum on the global block sums array
-        // Then clear the last element on the shared memory
-        if (thid == 0)
+        unsigned int r_cpy = 0;
+        unsigned int lr_sum = 0;
+        if (t_active)
         {
-            //unsigned int total_sum_idx = (unsigned int) fmin();
-            unsigned int total_sum = s_mask_out[max_elems_per_block - 1
-                + CONFLICT_FREE_OFFSET(max_elems_per_block - 1)];
-            s_mask_out_sums[i] = total_sum;
-            d_block_sums[i * gridDim.x + blockIdx.x] = total_sum;
-            s_mask_out[max_elems_per_block - 1
-                + CONFLICT_FREE_OFFSET(max_elems_per_block - 1)] = 0;
+            // left index must be r_idx - 2^s
+            l_idx = r_idx - (1 << s);
+
+            // do the downsweep operation
+            r_cpy = s_out[r_idx];
+            lr_sum = s_out[l_idx] + s_out[r_idx];
         }
         __syncthreads();
 
-        // Downsweep step
-        for (int d = 1; d < max_elems_per_block; d <<= 1)
+        if (t_active)
         {
-            offset >>= 1;
-            __syncthreads();
-
-            if (t_active && (thid < d))
-            {
-                int ai = offset * ((thid << 1) + 1) - 1;
-                int bi = offset * ((thid << 1) + 2) - 1;
-                ai += CONFLICT_FREE_OFFSET(ai);
-                bi += CONFLICT_FREE_OFFSET(bi);
-
-                unsigned int temp = s_mask_out[ai];
-                s_mask_out[ai] = s_mask_out[bi];
-                s_mask_out[bi] += temp;
-            }
-        }
-        __syncthreads();
-
-        if (val_equals_i && (cpy_idx < d_in_len))
-        {
-            s_merged_scan_mask_out[thid] = s_mask_out[thid + CONFLICT_FREE_OFFSET(thid)];
+            s_out[l_idx] = r_cpy;
+            s_out[r_idx] = lr_sum;
         }
         __syncthreads();
     }
-    
-    __syncthreads();
 
-    // Scan mask output sums
-    if (thid == 0)
+    if (cpy_idx < numElems)
     {
-        unsigned int run_sum = 0;
-        for (unsigned int i = 0; i < 4; ++i)
-        {
-            s_scan_mask_out_sums[i] = run_sum;
-            run_sum += s_mask_out_sums[i];
-        }
-    }
-    __syncthreads();
-
-    if (cpy_idx < d_in_len)
-    {
-        // Calculate the new indices of the input elements for sorting
-        unsigned int new_pos = s_merged_scan_mask_out[thid] + s_scan_mask_out_sums[t_2bit_extract];
-        //if (new_ai >= 1024)
-        //    new_ai = 0;
-        unsigned int t_prefix_sum = s_merged_scan_mask_out[thid];
-        
-        __syncthreads();
-
-        // Shuffle the block's input elements to actually sort them
-        s_data[new_pos] = t_data;
-        s_merged_scan_mask_out[new_pos] = t_prefix_sum;
-        
-        __syncthreads();
-
-        // copy block-wise sort results to global 
-        // then copy block-wise prefix sum results to global memory
-        d_prefix_sums[cpy_idx] = s_merged_scan_mask_out[thid];
-        d_out_sorted[cpy_idx] = s_data[thid];
+        d_out[cpy_idx] = s_out[threadIdx.x];
+        if (cpy_idx + blockDim.x < numElems)
+            d_out[cpy_idx + blockDim.x] = s_out[threadIdx.x + blockDim.x];
     }
 }
 
-__global__ void gpu_glbl_shuffle(unsigned int* d_out,
-    unsigned int* d_in,
-    unsigned int* d_scan_block_sums,
-    unsigned int* d_prefix_sums,
-    unsigned int input_shift_width,
-    unsigned int d_in_len,
-    unsigned int max_elems_per_block)
+__global__
+void gpu_add_block_sums(unsigned int* const d_out,
+    const unsigned int* const d_in,
+    unsigned int* const d_block_sums,
+    const size_t numElems)
 {
+    unsigned int d_block_sum_val = d_block_sums[blockIdx.x];
 
-    unsigned int thid = threadIdx.x;
-    unsigned int cpy_idx = max_elems_per_block * blockIdx.x + thid;
-
-    if (cpy_idx < d_in_len)
+    // Simple implementation's performance is not significantly (if at all)
+    //  better than previous verbose implementation
+    unsigned int cpy_idx = 2 * blockIdx.x * blockDim.x + threadIdx.x;
+    if (cpy_idx < numElems)
     {
-        unsigned int t_data = d_in[cpy_idx];
-        unsigned int t_2bit_extract = (t_data >> input_shift_width) & 3;
-        unsigned int t_prefix_sum = d_prefix_sums[cpy_idx];
-        unsigned int data_glbl_pos = d_scan_block_sums[t_2bit_extract * gridDim.x + blockIdx.x]
-            + t_prefix_sum;
-        __syncthreads();
-        d_out[data_glbl_pos] = t_data;
+        d_out[cpy_idx] = d_in[cpy_idx] + d_block_sum_val;
+        if (cpy_idx + blockDim.x < numElems)
+            d_out[cpy_idx + blockDim.x] = d_in[cpy_idx + blockDim.x] + d_block_sum_val;
     }
+
 }
 
-void radix_sort(unsigned int* const d_out,
-    unsigned int* const d_in,
-    unsigned int d_in_len)
+
+__global__
+void gpu_prescan(unsigned int* const d_out,
+    const unsigned int* const d_in,
+    unsigned int* const d_block_sums,
+    const unsigned int len,
+    const unsigned int shmem_sz,
+    const unsigned int max_elems_per_block)
 {
-    unsigned int block_sz = MAX_BLOCK_SZ;
-    unsigned int max_elems_per_block = block_sz;
-    unsigned int grid_sz = d_in_len / max_elems_per_block;
+    // Allocated on invocation
+    extern __shared__ unsigned int s_out[];
+
+    int thid = threadIdx.x;
+    int ai = thid;
+    int bi = thid + blockDim.x;
+
+    // Zero out the shared memory
+    // Helpful especially when input size is not power of two
+    s_out[thid] = 0;
+    s_out[thid + blockDim.x] = 0;
+    // If CONFLICT_FREE_OFFSET is used, shared memory
+    //  must be a few more than 2 * blockDim.x
+    if (thid + max_elems_per_block < shmem_sz)
+        s_out[thid + max_elems_per_block] = 0;
+
+    __syncthreads();
     
-    if (d_in_len % max_elems_per_block != 0)
+    // Copy d_in to shared memory
+    // Note that d_in's elements are scattered into shared memory
+    //  in light of avoiding bank conflicts
+    unsigned int cpy_idx = max_elems_per_block * blockIdx.x + threadIdx.x;
+    if (cpy_idx < len)
+    {
+        s_out[ai + CONFLICT_FREE_OFFSET(ai)] = d_in[cpy_idx];
+        if (cpy_idx + blockDim.x < len)
+            s_out[bi + CONFLICT_FREE_OFFSET(bi)] = d_in[cpy_idx + blockDim.x];
+    }
+
+    // Upsweep/Reduce step
+    int offset = 1;
+    for (int d = max_elems_per_block >> 1; d > 0; d >>= 1)
+    {
+        __syncthreads();
+
+        if (thid < d)
+        {
+            int ai = offset * ((thid << 1) + 1) - 1;
+            int bi = offset * ((thid << 1) + 2) - 1;
+            ai += CONFLICT_FREE_OFFSET(ai);
+            bi += CONFLICT_FREE_OFFSET(bi);
+
+            s_out[bi] += s_out[ai];
+        }
+        offset <<= 1;
+    }
+
+    // Save the total sum on the global block sums array
+    // Then clear the last element on the shared memory
+    if (thid == 0) 
+    { 
+        d_block_sums[blockIdx.x] = s_out[max_elems_per_block - 1 
+            + CONFLICT_FREE_OFFSET(max_elems_per_block - 1)];
+        s_out[max_elems_per_block - 1 
+            + CONFLICT_FREE_OFFSET(max_elems_per_block - 1)] = 0;
+    }
+
+    // Downsweep step
+    for (int d = 1; d < max_elems_per_block; d <<= 1)
+    {
+        offset >>= 1;
+        __syncthreads();
+
+        if (thid < d)
+        {
+            int ai = offset * ((thid << 1) + 1) - 1;
+            int bi = offset * ((thid << 1) + 2) - 1;
+            ai += CONFLICT_FREE_OFFSET(ai);
+            bi += CONFLICT_FREE_OFFSET(bi);
+
+            unsigned int temp = s_out[ai];
+            s_out[ai] = s_out[bi];
+            s_out[bi] += temp;
+        }
+    }
+    __syncthreads();
+
+    // Copy contents of shared memory to global memory
+    if (cpy_idx < len)
+    {
+        d_out[cpy_idx] = s_out[ai + CONFLICT_FREE_OFFSET(ai)];
+        if (cpy_idx + blockDim.x < len)
+            d_out[cpy_idx + blockDim.x] = s_out[bi + CONFLICT_FREE_OFFSET(bi)];
+    }
+}
+ 
+void sum_scan_blelloch(unsigned int* const d_out,
+    const unsigned int* const d_in,
+    const size_t numElems)
+{
+    // Zero out d_out
+    cudaMemset(d_out, 0, numElems * sizeof(unsigned int));
+
+    // Set up number of threads and blocks
+    
+    unsigned int block_sz = MAX_BLOCK_SZ / 2;
+    unsigned int max_elems_per_block = 2 * block_sz; // due to binary tree nature of algorithm
+
+    unsigned int grid_sz = numElems / max_elems_per_block;
+    if (numElems % max_elems_per_block != 0) 
         grid_sz += 1;
-    // initialize the prefix sum variable
-    unsigned int* d_prefix_sums;
-    unsigned int d_prefix_sums_len = d_in_len;
-    cudaMalloc(&d_prefix_sums, sizeof(unsigned int) * d_prefix_sums_len);
-    cudaMemset(d_prefix_sums, 0, sizeof(unsigned int) * d_prefix_sums_len);
 
+    // Conflict free padding requires that shared memory be more than 2 * block_sz
+    unsigned int shmem_sz = max_elems_per_block + ((max_elems_per_block) >> LOG_NUM_BANKS);
+
+    // Allocate memory for array of total sums produced by each block
+    // Array length must be the same as number of blocks
     unsigned int* d_block_sums;
-    unsigned int d_block_sums_len = 4 * grid_sz; // 4-way split
-    cudaMalloc(&d_block_sums, sizeof(unsigned int) * d_block_sums_len);
-    cudaMemset(d_block_sums, 0, sizeof(unsigned int) * d_block_sums_len);
+    cudaMalloc(&d_block_sums, sizeof(unsigned int) * grid_sz);
+    cudaMemset(d_block_sums, 0, sizeof(unsigned int) * grid_sz);
 
-    unsigned int* d_scan_block_sums;
-    cudaMalloc(&d_scan_block_sums, sizeof(unsigned int) * d_block_sums_len);
-    cudaMemset(d_scan_block_sums, 0, sizeof(unsigned int) * d_block_sums_len);
-
-    unsigned int s_data_len = max_elems_per_block;
-    unsigned int s_mask_out_len = max_elems_per_block + (max_elems_per_block / NUM_BANKS);
-    unsigned int s_merged_scan_mask_out_len = max_elems_per_block;
-    unsigned int s_mask_out_sums_len = 4; // 4-way split
-    unsigned int s_scan_mask_out_sums_len = 4;
-    unsigned int shmem_sz = (s_data_len 
-                            + s_mask_out_len
-                            + s_merged_scan_mask_out_len
-                            + s_mask_out_sums_len
-                            + s_scan_mask_out_sums_len)
-                            * sizeof(unsigned int);
+    // Sum scan data allocated to each block
+    //gpu_sum_scan_blelloch<<<grid_sz, block_sz, sizeof(unsigned int) * max_elems_per_block >>>(d_out, d_in, d_block_sums, numElems);
+    gpu_prescan<<<grid_sz, block_sz, sizeof(unsigned int) * shmem_sz>>>(d_out, 
+                                                                    d_in, 
+                                                                    d_block_sums, 
+                                                                    numElems, 
+                                                                    shmem_sz,
+                                                                    max_elems_per_block);
 
 
-    // for every 2 bits from LSB to MSB:
-    //  block-wise radix sort (write blocks back to global memory)
-    for (unsigned int shift_width = 0; shift_width <= 30; shift_width += 2)
+    if (grid_sz <= max_elems_per_block)
     {
-        gpu_radix_sort_local<<<grid_sz, block_sz, shmem_sz>>>(d_out, 
-                                                                d_prefix_sums, 
-                                                                d_block_sums, 
-                                                                shift_width, 
-                                                                d_in, 
-                                                                d_in_len, 
-                                                                max_elems_per_block);
-
-        // scan global block sum array
-        sum_scan_blelloch(d_scan_block_sums, d_block_sums, d_block_sums_len);
-
-        // scatter/shuffle block-wise sorted array to final positions
-        gpu_glbl_shuffle<<<grid_sz, block_sz>>>(d_in, 
-                                                    d_out, 
-                                                    d_scan_block_sums, 
-                                                    d_prefix_sums, 
-                                                    shift_width, 
-                                                    d_in_len, 
-                                                    max_elems_per_block);
+        unsigned int* d_dummy_blocks_sums;
+        cudaMalloc(&d_dummy_blocks_sums, sizeof(unsigned int));
+        cudaMemset(d_dummy_blocks_sums, 0, sizeof(unsigned int));
+        //gpu_sum_scan_blelloch<<<1, block_sz, sizeof(unsigned int) * max_elems_per_block>>>(d_block_sums, d_block_sums, d_dummy_blocks_sums, grid_sz);
+        gpu_prescan<<<1, block_sz, sizeof(unsigned int) * shmem_sz>>>(d_block_sums, 
+                                                                    d_block_sums, 
+                                                                    d_dummy_blocks_sums, 
+                                                                    grid_sz, 
+                                                                    shmem_sz,
+                                                                    max_elems_per_block);
+        cudaFree(d_dummy_blocks_sums);
     }
-    cudaMemcpy(d_out, d_in, sizeof(unsigned int) * d_in_len, cudaMemcpyDeviceToDevice);
-    cudaFree(d_scan_block_sums);
+
+    else
+    {
+        unsigned int* d_in_block_sums;
+        cudaMalloc(&d_in_block_sums, sizeof(unsigned int) * grid_sz);
+        cudaMemcpy(d_in_block_sums, d_block_sums, sizeof(unsigned int) * grid_sz, cudaMemcpyDeviceToDevice);
+        sum_scan_blelloch(d_block_sums, d_in_block_sums, grid_sz);
+        cudaFree(d_in_block_sums);
+    }
+    
+
+    gpu_add_block_sums<<<grid_sz, block_sz>>>(d_out, d_out, d_block_sums, numElems);
+
     cudaFree(d_block_sums);
-    cudaFree(d_prefix_sums);
 }
