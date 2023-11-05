@@ -358,11 +358,14 @@ int main(int argc, char** argv)
   }
 
   // initialize local array
-  bool isDoubles = false;
-  genValues(rank, size, n_total, isDoubles, a);
+  fillValsRandParallel(a, n, 10 + rank);
 
   // let all processes get here
   MPI_Barrier(MPI_COMM_WORLD);
+
+  for(int i = 0; i < n; i++) {
+    printf("Rank %i: %i\n", rank, a[i]);
+  }
   
   // take a timestamp before the sort starts
   timestamp_type time1, time2;
@@ -433,16 +436,19 @@ int main(int argc, char** argv)
 
   // check if sorted
   if(rank == 0) {
+    printf("%i\n", a[0]);
     for(int i = 1; i < n_total; i++) {
       if(a[i - 1] > a[i]) {
         printf("ERROR in sorting at index [%i, %i]; [%i > %i]\n", i-1, i, a[i - 1], a[i]);
       }
+      printf("%i\n", a[i]);
     }
+    printf("Sorted Array Checked\n");
   }
 
   
   // print results
-  if (print_results) {
+  if (print_results || true) {
     print_array(size, rank, &a[0], p_n);
   }
 
