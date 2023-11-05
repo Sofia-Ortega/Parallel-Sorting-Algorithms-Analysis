@@ -64,35 +64,34 @@ void radixsort_gpu(unsigned int* h_in, unsigned int num, unsigned int num_thread
 int main(int argc, char** argv)
 {
     // argv:
-
-    // 0          1                 2
-    // radix_cuda num_vals_to_sort  [optional: printArray]
+    // 0          1            2                 3
+    // radix_cuda num_threasds num_vals_to_sort  [optional: printArray]
     struct timespec start, stop;
 
-    if(argc != 2 && argc != 3) {
+    // get user input
+    if(argc != 3 && argc != 4) {
       printf("Incorrect argument usage\n");
-      printf("radix_cuda num_vals_to_sort [optional: print_array]\n");
+      printf("radix_cuda num_threads num_vals_to_sort [optional: print_array]\n");
       return -1;
     }
     
-
-    // initialize local array
-    int n_values = atoi(argv[1]);
+    int num_threads = atoi(argv[1]);
+    int n_values = atoi(argv[2]);
     bool printArray = false;
 
     if(argc == 3) {
-      printArray = atoi(argv[2]);
+      printArray = atoi(argv[3]);
     }
 
-    unsigned int* numbers = new unsigned int[n_values];
+    printf("Sorting %i values with %i threads\n", n_values, num_threads);
 
+
+    // initialize local array
+    unsigned int* numbers = new unsigned int[n_values];
     for(int i = 0; i < n_values; i++) {
       numbers[i] = (rand() % 10000) + 1;
     }
 
-    int num_threads = 2;
-
-    printf("Sorting %i values with %i threads\n", n_values, num_threads);
 
     // print array
     if(printArray) {
@@ -101,6 +100,7 @@ int main(int argc, char** argv)
       }
     }
 
+    // sorting
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &start);
     radixsort_gpu(numbers, n_values, num_threads, printArray);
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &stop);
