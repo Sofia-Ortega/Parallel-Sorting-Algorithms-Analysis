@@ -1,4 +1,4 @@
-#include "sort.h"
+#include "radix_sort.h"
 
 #define MAX_BLOCK_SZ 1024
 #define NUM_BANKS 32
