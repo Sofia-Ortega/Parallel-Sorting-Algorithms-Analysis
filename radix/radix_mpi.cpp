@@ -42,12 +42,6 @@ struct list {
   size_t capacity;
 };
 
-struct checkSortedPacket {
-  int isSorted;
-  int min;
-  int max;
-}
-
 // add item to a dynamic array encapsulated in a structure
 int add_item(List* list, int item) {
   if (list->length >= list->capacity) {
