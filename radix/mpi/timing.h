@@ -1,5 +1,5 @@
 
-/**
+/** ---------- ADAPTED FROM ---------------
  * SOURCE: https://github.com/ym720/p_radix_sort_mpi/blob/master/p_radix_sort_mpi/timing.h
 */
 

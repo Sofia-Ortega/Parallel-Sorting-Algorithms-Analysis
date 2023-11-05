@@ -1,6 +1,6 @@
 
 /**
- * -------------------- SOURCE -----------------------------------
+ * -------------------- Adapted From -----------------------------------
  * Code: https://github.com/ym720/p_radix_sort_mpi/blob/master/p_radix_sort_mpi/p_radix_sort.c
  * Report: https://andreask.cs.illinois.edu/Teaching/HPCFall2012/Projects/yourii-report.pdf
  * Author: Yourii Martiak
