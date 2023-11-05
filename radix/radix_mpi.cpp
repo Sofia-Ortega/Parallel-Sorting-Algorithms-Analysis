@@ -43,7 +43,7 @@ struct list {
 };
 
 struct checkSortedPacket {
-  bool isSorted;
+  int isSorted;
   int min;
   int max;
 }
@@ -112,14 +112,14 @@ void print_array(const int P, const int rank, int *a, int *n) {
  * n: array containing the number of sorted elements in each process
  * sortedPacket: packet to be sent to rank 0 to determine if sorted - [bool isSorted, int min, int max]
 */
-bool check_sorted(const int P, const int rank, int *a, int *n, checkSortedPacket *sortedPacket) {
+bool check_sorted(const int P, const int rank, int *a, int *n, int *sortedPacket) {
 
   // check if own array is sorted
-  bool isSorted = true;
+  int isSorted = 1;
   int sizeOfA = n[rank];
   for(int i = 1; i < sizeOfA; i++)  {
     if(a[i - 1] > a[i]) {
-      isSorted = false;
+      isSorted = 0;
       break;
     }
   }
@@ -140,12 +140,12 @@ bool check_sorted(const int P, const int rank, int *a, int *n, checkSortedPacket
 
       MPI_Status stat;
 
-      checkSortedPacket buff; // receive sorted packet
+      int buff[3]; // receive sorted packet
 
-      MPI_Recv(&buff, SORTED_PACKET_SIZE, MPI_INT, p, CHECK_SORTED, MPI_COMM_WORLD, &stat);
+      MPI_Recv(&buff, 3, MPI_INT, p, CHECK_SORTED, MPI_COMM_WORLD, &stat);
 
       // if array of process is not sorted, or if the combination between the process' arrays does not match
-      if(!buff.isSorted || maxOfPrevProcess > buff.min) {
+      if(!buff[0] || maxOfPrevProcess > buff[1]) {
         printf("Error in Sorting in process %i", rank);
         return false;
       }
@@ -160,10 +160,9 @@ bool check_sorted(const int P, const int rank, int *a, int *n, checkSortedPacket
 
     // if not rank 0 ,send packet
 
-    sortedPacket->isSorted = isSorted;
-    sortedPacket->min = a[0];
-    sortedPacket->max = a[n[rank] - 1];
-
+    sortedPacket[0] = isSorted;
+    sortedPacket[1] = a[0];
+    sortedPacket[2] = a[n[rank] - 1];
 
     MPI_Send(sortedPacket, 3, MPI_INT, 0, CHECK_SORTED, MPI_COMM_WORLD); 
   }
@@ -494,7 +493,7 @@ int main(int argc, char** argv)
   }
 
   // check if result is correctly sorted
-  checkSortedPacket* isSortedPacket = (checkSortedPacket*)malloc(sizeof(checkSortedPacket));
+  int* isSortedPacket = (int*)malloc(sizeof(int) * 3);
   check_sorted(size, rank, &a[0], p_n, isSortedPacket);
 
   
