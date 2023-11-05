@@ -79,7 +79,7 @@ int main(int argc, char** argv)
     int n_values = atoi(argv[2]);
     bool printArray = false;
 
-    if(argc == 3) {
+    if(argc == 4) {
       printArray = atoi(argv[3]);
     }
 
