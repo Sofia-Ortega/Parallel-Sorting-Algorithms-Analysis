@@ -24,6 +24,17 @@ void swap(int *arr, int i, int j)
     arr[i] = temp;
 }
 
+bool isSorted(int *arr, int count)
+{
+    for (int i = 0; i < count - 1; ++i)
+    {
+        if (arr[i] > arr[i + 1])
+            return false;
+    }
+
+    return true;
+}
+
 // Quick sort function
 void quicksort(int *arr, int start, int end)
 {
@@ -98,29 +109,32 @@ int main(int argc, char *argv[])
     // Read in CLI arguments
     int number_of_elements = atoi(argv[1]); // size of array
     int size = atoi(argv[2]);               // 0 for small,
-
+    int process_id = 0;
+    int process_count = 0;
+    double compTime = 0.0;
     int *data = NULL;
     int chunk_size, own_chunk_size;
     int *chunk;
-    double dataInitTime, barrierTime, commTime, compTime, correctTime, totalTime;
+    double dataInitTime, barrierTime, commTime, correctTime, totalTime;
     MPI_Status status;
 
     totalTime = MPI_Wtime();
     CALI_MARK_BEGIN("totalTime")
 
     // Initialize MPI
-    int process_id, process_count;
+
     MPI_Init(&argc, &argv);
-    MPI_COMM_size(MPI_COMM_WORLD, &process_count);
-    MPI_COMM_rank(MPI_COMM_WORLD, &process_id);
+    MPI_Comm_rank(MPI_COMM_WORLD, &process_id);
+    MPI_Comm_size(MPI_COMM_WORLD, &process_count);
+
     // data_init
     dataInitTime = MPI_Wtime();
-    CALI_MARK_BEGIN("dataInitTime")
+    CALI_MARK_BEGIN("dataInitTime");
     if (process_id == 0)
     {
         genValues(process_id, process_count, number_of_elements, false, data, 0);
     }
-    CALI_MARK_END("dataInitTime")
+    CALI_MARK_END("dataInitTime");
     dataInitTime = MPI_Wtime() - dataInitTime;
 
     // comm_small region
@@ -128,14 +142,14 @@ int main(int argc, char *argv[])
     // block all child processes until master process
     // has finished generating data
     barrierTime = MPI_Wtime();
-    CALI_MARK_BEGIN("barrierTime")
+    CALI_MARK_BEGIN("barrierTime");
     MPI_Barrier(MPI_COMM_WORLD);
-    CALI_MARK_END("barrierTime")
+    CALI_MARK_END("barrierTime");
     barrierTime = MPI_Wtime() - barrierTime;
 
     // Broadcast the number of elements
     commTime = MPI_Wtime();
-    CALI_MARK_BEGIN("commTime")
+    CALI_MARK_BEGIN("commTime");
     MPI_Bcast(&number_of_elements, 1, MPI_INT, 0,
               MPI_COMM_WORLD);
 
@@ -152,18 +166,18 @@ int main(int argc, char *argv[])
                 chunk_size, MPI_INT, 0, MPI_COMM_WORLD);
     free(data);
     data = NULL;
-    CALI_MARK_END("commTime")
+    CALI_MARK_END("commTime");
 
     // Compute own chunk size
     compTime = MPI_Wtime();
-    CALI_MARK_BEGIN("compTime")
+    CALI_MARK_BEGIN("compTime");
     own_chunk_size = (process_id == process_count - 1)
                          ? (chunk_size + number_of_elements % process_count)
                          : chunk_size;
 
     // Sort the data for every chunk called by process
     quicksort(chunk, 0, own_chunk_size);
-    for (step = 1; step < process_count; step *= 2)
+    for (int step = 1; step < process_count; step *= 2)
     {
         if (process_id % (2 * step) != 0)
         {
@@ -193,60 +207,23 @@ int main(int argc, char *argv[])
         }
     }
 
-    CALI_MARK_END("compTime")
+    CALI_MARK_END("compTime");
+    
     compTime = MPI_Wtime() - compTime;
 
     correctTime = MPI_Wtime();
-    CALI_MARK_BEGIN("correctTime")
-
-    if (process_id == 0)
-    {
-        // Opening the file
-        file = fopen(argv[2], "w");
-
-        if (file == NULL)
-        {
-            printf("Error in opening file... \n");
-            exit(-1);
+    CALI_MARK_BEGIN("correctTime");
+    if (process_id == 0) {
+        if (isSorted(data, number_of_elements)) {
+            printf("Array is sorted\n");
+        } else {
+            printf("Array is not sorted\n");
         }
-
-        // Printing total number of elements
-        // in the file
-        fprintf(
-            file,
-            "Total number of Elements in the array : %d\n",
-            own_chunk_size);
-
-        // Printing the value of array in the file
-        for (int i = 0; i < own_chunk_size; i++)
-        {
-            fprintf(file, "%d ", chunk[i]);
-        }
-
-        // Closing the file
-        fclose(file);
-
-        printf("\n\n\n\nResult printed in output.txt file "
-               "and shown below: \n");
-
-        // For Printing in the terminal
-        printf("Total number of Elements given as input : "
-               "%d\n",
-               number_of_elements);
-        printf("Sorted array is: \n");
-
-        for (int i = 0; i < number_of_elements; i++)
-        {
-            printf("%d ", chunk[i]);
-        }
-
-        printf(
-            "\n\nQuicksort %d ints on %d procs: %f secs\n",
-            number_of_elements, process_count,
-            time_taken);
     }
+    CALI_MARK_END("correctTime");
+    correctTime = MPI_Wtime() - correctTime;
 
-    CALI_MARK_END("totalTime")
+    CALI_MARK_END("totalTime");
     totalTime = MPI_Wtime() - totalTime;
 
     // create caliper ConfigManager object

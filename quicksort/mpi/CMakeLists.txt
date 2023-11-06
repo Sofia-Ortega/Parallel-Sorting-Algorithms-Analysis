@@ -6,7 +6,7 @@ find_package(adiak REQUIRED)
 
 set(SOURCE_FILES
 	quicksort_mpi.cpp
-	../InputGeneration/inputgen.cpp)
+	inputgen.cpp)
 
 add_executable(quicksort_mpi ${SOURCE_FILES})
 
