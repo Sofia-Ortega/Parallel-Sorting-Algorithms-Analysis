@@ -1,21 +1,7 @@
-#include "../../InputGeneration/inputgen.h"
 #include <iostream>
 #include <sys/time.h>
 #include <cstdlib>
 #include <chrono>
-
-const char * main = "main";
-const char * parallel = "parallel";
-const char * sequential = "sequential";
-const char * genValuesTime = "data_init";
-const char * correctness = "correctness_check";
-const char * comp = "comp";
-const char * compSmall = "comp_small";
-const char * compLarge = "comp_large";
-const char * comm = "comm";
-const char * commSmall = "comm_small";
-const char * commLarge = "comm_large";
-const char * paraMergeTime = "para_merge_time";
 
 /**
  * mergesort.cu
@@ -39,9 +25,6 @@ __device__ void gpu_bottomUpMerge(double*, double*, long, long, long);
 #define min(a, b) (a < b ? a : b)
 
 int main(int argc, char** argv) {
-    CALI_CXX_MARK_FUNCTION;
-
-	CALI_MARK_BEGIN(main);
 
     dim3 threadsPerBlock;
     dim3 blocksPerGrid;
@@ -54,21 +37,13 @@ int main(int argc, char** argv) {
     blocksPerGrid.y = 1;
     blocksPerGrid.z = 1;
 
-    long nBlocks = blocksPerGrid.x * blocksPerGrid.y * blocksPerGrid.z;
-    long nThreads = threadsPerBlock.x * threadsPerBlock.y * threadsPerBlock.z * nBlocks;
-
-
     //
-    // Generate numbers
+    // Read numbers from stdin
     //
-    CALI_MARK_BEGIN(genValuesTime);
-    int numprocs = atoi(argv[1]);
-	int size = atoi(argv[2]);
-    int option = atoi(argv[3]);
+	int size = atoi(argv[2]);;
     double* data = new double[size];
 	srand(10);
 	for(int i=0; i<size; ++i) data[i] = (double)(rand() % 100);
-	CALI_MARK_END(genValuesTime);
 
     // merge-sort the data
 	auto start = std::chrono::steady_clock::now();
@@ -76,7 +51,6 @@ int main(int argc, char** argv) {
 	auto end = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start);
 	std::cout << "CUDA Mergesort Time: " << end.count() << " ms" << std::endl;
 
-    CALI_MARK_BEGIN(correctness);
 	bool isSorted = true;
 	for (int i=0; i<size-1; ++i)
 	{
@@ -86,44 +60,11 @@ int main(int argc, char** argv) {
 			break;
 		}
 	}
-    CALI_MARK_END(correctness);
-
-    CALI_MARK_END(main);
-
 	std::cout << "The list is sorted: " << isSorted << std::endl;
-
-    // Create caliper ConfigManager object
-	cali::ConfigManager mgr;
-	mgr.start();
-
-    adiak::init(NULL);
-    adiak::launchdate();    // launch date of the job
-    adiak::libraries();     // Libraries used
-    adiak::cmdline();       // Command line used to launch the job
-    adiak::clustername();   // Name of the cluster
-    adiak::value("Algorithm", "Mergesort"); // The name of the algorithm you are using (e.g., "MergeSort", "BitonicSort")
-    adiak::value("ProgrammingModel", "CUDA"); // e.g., "MPI", "CUDA", "MPIwithCUDA"
-    adiak::value("Datatype", "double"); // The datatype of input elements (e.g., double, int, float)
-    adiak::value("SizeOfDatatype", 8); // sizeof(datatype) of input elements in bytes (e.g., 1, 2, 4)
-    adiak::value("InputSize", size); // The number of elements in input dataset (1000)
-    std::string inputType = "Random";
-	if (option == 1) inputType = "Sorted";
-	else if (option == 2) inputType = "ReverseSorted";
-    adiak::value("InputType", inputType); // For sorting, this would be "Sorted", "ReverseSorted", "Random", "1%perturbed"
-    adiak::value("num_procs", numprocs); // The number of processors (MPI ranks)
-    adiak::value("num_threads", nThreads); // The number of CUDA or OpenMP threads
-    adiak::value("num_blocks", nBlocks); // The number of CUDA blocks 
-    adiak::value("group_num", 23); // The number of your group (integer, e.g., 1, 10)
-    adiak::value("implementation_source", "Online/Handwritten") // Where you got the source code of your algorithm; choices: ("Online", "AI", "Handwritten").
-
-    // Flush Caliper output before finalizing MPI
-   	mgr.stop();
-   	mgr.flush();
 
 }
 
 void mergesort(double* data, long size, dim3 threadsPerBlock, dim3 blocksPerGrid) {
-    CALI_CXX_MARK_FUNCTION;
 
     //
     // Allocate two arrays on the GPU
@@ -139,13 +80,7 @@ void mergesort(double* data, long size, dim3 threadsPerBlock, dim3 blocksPerGrid
     cudaMalloc((void**) &D_swp, size * sizeof(double));
 
     // Copy from our input list into the first array
-    CALI_MARK_BEGIN(comm);
-    CALI_MARK_BEGIN(commLarge);
-    CALI_MARK_BEGIN("cudaMemcpy");
     cudaMemcpy(D_data, data, size * sizeof(double), cudaMemcpyHostToDevice);
-    CALI_MARK_END("cudaMemcpy");
-    CALI_MARK_END(commLarge);
-    CALI_MARK_END(comm);
  
     //
     // Copy the thread / block info to the GPU as well
@@ -153,14 +88,8 @@ void mergesort(double* data, long size, dim3 threadsPerBlock, dim3 blocksPerGrid
 	cudaMalloc((void**) &D_threads, sizeof(dim3));
     cudaMalloc((void**) &D_blocks, sizeof(dim3));
 
-    CALI_MARK_BEGIN(comm);
-    CALI_MARK_BEGIN(commSmall);
-    CALI_MARK_BEGIN("cudaMemcpy");
 	cudaMemcpy(D_threads, &threadsPerBlock, sizeof(dim3), cudaMemcpyHostToDevice);
     cudaMemcpy(D_blocks, &blocksPerGrid, sizeof(dim3), cudaMemcpyHostToDevice);
-    CALI_MARK_END("cudaMemcpy");
-    CALI_MARK_END(commSmall);
-    CALI_MARK_END(comm);
 
     double* A = D_data;
     double* B = D_swp;
@@ -172,9 +101,6 @@ void mergesort(double* data, long size, dim3 threadsPerBlock, dim3 blocksPerGrid
     // Slice up the list and give pieces of it to each thread, letting the pieces grow
     // bigger and bigger until the whole list is sorted
     //
-    CALI_MARK_BEGIN(comp);
-    CALI_MARK_BEGIN(compLarge);
-    CALI_MARK_BEGIN("Mergesort");
     for (int width = 2; width < (size << 1); width <<= 1) {
         long slices = size / ((nThreads) * width) + 1;
 
@@ -185,20 +111,11 @@ void mergesort(double* data, long size, dim3 threadsPerBlock, dim3 blocksPerGrid
         A = A == D_data ? D_swp : D_data;
         B = B == D_data ? D_swp : D_data;
     }
-    CALI_MARK_END("Mergesort");
-    CALI_MARK_END(compLarge);
-    CALI_MARK_END(comp);
 
     //
     // Get the list back from the GPU
     //
-    CALI_MARK_BEGIN(comm);
-    CALI_MARK_BEGIN(commLarge);
-    CALI_MARK_BEGIN("cudaMemcpy");
     cudaMemcpy(data, A, size * sizeof(double), cudaMemcpyDeviceToHost);
-    CALI_MARK_END("cudaMemcpy");
-    CALI_MARK_END(commLarge);
-    CALI_MARK_END(comm);
     
     // Free the GPU memory
 	cudaFree(A);
