@@ -21,6 +21,13 @@ int compare (const void * a, const void * b)
 
 int main(int argc, char *argv[]){
 
+	CALI_CXX_MARK_FUNCTION
+
+	const char* Input_Time;
+	const char* Sort_Time;
+	const char* Is_Sorted_Time;
+
+
 	int nump,rank;
 	int n,localn;
 	int *data,recdata[100],recdata2[100];
@@ -57,14 +64,21 @@ int main(int argc, char *argv[]){
     }
     ierr=MPI_Bcast(&localn,1,MPI_INT,0,MPI_COMM_WORLD);
     ierr=MPI_Scatter(data, localn, MPI_INT, &recdata, 100, MPI_INT, 0, MPI_COMM_WORLD);
+	// Time input
     printf("%d:received data:",rank);
+		double MInputTime = MPI_Wtime();
+		CALI_MARK_BEGIN(Input_Time);
          for(i=0;i<localn;i++){
          	printf("%d ",recdata[i] );
          }
+		 CALI_MARK_END(Input_Time);
+		 MInputTime = MPI_Wtime() - MInputTime;
     printf("\n");
     sort(recdata,recdata+localn);
 
     //begin the odd-even sort
+	double MSortTime = MPI_Wtime();
+	CALI_MARK_BEGIN(Sort_Time);
     int oddrank,evenrank;
 
     if(rank%2==0){
@@ -75,6 +89,7 @@ int main(int argc, char *argv[]){
  		oddrank = rank+1;
  		evenrank = rank-1;
 	}
+
 /* Set the ranks of the processors at the end of the linear */
 if (oddrank == -1 || oddrank == nump)
  oddrank = MPI_PROC_NULL;
@@ -118,17 +133,44 @@ for (p=0; p<nump-1; p++) {
  }//else
  }//for
 
+CALI_MARK_END(Sort_Time);
+MSortTime = MPI_Wtime() - MSortTime;
+
+
 
 
 ierr=MPI_Gather(recdata,localn,MPI_INT,data,localn,MPI_INT,0,MPI_COMM_WORLD);
 if(rank==root_process){
-printf("final sorted data:");
-         for(i=0;i<n;i++){
-         	printf("%d ",data[i] );
-         }
-    printf("\n");
+	// check if the data is sorted
+	double MIsSortedTime = MPI_Wtime();
+	CALI_MARK_BEGIN(Is_Sorted_Time);
+
+	int sorted=1;
+	for(i=1;i<localn;i++){
+		if(recdata[i]<recdata[i-1])
+			sorted=0;
+	}
+
+	CALI_MARK_END(Is_Sorted_Time);
+	MIsSortedTime = MPI_Wtime() - MIsSortedTime;
+
+	printf("Parallel Odd-Even Sort:\n");
+	printf("\tInput Time: %.3f\n", MInputTime);
+	printf("\tSort Time: %.3f\n", MSortTime);
+	printf("\tIs Sorted Time: %.3f\n", MIsSortedTime);
+
 }
 
 ierr = MPI_Finalize();
 
+// Create caliper object
+	cali::ConfigManager mgr;
+	mgr.start();
+
+	adaik::init(NULL);
+   	adiak::user();
+   	adiak::clustername();	
+   	adiak::value("num_procs", nump);
+   	adiak::value("num_values", n);
+   	adiak::value("program_name", "OETSort");
 }
