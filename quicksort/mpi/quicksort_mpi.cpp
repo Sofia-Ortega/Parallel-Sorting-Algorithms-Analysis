@@ -106,11 +106,10 @@ int main(int argc, char *argv[])
 {
     CALI_CXX_MARK_FUNCTION;
 
-    // Read in CLI arguments
+    // Read in CLI arguments - size, threads
     int number_of_elements = atoi(argv[1]); // size of array
-    int size = atoi(argv[2]);               // 0 for small,
-    int process_id = 0;
-    int process_count = 0;
+    int process_id;
+    int process_count = atoi(argv[2]); // number of threads
     double compTime = 0.0;
     int *data = NULL;
     int chunk_size, own_chunk_size;
