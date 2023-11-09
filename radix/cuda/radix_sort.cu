@@ -222,6 +222,8 @@ void radix_sort(unsigned int* const d_out,
 
     // for every 2 bits from LSB to MSB:
     //  block-wise radix sort (write blocks back to global memory)
+    CALI_MARK_BEGIN("comp");
+    CALI_MARK_BEGIN("comp_large");
     for (unsigned int shift_width = 0; shift_width <= 30; shift_width += 2)
     {
         gpu_radix_sort_local<<<grid_sz, block_sz, shmem_sz>>>(d_out, 
@@ -244,7 +246,15 @@ void radix_sort(unsigned int* const d_out,
                                                     d_in_len, 
                                                     max_elems_per_block);
     }
+    CALI_MARK_END("comp");
+    CALI_MARK_END("comp_large");
+
+    CALI_MARK_BEGIN("comm");
+    CALI_MARK_BEGIN("comm_small");
     cudaMemcpy(d_out, d_in, sizeof(unsigned int) * d_in_len, cudaMemcpyDeviceToDevice);
+    CALI_MARK_END("comm_small");
+    CALI_MARK_END("comm");
+
     cudaFree(d_scan_block_sums);
     cudaFree(d_block_sums);
     cudaFree(d_prefix_sums);

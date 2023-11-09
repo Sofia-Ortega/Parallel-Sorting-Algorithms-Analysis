@@ -467,7 +467,7 @@ adiak::cmdline();       // Command line used to launch the job
 adiak::clustername();   // Name of the cluster
 adiak::value("Algorithm", "RadixSort"); // The name of the algorithm you are using (e.g., "MergeSort", "BitonicSort")
 adiak::value("ProgrammingModel", "MPI"); // e.g., "MPI", "CUDA", "MPIwithCUDA"
-adiak::value("Datatype", int); // The datatype of input elements (e.g., double, int, float)
+adiak::value("Datatype", "int"); // The datatype of input elements (e.g., double, int, float)
 adiak::value("SizeOfDatatype", sizeof(int)); // sizeof(datatype) of input elements in bytes (e.g., 1, 2, 4)
 adiak::value("InputSize", n_total); // The number of elements in input dataset (1000)
 adiak::value("InputType", "Random"); // For sorting, this would be "Sorted", "ReverseSorted", "Random", "1%perturbed"
