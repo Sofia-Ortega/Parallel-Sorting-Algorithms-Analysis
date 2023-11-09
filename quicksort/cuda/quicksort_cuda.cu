@@ -11,9 +11,6 @@
 #include <string.h>
 #include <cutil_inline.h>
 
-#define MAX_THREADS 128
-#define N 512
-
 int *r_values;
 int *d_values;
 
@@ -80,9 +77,15 @@ __global__ static void quicksort(int *values)
 
 int main(int argc, char **argv)
 {
+    CALI_CXX_MARK_FUNCTION;
+    CALI_MARK_BEGIN("main");
+
+
+
     printf("./quicksort starting with %d numbers...\n", N);
     unsigned int hTimer;
-    size_t size = N * sizeof(int);
+    size_t size = atoi(argv[1]); // CHANGE TO CLI ARG
+    const int MAX_THREADS = atoi(argv[2]); // CHANGE TO CLI ARG
 
     // allocate host memory
     r_values = (int *)malloc(size);
@@ -91,28 +94,23 @@ int main(int argc, char **argv)
     cutilSafeCall(cudaMalloc((void **)&d_values, size));
 
     // allocate threads per block
-    const unsigned int cThreadsPerBlock = 128;
+    const unsigned int cThreadsPerBlock = 128; // CHANGE TO CLI ARG
 
     // Get dataset from command line
-    if (argc > 1)
+    // Generate random numbers
+    
+    CALI_MARK_BEGIN("dataInitTime");
+    srand(time(NULL));
+    for (int i = 0; i < N; i++)
     {
-        for (int i = 0; i < N; i++)
-        {
-            r_values[i] = atoi(argv[i + 1]);
-        }
+        r_values[i] = rand() % 100;
     }
-    else
-    {
-        // Generate random numbers
-        srand(time(NULL));
-        for (int i = 0; i < N; i++)
-        {
-            r_values[i] = rand() % 100;
-        }
-    }
+    CALI_MARK_END("dataInitTime");
 
     // Copy data from host to device
+    CALI_MARK_BEGIN("comm");
     cutilSafeCall(cudaMemcpy(d_values, r_values, size, cudaMemcpyHostToDevice));
+    CALI_MARK_END("comm");
 
     // Start timer
     printf("Beginning kernel execution...\n");
@@ -122,8 +120,12 @@ int main(int argc, char **argv)
     cutilCheckError(cutStartTimer(hTimer));
 
     // Execute kernel
+    auto start = std::chrono::steady_clock::now();
+    CALI_MARK_BEGIN("comp");
     quicksort<<<MAX_THREADS / cThreadsPerBlock, MAX_THREADS / cThreadsPerBlock, cThreadsPerBlock>>>(d_values);
     cutilCheckMsg("Kernel execution failed...");
+    CALI_MARK_END("comp");
+
 
     cutilSafeCall(cudaThreadSynchronize());
     cutilCheckError(cutStopTimer(hTimer));
@@ -132,14 +134,21 @@ int main(int argc, char **argv)
     printf("\nKernel execution completed in %f ms\n", gpuTime);
 
     // copy data back to host
+    CALI_MARK_BEGIN("comm");
     cutilSafeCall(cudaMemcpy(r_values, d_values, size, cudaMemcpyDeviceToHost));
+    CALI_MARK_END("comm");
 
-    // test print
-    for (int i = 0; i < N; i++) {
-        printf("%d ", r_values[i]);
+    CALI_MARK_BEGIN("correctness");
+    bool isSorted = true;
+    for (int i = 0; i < size - 1; i++)
+    {
+        if (r_values[i] > r_values[i + 1])
+        {
+            isSorted = false;
+            break;
+        }
     }
-    printf("\n");
-
+    CALI_MARK_END("correctness");
     // free memory
     free(r_values);
     cutilSafeCall(cudaFree(d_values));
@@ -147,4 +156,6 @@ int main(int argc, char **argv)
     // exit
     cudaThreadExit();
     cutilExit(argc, argv);
+
+    CALI_MARK_END("main");
 }
