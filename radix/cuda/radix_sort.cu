@@ -26,7 +26,7 @@ __global__ void gpu_radix_sort_local(unsigned int* d_out_sorted,
     unsigned int* s_mask_out = &s_data[max_elems_per_block];
     unsigned int* s_merged_scan_mask_out = &s_mask_out[s_mask_out_len];
     unsigned int* s_mask_out_sums = &s_merged_scan_mask_out[max_elems_per_block];
-    unsigned int* s_scan_mask_out_sums = &s_mask_out_sums[4];
+    unsigned int* s_scan_mask_out_sums = &s;_mask_out_sums[4];
 
     unsigned int thid = threadIdx.x;
 
@@ -246,8 +246,8 @@ void radix_sort(unsigned int* const d_out,
                                                     d_in_len, 
                                                     max_elems_per_block);
     }
-    CALI_MARK_END("comp");
     CALI_MARK_END("comp_large");
+    CALI_MARK_END("comp");
 
     CALI_MARK_BEGIN("comm");
     CALI_MARK_BEGIN("comm_small");

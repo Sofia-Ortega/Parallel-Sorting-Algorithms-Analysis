@@ -36,7 +36,6 @@
 #define NUM_TAG PRINT_TAG_NUM + 1
 #define CHECK_SORTED NUM_TAG + 1
 
-const char* main = "main";
 const char* data_init = "data_init";
 const char* correctness_check = "correctness_check";
 const char* comm = "comm";
@@ -342,7 +341,7 @@ int main(int argc, char** argv)
     print_results = atoi(argv[2]);
   }
 
-  CALI_MARK_BEGIN(main);
+  CALI_MARK_BEGIN(main_timing);
   // initialize vars and allocate memory
   int n_total = atoi(argv[1]);
   int n = n_total/size;
@@ -454,7 +453,6 @@ int main(int argc, char** argv)
   }
   CALI_MARK_END(correctness_check);
 
-  CALI_MARK_END(main);
 
   // create caliper ConfigManager object
   cali::ConfigManager mgr;
@@ -475,7 +473,7 @@ adiak::value("num_procs", size); // The number of processors (MPI ranks)
 adiak::value("num_threads", size); // The number of CUDA or OpenMP threads
 adiak::value("num_blocks", 0); // The number of CUDA blocks 
 adiak::value("group_num", 23); // The number of your group (integer, e.g., 1, 10)
-adiak::value("implementation_source", "Online") // Where you got the source code of your algorithm; choices: ("Online", "AI", "Handwritten").
+adiak::value("implementation_source", "Online"); // Where you got the source code of your algorithm; choices: ("Online", "AI", "Handwritten").
 
   // Flush Caliper output before finalizing MPI
   mgr.stop();
