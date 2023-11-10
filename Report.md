@@ -254,10 +254,57 @@ sbatch mergesort.grace_job <n> <p> <option>
 
 
 * Source Code: [https://github.com/ym720/p_radix_sort_mpi/tree/master/p_radix_sort_mpi](https://github.com/54kevinalbert/gpu-mergesort)
- * Author: Kevin Albert
+ * Author: Shantanu Agarwal
 
 
- # Questions
+## Odd Even Transposition Sort
 
- 1. I was also confused on comp_small and comm_small for mergesort. I feel that everything is a large computation and a large communication.
- 2. Would you guys have any good resources on how the CUDA verson of mergesort works that goes into the details. I was unable to find any great resources and find the code a little bit confusing.
+### MPI
+
+#### Summary
+
+The input gets generated using a for loop that picks random numbers between 0 and 99. The data is evenly distributed across all the processers, the odd even phases are then used to swap as needed, followed by the processes communicating with each other to exchange data until it is sorted.
+
+The input is 
+#### Running
+
+1. Run `. build.sh`
+
+2. Run sbatch:
+
+```
+sbatch mergesort.grace_job <n> 
+```
+
+- `n`: length of array you want to sort
+
+#### Adapted From 
+
+
+* Source Code: https://github.com/ashantanu/Odd-Even-Sort-using-MPI/blob/master/oddEven.cpp
+
+### CUDA
+
+#### Summary
+
+The CUDA implementation is different in that it goes through the CUDA kernel, and is called with the array of integers, and each GPU thread getting a unique id. The oddeven function then does the same alternating and swapping as above till sorted. 
+
+#### Running
+
+1. Run `. build.sh`
+
+2. Run sbatch:
+
+```
+sbatch mergesort.grace_job <n> 
+```
+
+- `n`: how many numbers you want to sort 
+
+
+#### Adapted From 
+
+
+* Source Code: https://github.com/Kshitij421/Odd-Even-Sort-using-Cuda-/blob/master/oddeven.cu
+
+ * Author: @Kshitij421
