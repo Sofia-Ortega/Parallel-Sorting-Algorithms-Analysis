@@ -1,17 +1,18 @@
+
 /**
  * -------------------- SOURCE -----------------------------------
  * Code: https://github.com/ashantanu/Odd-Even-Sort-using-MPI/blob/master/oddEven.cpp
  * Author: Shantanu Agarwal
  * University: IIT Guwahati
- * Date: August 4, 2016 
- * 
+ * Date: August 4, 2016
+ *
 */
 
 #include <iostream>
 #include <stdio.h>
 #include <mpi.h>
 #include <stdlib.h>
-#include <algorithm> 
+#include <algorithm>
 
 using namespace std;
 
@@ -22,29 +23,30 @@ int compare (const void * a, const void * b)
 
 int main(int argc, char *argv[]){
 
-	CALI_CXX_MARK_FUNCTION
+        CALI_CXX_MARK_FUNCTION;
 
-	const char* Main_Time;
-	const char* Input_Gen_Time;
-	const char* Comm_Small;
-	const char* Comm_Large;
-	const char* Comp_Large;
-	const char* Input_Time;
-	const char* Sort_Time;
-	const char* Is_Sorted_Time;
+        const char* Main_Time;
+        const char* Input_Gen_Time;
+        const char* Comm_Small;
+        const char* Comm_Large;
+        const char* Comp_Large;
+        const char* Input_Time;
+        const char* Sort_Time;
+        const char* Is_Sorted_Time;
 
-	// Time main
-	double MMainTime = MPI_Wtime();
-	CALI_MARK_BEGIN(Main_Time);
+        // Time main
+        double MMainTime = MPI_Wtime();
+        CALI_MARK_BEGIN(Main_Time);
 
-	int nump,rank;
-	int n,localn;
-	int *data,recdata[100],recdata2[100];
-	int *temp;
-	int ierr,i;
-	int root_process;
-	int sendcounts;
-	MPI_Status status;
+        int nump,rank;
+        int n = atoi(argv[1]);
+        int localn;
+        int *data,recdata[100],recdata2[100];
+        int *temp;
+        int ierr,i;
+        int root_process;
+        int sendcounts;
+        MPI_Status status;
 	
 	ierr = MPI_Init(&argc, &argv);
     root_process = 0;

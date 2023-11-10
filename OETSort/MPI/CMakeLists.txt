@@ -1,4 +1,4 @@
-make_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.12)
 
 find_package(MPI REQUIRED)
 find_package(caliper REQUIRED)
@@ -15,3 +15,4 @@ include_directories(${adiak_INCLUDE_DIRS})
 
 target_link_libraries(oetsort_mpi PRIVATE MPI::MPI_CXX)
 target_link_libraries(oetsort_mpi PRIVATE caliper)
+
