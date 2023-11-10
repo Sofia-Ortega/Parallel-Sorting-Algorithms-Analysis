@@ -2,7 +2,7 @@
 #include <cmath>
 #include <string>
 
-const char * main = "main";
+const char * mainRegion = "main";
 const char * parallel = "parallel";
 const char * sequential = "sequential";
 const char * genValuesTime = "data_init";
@@ -10,7 +10,7 @@ const char * correctness = "correctness_check";
 const char * comp = "comp";
 const char * compSmall = "comp_small";
 const char * compLarge = "comp_large";
-const char * comm = "comm";
+const char * commRegion = "comm";
 const char * commSmall = "comm_small";
 const char * commLarge = "comm_large";
 const char * paraMergeTime = "para_merge_time";
@@ -155,13 +155,13 @@ double* mergeSortParallel(int height, int id, double *localArray, int size, MPI_
 
 			// Get the second half from child
 			half2 = new double[size];
-			CALI_MARK_BEGIN(comm);
+			CALI_MARK_BEGIN(commRegion);
 			CALI_MARK_BEGIN(commLarge);
 			CALI_MARK_BEGIN("MPI_Recv");
 			MPI_Recv(half2, size, MPI_DOUBLE, rightChild, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 			CALI_MARK_END("MPI_Recv");
 			CALI_MARK_END(commLarge);
-			CALI_MARK_END(comm);
+			CALI_MARK_END(commRegion);
 
 			// Merge both halves
 			mergeResult = new double[2*size];
@@ -180,13 +180,13 @@ double* mergeSortParallel(int height, int id, double *localArray, int size, MPI_
 		}
 		else // right child
 		{
-			CALI_MARK_BEGIN(comm);
+			CALI_MARK_BEGIN(commRegion);
 			CALI_MARK_BEGIN(commLarge);
 			CALI_MARK_BEGIN("MPI_Send");
 			MPI_Send(half1, size, MPI_DOUBLE, parent, 0, MPI_COMM_WORLD);
 			CALI_MARK_END("MPI_Send");
 			CALI_MARK_END(commLarge);
-			CALI_MARK_END(comm);
+			CALI_MARK_END(commRegion);
 			if (myHeight != 0) delete[] half1;
 			myHeight = height;
 		}
@@ -204,7 +204,7 @@ int main (int argc, char *argv[])
 {
 	CALI_CXX_MARK_FUNCTION;
 
-	CALI_MARK_BEGIN(main);
+	CALI_MARK_BEGIN(mainRegion);
 	int numberOfVals = atoi(argv[1]);
 	int option = atoi(argv[2]);
 
@@ -289,13 +289,13 @@ int main (int argc, char *argv[])
 
 	int localArraySize = numberOfVals / numprocs;
 	double *localArray = new double[localArraySize];
-	CALI_MARK_BEGIN(comm);
+	CALI_MARK_BEGIN(commRegion);
 	CALI_MARK_BEGIN(commLarge);
 	CALI_MARK_BEGIN("MPI_Scatter");
 	MPI_Scatter(valuesDouble, localArraySize, MPI_DOUBLE, localArray, localArraySize, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 	CALI_MARK_END("MPI_Scatter");
 	CALI_MARK_END(commLarge);
-	CALI_MARK_END(comm);
+	CALI_MARK_END(commRegion);
 
 	double mergeParallelTime = MPI_Wtime();
 	double rootTime;
@@ -320,13 +320,13 @@ int main (int argc, char *argv[])
 
 	mergeParallelTime = MPI_Wtime() - mergeParallelTime;
 	double totalMergeTime;
-	CALI_MARK_BEGIN(comm);
+	CALI_MARK_BEGIN(commRegion);
 	CALI_MARK_BEGIN(commLarge);
 	CALI_MARK_BEGIN("MPI_Reduce");
 	MPI_Reduce(&mergeParallelTime, &totalMergeTime, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
 	CALI_MARK_END("MPI_Reduce");
 	CALI_MARK_END(commLarge);
-	CALI_MARK_END(comm);
+	CALI_MARK_END(commRegion);
 
 	if (taskid == ROOT)
 	{
@@ -352,7 +352,7 @@ int main (int argc, char *argv[])
 	delete[] localArray;
 
 	CALI_MARK_END(paraMergeTime);
-	CALI_MARK_END(main);
+	CALI_MARK_END(mainRegion);
 	// Create caliper ConfigManager object
 	cali::ConfigManager mgr;
 	mgr.start();
@@ -373,7 +373,7 @@ int main (int argc, char *argv[])
     adiak::value("InputType", inputType); // For sorting, this would be "Sorted", "ReverseSorted", "Random", "1%perturbed"
     adiak::value("num_procs", numprocs); // The number of processors (MPI ranks)
     adiak::value("group_num", 23); // The number of your group (integer, e.g., 1, 10)
-    adiak::value("implementation_source", "Online/Handwritten") // Where you got the source code of your algorithm; choices: ("Online", "AI", "Handwritten").
+    adiak::value("implementation_source", "Online/Handwritten"); // Where you got the source code of your algorithm; choices: ("Online", "AI", "Handwritten").
 
    	// Flush Caliper output before finalizing MPI
    	mgr.stop();
