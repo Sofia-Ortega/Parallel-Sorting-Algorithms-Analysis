@@ -15,11 +15,11 @@ The team will be communicating primarily through **Discord**.
 
 Sorting Algorithms
 
-## 2. Brief project description 
+### 2. Brief project description 
 
 We will be comparing the performance of the following algorithms with a variety of differing array inputs. These array input will either be sorted, reversed, or randomly selected values. We will also be measuring how well each algorithm scales. We plan to implement each algorithm using MPI to serve the data amongst multiple GPUs that will then use CUDA. Once each part gets sorted on the GPUs, they will be merged either sequentially or in parallel.
 
-- Parallel Radix Sort (MPI + CUDA)
+- __Parallel Radix Sort (MPI + CUDA)__
 
   Note: Radix sort only works with integers
 
@@ -126,3 +126,138 @@ quicksort(A[q : r]):
 
 where each quicksort call and each partition call are done in parallel.
 ```
+
+
+
+# Algorithm Documentation
+
+## Radix Sort
+
+
+### MPI
+
+#### Summary
+
+Implemented Radix Sort with MPI. 
+We initialize the array with `inputgen.cpp` to generate the input in parallel.
+Each MPI process receives a sub array of the input to sort independently. 
+Throughout the runtime, the MPI processes communicate the counts and elements between each other in order for each process to know where to correctly place their own elements in relation to the entire array. 
+
+
+#### Running
+
+1. Run `. build.sh`
+
+2. Run sbatch:
+
+```
+sbatch radix.grace_job  <t> <n>
+```
+
+- `t`: number of threads 
+- `n`: length of array you want to sort 
+
+#### Adapted From 
+
+
+* Source Code: https://github.com/jackfly/radix-sort-cuda/tree/master
+ * Author: Jack Liu
+ * Date: December 18, 2017
+
+### CUDA
+
+#### Summary
+
+This MPI implementation was created with CUDA. 
+In this implementation of radix, multiple passes are done on the array.
+For each pass, we separate the array between blocks, which performs radix sort on its own individual subset of the array. 
+`gpu_glbl_shuffle` is called to coordinate so that each element is inserted in the correct position of the overall array after all the blocks are finished
+
+#### Running
+
+1. Run `. build.sh`
+
+2. Run sbatch:
+
+```
+sbatch radix.grace_job  <n> <p>
+```
+
+- `n`: how many numbers you want to sort 
+- `p`: number of processes
+
+#### Adapted From 
+
+
+* Source Code: https://github.com/ym720/p_radix_sort_mpi/tree/master/p_radix_sort_mpi
+
+ * Report: https://andreask.cs.illinois.edu/Teaching/HPCFall2012/Projects/yourii-report.pdf
+ * Author: Yourii Martiak
+ * University: New York University
+ * Date: December 20, 2012
+
+
+ # Questions
+
+ 1. For Radix sort, I was a bit confused on what was considered a comp_small vs a comp_large. I would love clarification to see if I marked the correct areas correctly.
+
+## Mergesort
+
+
+### MPI
+
+#### Summary
+
+The input gets generated in parallel using the inputgeneration code. The array is scattered across the different processors and then sorted on each processor using the serial mergesort algorithm. The processors for a binary tree structure where the right child will send its data to the left child to be merged into one array. This process is repeated until the entire array is merged and sorted.
+
+
+#### Running
+
+1. Run `. build.sh`
+
+2. Run sbatch:
+
+```
+sbatch mergesort.grace_job <t> <n> <option>
+```
+
+- `t`: number of processors
+- `n`: length of array you want to sort
+- `option`: 0 for random array, 1 for sorted, and 2 for reverse sorted
+
+#### Adapted From 
+
+
+* Source Code: http://selkie-macalester.org/csinparallel/modules/MPIProgramming/build/html/mergeSort/mergeSort.html
+
+### CUDA
+
+#### Summary
+
+The CUDA implementation was much more difficult to get working. It seems mergesort is slightly easier to go about in MPI. I believe the CUDA code works by sorting lots of small arrays across many threads. It then inceases the numbers that each thread is resposible for and repeats the process with fewer threads. It keeps repeating this process until the list is sorted.
+
+#### Running
+
+1. Run `. build.sh`
+
+2. Run sbatch:
+
+```
+sbatch mergesort.grace_job <n> <p> <option>
+```
+
+- `n`: how many numbers you want to sort 
+- `p`: number of processes
+- `option`: 0 for random array, 1 for sorted, and 2 for reverse sorted (not fully implmeneted for the CUDA version just yet)
+
+#### Adapted From 
+
+
+* Source Code: [https://github.com/ym720/p_radix_sort_mpi/tree/master/p_radix_sort_mpi](https://github.com/54kevinalbert/gpu-mergesort)
+ * Author: Kevin Albert
+
+
+ # Questions
+
+ 1. I was also confused on comp_small and comm_small for mergesort. I feel that everything is a large computation and a large communication.
+ 2. Would you guys have any good resources on how the CUDA verson of mergesort works that goes into the details. I was unable to find any great resources and find the code a little bit confusing.
