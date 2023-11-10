@@ -18,13 +18,13 @@
 ##First Executable Line
 #
 processes=$1
-values=$2
-option=$3
+num_values=$2
+num_threads=$3
 
 module load intel/2020b       # load Intel software stack
 module load CMake/3.12.1
 
 CALI_CONFIG="spot(output=caliper-${processes}-${values}.cali)" \
-mpirun -np $processes ./quicksort_mpi $values $option
+mpirun -np $processes ./quicksort_mpi $num_values $num_threads
 
 squeue -j $SLURM_JOBID

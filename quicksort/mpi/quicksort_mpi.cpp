@@ -20,7 +20,7 @@ const char *mainRegion = "main";
 const char *parallel = "parallel";
 const char *sequential = "sequential";
 const char *genValuesTime = "data_init";
-const char *barrierTime = "barrier";
+const char *barrier = "barrier";
 const char *correctness = "correctness_check";
 const char *comp = "comp";
 const char *compSmall = "comp_small";
@@ -66,6 +66,8 @@ void quicksort(int *arr, int start, int end)
     index = start;
 
     // Iterate over the range [start, end]
+    CALI_MARK_BEGIN(comp);
+    CALI_MARK_BEGIN(compSmall);
     for (int i = start + 1; i < start + end; i++)
     {
 
@@ -80,12 +82,15 @@ void quicksort(int *arr, int start, int end)
 
     // Swap the pivot into place
     swap(arr, start, index);
+    CALI_MARK_END(compSmall);
 
     // Recursive Call for sorting
     // of quick sort function
-    CALI_MARK
+    CALI_MARK_BEGIN(compLarge);
     quicksort(arr, start, index - start);
     quicksort(arr, index + 1, start + end - index - 1);
+    CALI_MARK_END(compLarge);
+    CALI_MARK_END(comp);
 }
 
 // Function that merges the two arrays
@@ -133,6 +138,7 @@ int main(int argc, char *argv[])
     CALI_CXX_MARK_FUNCTION;
 
     CALI_MARK_BEGIN(mainRegion);
+
     int number_of_elements = atoi(argv[1]);
     int *data = NULL;
     int chunk_size, own_chunk_size;
@@ -140,17 +146,12 @@ int main(int argc, char *argv[])
     MPI_Status status;
     double dataInitTime, barrierTime, commSmallTime, commLargeTime, compSmallTime, compLargeTime, correctTime, totalTime;
 
-    if (argc != 3)
-    {
-        printf("Desired number of arguments are not their "
-               "in argv....\n");
-        printf("2 files required first one input and "
-               "second one output....\n");
-        exit(-1);
-    }
-
     int number_of_process, rank_of_process;
     number_of_process = atoi(argv[2]);
+
+    cout << "Number of elements: " << number_of_elements << endl;
+    cout << "Number of processes: " << number_of_process << endl;
+    cout << "Version 0.1" << endl;
 
     // Initialize the MPI environment
     int rc = MPI_Init(&argc, &argv);
@@ -174,11 +175,11 @@ int main(int argc, char *argv[])
 
     // Blocks all process until reach this point
     CALI_MARK_BEGIN(commRegion);
-    CALI_MARK_BEGIN(barrierTime);
+    CALI_MARK_BEGIN(barrier);
     barrierTime = MPI_Wtime();
     MPI_Barrier(MPI_COMM_WORLD);
     barrierTime = MPI_Wtime() - barrierTime;
-    CALI_MARK_END(barrierTime);
+    CALI_MARK_END(barrier);
 
     // BroadCast the Size to all the
     // process from root process
@@ -207,6 +208,7 @@ int main(int argc, char *argv[])
     CALI_MARK_END(commLarge);
     free(data);
     data = NULL;
+    CALI_MARK_END(commRegion);
 
     // Compute size of own chunk and
     // then sort them
@@ -218,16 +220,26 @@ int main(int argc, char *argv[])
 
     // Sorting array with quick sort for every
     // chunk as called by process
+    CALI_MARK_BEGIN(comp);
+    CALI_MARK_BEGIN(compLarge);
+    compLargeTime = MPI_Wtime();
     quicksort(chunk, 0, own_chunk_size);
+    compLargeTime = MPI_Wtime() - compLargeTime;
+    CALI_MARK_END(compLarge);
+    CALI_MARK_END(comp);
 
+    CALI_MARK_BEGIN(commRegion);
     for (int step = 1; step < number_of_process;
          step = 2 * step)
     {
         if (rank_of_process % (2 * step) != 0)
         {
+            CALI_MARK_BEGIN(commLarge);
             MPI_Send(chunk, own_chunk_size, MPI_INT,
                      rank_of_process - step, 0,
                      MPI_COMM_WORLD);
+            CALI_MARK_END(commLarge);
+
             break;
         }
 
@@ -239,13 +251,22 @@ int main(int argc, char *argv[])
             int *chunk_received;
             chunk_received = (int *)malloc(
                 received_chunk_size * sizeof(int));
+            CALI_MARK_BEGIN(commSmall);
+
             MPI_Recv(chunk_received, received_chunk_size,
                      MPI_INT, rank_of_process + step, 0,
                      MPI_COMM_WORLD, &status);
+            CALI_MARK_END(commSmall);
 
+            CALI_MARK_BEGIN(comp);
+            CALI_MARK_BEGIN(compSmall);
+            compSmallTime = MPI_Wtime();
             data = merge(chunk, own_chunk_size,
                          chunk_received,
                          received_chunk_size);
+            compSmallTime = MPI_Wtime() - compSmallTime;
+            CALI_MARK_END(compSmall);
+            CALI_MARK_END(comp);
 
             free(chunk);
             free(chunk_received);
@@ -253,12 +274,15 @@ int main(int argc, char *argv[])
             own_chunk_size = own_chunk_size + received_chunk_size;
         }
     }
+    CALI_MARK_END(commRegion);
 
     // Opening the other file as taken form input
     // and writing it to the file and giving it
     // as the output
     if (rank_of_process == 0)
     {
+        CALI_MARK_BEGIN(correctness);
+        correctTime = MPI_Wtime();
         // check if array is sorted or not
         if (isSorted(chunk, number_of_elements))
         {
@@ -268,9 +292,30 @@ int main(int argc, char *argv[])
         {
             printf("Array is not sorted (womp womp)\n");
         }
+        correctTime = MPI_Wtime() - correctTime;
+        CALI_MARK_END(correctness);
     }
 
+    totalTime = MPI_Wtime() - totalTime;
     CALI_MARK_END(mainRegion);
+    // create caliper ConfigManager object
+    cali::ConfigManager mgr;
+    mgr.start();
+
+    adiak::init(NULL);
+    adiak::launchdate();                                    // launch date of the job
+    adiak::libraries();                                     // Libraries used
+    adiak::cmdline();                                       // Command line used to launch the job
+    adiak::clustername();                                   // Name of the cluster
+    adiak::value("Algorithm", "QuickSort");                 // The name of the algorithm you are using (e.g., "MergeSort", "BitonicSort")
+    adiak::value("ProgrammingModel", "MPI");                // e.g., "MPI", "CUDA", "MPIwithCUDA"
+    adiak::value("SizeOfDatatype", sizeof(int));            // sizeof(datatype) of input elements in bytes (e.g., 1, 2, 4)
+    adiak::value("number_of_elements", number_of_elements); // The number of elements in input dataset (1000)
+    adiak::value("process_counts", number_of_process);          // The number of processors (MPI ranks)
+
+    // Flush Caliper output before finalizing MPI
+    mgr.stop();
+    mgr.flush();
     MPI_Finalize();
     return 0;
 }

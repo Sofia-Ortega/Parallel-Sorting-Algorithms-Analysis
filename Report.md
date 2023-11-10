@@ -313,3 +313,39 @@ sbatch mergesort.grace_job <n>
 * Source Code: https://github.com/Kshitij421/Odd-Even-Sort-using-Cuda-/blob/master/oddeven.cu
 
  * Author: @Kshitij421
+
+## Quicksort
+
+### MPI
+#### Summary
+The input gets generated sequentially, using a for loop to generate `num_of_elements` amount of random numbers. The array is scattered across the different processors and then sorted on each processor using the serial quicksort algorithm. The processors for a binary tree structure where the right child will send its data to the left child to be merged into one array. This process is repeated until the entire array is merged and sorted. Once the array is sorted, the root processor will check if it is sorted correctly and print out the result.
+
+#### Running  
+1. Run `. build.sh`
+2. Run sbatch:
+```
+sbatch quicksort.grace_job <n> <t>
+```
+- `n`: length of array you want to sort
+- `t`: number of threads
+
+#### Adapted From
+* Source Code: https://www.geeksforgeeks.org/implementation-of-quick-sort-using-mpi-omp-and-posix-thread/
+* Author: GeeksforGeeks (Ashutosh Soni)
+
+### CUDA
+#### Summary
+The input gets generated sequentially again, also using a for loop to generate `size` elements. As far as I could understand, we split the array into blocks of size `block_size`, with `cThreadsPerBlock` threads in them (128 threads per block) and then sort each block using the kernel function quicksort algorithm. So each block is sorted independently of the others. We finally merge it all together in the same while loop.
+
+#### Running
+1. Run `. build.sh`
+2. Run sbatch:
+```
+sbatch quicksort.grace_job <n> <p>
+```
+- `n`: length of array you want to sort
+- `p`: number of processes
+
+#### Adapted From
+* Source Code: https://github.com/saigowri/CUDA/blob/master/quicksort.cu
+* Author: Sai Gowri
