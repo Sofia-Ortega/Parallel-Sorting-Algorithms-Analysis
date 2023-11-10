@@ -254,8 +254,13 @@ sbatch mergesort.grace_job <n> <p> <option>
 
 
 * Source Code: [https://github.com/ym720/p_radix_sort_mpi/tree/master/p_radix_sort_mpi](https://github.com/54kevinalbert/gpu-mergesort)
- * Author: Shantanu Agarwal
+ * Author: Kevin Albert
 
+
+ # Questions
+
+ 1. I was also confused on comp_small and comm_small for mergesort. I feel that everything is a large computation and a large communication.
+ 2. Would you guys have any good resources on how the CUDA verson of mergesort works that goes into the details. I was unable to find any great resources and find the code a little bit confusing.
 
 ## Odd Even Transposition Sort
 
