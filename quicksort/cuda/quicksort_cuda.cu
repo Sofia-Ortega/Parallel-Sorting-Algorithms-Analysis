@@ -9,8 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-// #include <cutil_inline.h>
-#include <cuda.h>
+#include <cutil_inline.h>
 
 int *r_values;
 int *d_values;

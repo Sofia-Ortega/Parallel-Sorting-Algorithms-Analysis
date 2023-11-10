@@ -147,12 +147,6 @@ int main(int argc, char *argv[])
     double dataInitTime, barrierTime, commSmallTime, commLargeTime, compSmallTime, compLargeTime, correctTime, totalTime;
 
     int number_of_process, rank_of_process;
-    number_of_process = atoi(argv[2]);
-
-    cout << "Number of elements: " << number_of_elements << endl;
-    cout << "Number of processes: " << number_of_process << endl;
-    cout << "Version 0.1" << endl;
-
     // Initialize the MPI environment
     int rc = MPI_Init(&argc, &argv);
     totalTime = MPI_Wtime();
@@ -165,10 +159,10 @@ int main(int argc, char *argv[])
     {
         // create a array of size number_of_elements of random integers
         data = (int *)malloc(number_of_elements * sizeof(int));
-    }
-    for (int i = 0; i < number_of_elements; i++)
-    {
-        data[i] = rand() % 1000;
+        for (int i = 0; i < number_of_elements; i++)
+        {
+            data[i] = rand() % 1000;
+        }
     }
     dataInitTime = MPI_Wtime() - dataInitTime;
     CALI_MARK_END(genValuesTime);
@@ -294,10 +288,31 @@ int main(int argc, char *argv[])
         }
         correctTime = MPI_Wtime() - correctTime;
         CALI_MARK_END(correctness);
+
+        // Print sorted array
+        for (int i = 0; i < number_of_elements; i++)
+        {
+            printf("%d ", chunk[i]);
+            if (i % 10 == 0) {
+                printf("\n");
+            }
+        }
+        printf("\n");
+
+        totalTime = MPI_Wtime() - totalTime;
+        printf("Time taken: %f\n", totalTime);
+        printf("Data init time: %f\n", dataInitTime);
+        printf("Barrier time: %f\n", barrierTime);
+        printf("Comm small time: %f\n", commSmallTime);
+        printf("Comm large time: %f\n", commLargeTime);
+        printf("Comp small time: %f\n", compSmallTime);
+        printf("Comp large time: %f\n", compLargeTime);
+        printf("Correctness time: %f\n", correctTime);
     }
 
     totalTime = MPI_Wtime() - totalTime;
     CALI_MARK_END(mainRegion);
+
     // create caliper ConfigManager object
     cali::ConfigManager mgr;
     mgr.start();
@@ -311,7 +326,7 @@ int main(int argc, char *argv[])
     adiak::value("ProgrammingModel", "MPI");                // e.g., "MPI", "CUDA", "MPIwithCUDA"
     adiak::value("SizeOfDatatype", sizeof(int));            // sizeof(datatype) of input elements in bytes (e.g., 1, 2, 4)
     adiak::value("number_of_elements", number_of_elements); // The number of elements in input dataset (1000)
-    adiak::value("process_counts", number_of_process);          // The number of processors (MPI ranks)
+    adiak::value("process_counts", number_of_process);      // The number of processors (MPI ranks)
 
     // Flush Caliper output before finalizing MPI
     mgr.stop();
