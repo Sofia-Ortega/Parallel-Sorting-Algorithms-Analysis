@@ -52,6 +52,7 @@ int main(int argc, char *argv[]){
     root_process = 0;
     ierr = MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     ierr = MPI_Comm_size(MPI_COMM_WORLD, &nump);
+	double MInput_Gen_Time;
 
       if(rank == root_process) {
          printf("please enter the number of numbers to sort: ");
@@ -61,7 +62,7 @@ int main(int argc, char *argv[]){
          localn=avgn;
 
 		// input generation
-		double MInput_Gen_Time = MPI_Wtime();
+		MInput_Gen_Time = MPI_Wtime();
 		CALI_MARK_BEGIN(Input_Gen_Time);
 
     	data=(int*)malloc(sizeof(int)*n);
