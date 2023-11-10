@@ -9,13 +9,20 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <cutil_inline.h>
+#include <cstdlib>
+#include <caliper/cali.h>
+#include <caliper/cali-manager.h>
+#include <adiak.hpp>
+#include <chrono>
 
 int *r_values;
 int *d_values;
 
+float dataInitTime;
+float correctnessTime;
+
 // Kernel function
-__global__ static void quicksort(int *values)
+__global__ static void quicksort(int *values, int N)
 {
 #define MAX_LEVELS 300
 
@@ -80,65 +87,74 @@ int main(int argc, char **argv)
     CALI_CXX_MARK_FUNCTION;
     CALI_MARK_BEGIN("main");
 
-
-
-    printf("./quicksort starting with %d numbers...\n", N);
-    unsigned int hTimer;
+    cudaEvent_t dataInitStart, dataInitStop, correctnessStart, correctnessStop;
     size_t size = atoi(argv[1]); // CHANGE TO CLI ARG
+    printf("./quicksort starting with %d numbers...\n", size * sizeof(int));
     const int MAX_THREADS = atoi(argv[2]); // CHANGE TO CLI ARG
 
+
+    std::cout << "MAX_THREADS: " << MAX_THREADS << std::endl;
+
+
     // allocate host memory
-    r_values = (int *)malloc(size);
+    r_values = (int *)malloc(size * sizeof(int));
 
     // allocate device memory
-    cudaMalloc((void **)&d_values, size);
+    cudaMalloc((void **)&d_values, size * sizeof(int));
 
     // allocate threads per block
     const unsigned int cThreadsPerBlock = 128; // CHANGE TO CLI ARG
 
     // Get dataset from command line
     // Generate random numbers
+    cudaEventCreate(&dataInitStart);
+    cudaEventCreate(&dataInitStop);
+    cudaEventCreate(&correctnessStart);
+    cudaEventCreate(&correctnessStop);
     
     CALI_MARK_BEGIN("dataInitTime");
+    cudaEventRecord(dataInitStart, 0);
     srand(time(NULL));
     for (int i = 0; i < size; i++)
     {
         r_values[i] = rand() % 100;
     }
+    cudaEventRecord(dataInitStop, 0);
+    cudaEventSynchronize(dataInitStop);
     CALI_MARK_END("dataInitTime");
+
+    cudaEventElapsedTime(&dataInitTime, dataInitStart, dataInitStop);
 
     // Copy data from host to device
     CALI_MARK_BEGIN("comm");
-    cudaMemcpy(d_values, r_values, size, cudaMemcpyHostToDevice);
+    cudaMemcpy(d_values, r_values, size * sizeof(int), cudaMemcpyHostToDevice);
     CALI_MARK_END("comm");
 
     // Start timer
     printf("Beginning kernel execution...\n");
-    cutCreateTimer(&hTimer);
     cudaThreadSynchronize();
-    cutResetTimer(hTimer);
-    cutStartTimer(hTimer);
 
     // Execute kernel
     auto start = std::chrono::steady_clock::now();
     CALI_MARK_BEGIN("comp");
-    quicksort<<<MAX_THREADS / cThreadsPerBlock, MAX_THREADS / cThreadsPerBlock, cThreadsPerBlock>>>(d_values);
+    quicksort<<<MAX_THREADS / cThreadsPerBlock, MAX_THREADS / cThreadsPerBlock, cThreadsPerBlock>>>(d_values, size);
     // cutilCheckMsg("Kernel execution failed...");
     CALI_MARK_END("comp");
+    auto end = std::chrono::steady_clock::now();
+    auto diff = end - start;
 
 
     cudaThreadSynchronize();
-    cutStopTimer(hTimer);
-    double gpuTime = cutGetTimerValue(hTimer);
 
-    printf("\nKernel execution completed in %f ms\n", gpuTime);
+    printf("\nKernel execution completed in %f ms\n", diff);
 
     // copy data back to host
     CALI_MARK_BEGIN("comm");
-    cudaMemcpy(r_values, d_values, size, cudaMemcpyDeviceToHost);
+    cudaMemcpy(r_values, d_values, size * sizeof(int), cudaMemcpyDeviceToHost);
     CALI_MARK_END("comm");
 
     CALI_MARK_BEGIN("correctness");
+    cudaEventRecord(correctnessStart, 0);
     bool isSorted = true;
     for (int i = 0; i < size - 1; i++)
     {
@@ -148,17 +164,24 @@ int main(int argc, char **argv)
             break;
         }
 
-        if (isSorted)
-        {
-            printf("Array is sorted (LESSGO)\n");
-        }
-        else
-        {
-            printf("Array is not sorted (womp womp)\n");
-        }
+        // if (isSorted)
+        // {
+        //     printf("Array is sorted (LESSGO)\n");
+        // }
+        // else
+        // {
+        //     printf("Array is not sorted (womp womp)\n");
+        // }
     }
+    cudaEventRecord(correctnessStop, 0);
     CALI_MARK_END("correctness");
+
+    cudaEventElapsedTime(&correctnessTime, correctnessStart, correctnessStop);
     // free memory
+    cudaEventDestroy(dataInitStart);
+    cudaEventDestroy(dataInitStop);
+    cudaEventDestroy(correctnessStart);
+    cudaEventDestroy(correctnessStop);
     free(r_values);
     cudaFree(d_values);
 

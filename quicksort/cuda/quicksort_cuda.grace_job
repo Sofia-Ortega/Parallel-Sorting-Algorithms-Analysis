@@ -16,12 +16,13 @@
 ##First Executable Line
 #
 
-num_threads=$1
-num_vals=$2
+num_vals=$1
+num_threads=$2
+
 #
 module load CUDA                #load CUDA module
 module load GCCcore/7.3.0
 #
 
 CALI_CONFIG="spot(output=${num_threads}-${num_vals}.cali)" \
-./quicksort_cuda $num_threads $num_vals
+./quicksort_cuda $num_vals $num_threads 
