@@ -1,5 +1,4 @@
 
-
 // ADAPTED FROM: https://github.com/jackfly/radix-sort-cuda/blob/master/cuda_implementation/main.cu
 
 #include <caliper/cali.h>
@@ -258,9 +257,9 @@ void radix_sort(unsigned int* const d_out,
     // for every 2 bits from LSB to MSB:
     //  block-wise radix sort (write blocks back to global memory)
     CALI_MARK_BEGIN("comp");
-    CALI_MARK_BEGIN("comp_large");
     for (unsigned int shift_width = 0; shift_width <= 30; shift_width += 2)
     {
+        CALI_MARK_BEGIN("comp_large");
         gpu_radix_sort_local<<<grid_sz, block_sz, shmem_sz>>>(d_out, 
                                                                 d_prefix_sums, 
                                                                 d_block_sums, 
@@ -269,10 +268,12 @@ void radix_sort(unsigned int* const d_out,
                                                                 d_in_len, 
                                                                 max_elems_per_block);
 
+        CALI_MARK_END("comp_large");
         // scan global block sum array
         sum_scan_blelloch(d_scan_block_sums, d_block_sums, d_block_sums_len);
 
         // scatter/shuffle block-wise sorted array to final positions
+        CALI_MARK_BEGIN("comp_small");
         gpu_glbl_shuffle<<<grid_sz, block_sz>>>(d_in, 
                                                     d_out, 
                                                     d_scan_block_sums, 
@@ -280,8 +281,8 @@ void radix_sort(unsigned int* const d_out,
                                                     shift_width, 
                                                     d_in_len, 
                                                     max_elems_per_block);
+        CALI_MARK_END("comp_small");
     }
-    CALI_MARK_END("comp_large");
     CALI_MARK_END("comp");
 
     CALI_MARK_BEGIN("comm");
