@@ -16,12 +16,26 @@
 
 using namespace std;
 
-// Simple swap function
+const char *mainRegion = "main";
+const char *parallel = "parallel";
+const char *sequential = "sequential";
+const char *genValuesTime = "data_init";
+const char *barrierTime = "barrier";
+const char *correctness = "correctness_check";
+const char *comp = "comp";
+const char *compSmall = "comp_small";
+const char *compLarge = "comp_large";
+const char *commRegion = "comm";
+const char *commSmall = "comm_small";
+const char *commLarge = "comm_large";
+
+// Function to swap two numbers
 void swap(int *arr, int i, int j)
 {
-    int temp = arr[j];
-    arr[j] = arr[i];
-    arr[i] = temp;
+    // cout << "Swapping " << arr[i] << " and " << arr[j] << endl;
+    int t = arr[i];
+    arr[i] = arr[j];
+    arr[j] = t;
 }
 
 bool isSorted(int *arr, int count)
@@ -35,177 +49,198 @@ bool isSorted(int *arr, int count)
     return true;
 }
 
-// Quick sort function
 void quicksort(int *arr, int start, int end)
 {
-
     int pivot, index;
 
-    // base case
+    // Base Case
     if (end <= 1)
-    {
         return;
-    }
 
-    // select pivot
+    // Pick pivot and swap with first
+    // element Pivot is middle element
     pivot = arr[start + end / 2];
     swap(arr, start, start + end / 2);
+
+    // Partitioning Steps
     index = start;
 
+    // Iterate over the range [start, end]
     for (int i = start + 1; i < start + end; i++)
     {
+
+        // Swap if the element is less
+        // than the pivot element
         if (arr[i] < pivot)
         {
-            ++index;
-            swap(arr, i, ++index);
+            index++;
+            swap(arr, i, index);
         }
     }
 
+    // Swap the pivot into place
     swap(arr, start, index);
 
-    // Recursively sort
+    // Recursive Call for sorting
+    // of quick sort function
+    CALI_MARK
     quicksort(arr, start, index - start);
-    quicksort(arr, index + 1, end - (index - start) - 1);
+    quicksort(arr, index + 1, start + end - index - 1);
 }
 
-// once you have two sorted arrays - need to merge them
+// Function that merges the two arrays
 int *merge(int *arr1, int n1, int *arr2, int n2)
 {
-    int *result = (int *)malloc((n1 + n2) * sizeof(int)); // dedicate space of size arr1 and 2
-    int i = 0, j = 0, k = 0;
+    int *result = (int *)malloc((n1 + n2) * sizeof(int));
+    int i = 0;
+    int j = 0;
+    int k;
 
-    for (k = 0; k < (n1 + n2); k++)
+    for (k = 0; k < n1 + n2; k++)
     {
         if (i >= n1)
         {
             result[k] = arr2[j];
             j++;
         }
-        else if (j >= n1)
+        else if (j >= n2)
         {
             result[k] = arr1[i];
             i++;
         }
+
+        // Indices in bounds as i < n1
+        // && j < n2
         else if (arr1[i] < arr2[j])
         {
             result[k] = arr1[i];
             i++;
         }
+
+        // v2[j] <= v1[i]
         else
         {
             result[k] = arr2[j];
             j++;
         }
     }
-
     return result;
 }
 
-// driver code and MPI functionality
+// Driver Code
 int main(int argc, char *argv[])
 {
     CALI_CXX_MARK_FUNCTION;
 
-    // Read in CLI arguments - size, threads
-    int number_of_elements = atoi(argv[1]); // size of array
-    cout << "Number of elements: " << number_of_elements << endl;
-    int process_id;
-    int process_count = atoi(argv[2]); // number of threads
-    cout << "Number of processes: " << process_count << endl;
-    cout << "Process ID: " << process_id << endl;
-    double compTime = 0.0;
-    // Array of ints to be sorted
-    int *data;
+    CALI_MARK_BEGIN(mainRegion);
+    int number_of_elements = atoi(argv[1]);
+    int *data = NULL;
     int chunk_size, own_chunk_size;
     int *chunk;
-    double dataInitTime, barrierTime, commTime, correctTime, totalTime;
     MPI_Status status;
+    double dataInitTime, barrierTime, commSmallTime, commLargeTime, compSmallTime, compLargeTime, correctTime, totalTime;
 
-    CALI_MARK_BEGIN("totalTime");
-    // Initialize MPI
-    MPI_Init(&argc, &argv);
-    totalTime = MPI_Wtime();
-    MPI_Comm_rank(MPI_COMM_WORLD, &process_id);
-    MPI_Comm_size(MPI_COMM_WORLD, &process_count);
-
-    // data_init
-    dataInitTime = MPI_Wtime();
-    CALI_MARK_BEGIN("dataInitTime");
-    if (process_id == 0)
+    if (argc != 3)
     {
-        data = new int[number_of_elements];
+        printf("Desired number of arguments are not their "
+               "in argv....\n");
+        printf("2 files required first one input and "
+               "second one output....\n");
+        exit(-1);
     }
-    genValues(process_id, process_count, number_of_elements, false, data, 0);
-    CALI_MARK_END("dataInitTime");
+
+    int number_of_process, rank_of_process;
+    number_of_process = atoi(argv[2]);
+
+    // Initialize the MPI environment
+    int rc = MPI_Init(&argc, &argv);
+    totalTime = MPI_Wtime();
+    MPI_Comm_size(MPI_COMM_WORLD, &number_of_process);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank_of_process);
+
+    CALI_MARK_BEGIN(genValuesTime);
+    dataInitTime = MPI_Wtime();
+    if (rank_of_process == 0)
+    {
+        // create a array of size number_of_elements of random integers
+        data = (int *)malloc(number_of_elements * sizeof(int));
+    }
+    for (int i = 0; i < number_of_elements; i++)
+    {
+        data[i] = rand() % 1000;
+    }
     dataInitTime = MPI_Wtime() - dataInitTime;
+    CALI_MARK_END(genValuesTime);
 
-    // comm_small region
-
-    // block all child processes until master process
-    // has finished generating data
+    // Blocks all process until reach this point
+    CALI_MARK_BEGIN(commRegion);
+    CALI_MARK_BEGIN(barrierTime);
     barrierTime = MPI_Wtime();
-    CALI_MARK_BEGIN("barrierTime");
     MPI_Barrier(MPI_COMM_WORLD);
-    CALI_MARK_END("barrierTime");
     barrierTime = MPI_Wtime() - barrierTime;
+    CALI_MARK_END(barrierTime);
 
-    // Broadcast the number of elements
-    commTime = MPI_Wtime();
-    CALI_MARK_BEGIN("commTime");
+    // BroadCast the Size to all the
+    // process from root process
+    CALI_MARK_BEGIN(commSmall);
+    commSmallTime = MPI_Wtime();
     MPI_Bcast(&number_of_elements, 1, MPI_INT, 0,
               MPI_COMM_WORLD);
+    commSmallTime = MPI_Wtime() - commSmallTime;
+    CALI_MARK_END(commSmall);
 
     // Computing chunk size
-    chunk_size
-        = (number_of_elements % process_count == 0)
-              ? (number_of_elements / process_count)
-              : number_of_elements
-                    / (process_count - 1);
+    chunk_size = (number_of_elements % number_of_process == 0)
+                     ? (number_of_elements / number_of_process)
+                     : number_of_elements / (number_of_process - 1);
 
-    // Allocate memory for chunk
+    // Calculating total size of chunk
+    // according to bits
     chunk = (int *)malloc(chunk_size * sizeof(int));
 
-    // Scatter the data
+    // Scatter the chuck size data to all process
+    CALI_MARK_BEGIN(commLarge);
+    commLargeTime = MPI_Wtime();
     MPI_Scatter(data, chunk_size, MPI_INT, chunk,
                 chunk_size, MPI_INT, 0, MPI_COMM_WORLD);
+    commLargeTime = MPI_Wtime() - commLargeTime;
+    CALI_MARK_END(commLarge);
     free(data);
     data = NULL;
-    CALI_MARK_END("commTime");
 
-    // Compute own chunk size
-    compTime = MPI_Wtime();
-    CALI_MARK_BEGIN("compTime");
-    own_chunk_size = (number_of_elements
-                      >= chunk_size * (process_id + 1))
+    // Compute size of own chunk and
+    // then sort them
+    // using quick sort
+
+    own_chunk_size = (number_of_elements >= chunk_size * (rank_of_process + 1))
                          ? chunk_size
-                         : (number_of_elements
-                            - chunk_size * process_id);
+                         : (number_of_elements - chunk_size * rank_of_process);
 
-    // Sort the data for every chunk called by process
+    // Sorting array with quick sort for every
+    // chunk as called by process
     quicksort(chunk, 0, own_chunk_size);
-    for (int step = 1; step < process_count;
+
+    for (int step = 1; step < number_of_process;
          step = 2 * step)
     {
-        cout << "Step: " << step << endl;
-        cout << "Process ID: " << process_id << endl;
-        if (process_id % (2 * step) != 0)
+        if (rank_of_process % (2 * step) != 0)
         {
             MPI_Send(chunk, own_chunk_size, MPI_INT,
-                     process_id - step, 0,
+                     rank_of_process - step, 0,
                      MPI_COMM_WORLD);
             break;
         }
 
-        if (process_id + step < process_count)
+        if (rank_of_process + step < number_of_process)
         {
-            int received_chunk_size = (number_of_elements >= chunk_size * (process_id + 2 * step))
+            int received_chunk_size = (number_of_elements >= chunk_size * (rank_of_process + 2 * step))
                                           ? (chunk_size * step)
-                                          : (number_of_elements - chunk_size * (process_id + step));
+                                          : (number_of_elements - chunk_size * (rank_of_process + step));
             int *chunk_received;
             chunk_received = (int *)malloc(
                 received_chunk_size * sizeof(int));
             MPI_Recv(chunk_received, received_chunk_size,
-                     MPI_INT, process_id + step, 0,
+                     MPI_INT, rank_of_process + step, 0,
                      MPI_COMM_WORLD, &status);
 
             data = merge(chunk, own_chunk_size,
@@ -219,46 +254,23 @@ int main(int argc, char *argv[])
         }
     }
 
-    CALI_MARK_END("compTime");
-
-    compTime = MPI_Wtime() - compTime;
-
-    correctTime = MPI_Wtime();
-    CALI_MARK_BEGIN("correctTime");
-    if (process_id == 0)
+    // Opening the other file as taken form input
+    // and writing it to the file and giving it
+    // as the output
+    if (rank_of_process == 0)
     {
-        if (isSorted(data, number_of_elements))
+        // check if array is sorted or not
+        if (isSorted(chunk, number_of_elements))
         {
-            printf("Array is sorted\n");
+            printf("Array is sorted!\n");
         }
         else
         {
-            printf("Array is not sorted\n");
+            printf("Array is not sorted (womp womp)\n");
         }
     }
-    CALI_MARK_END("correctTime");
-    correctTime = MPI_Wtime() - correctTime;
 
-    CALI_MARK_END("totalTime");
-    totalTime = MPI_Wtime() - totalTime;
-
-    // create caliper ConfigManager object
-    cali::ConfigManager mgr;
-    mgr.start();
-
-    adiak::init(NULL);
-    adiak::launchdate();                                    // launch date of the job
-    adiak::libraries();                                     // Libraries used
-    adiak::cmdline();                                       // Command line used to launch the job
-    adiak::clustername();                                   // Name of the cluster
-    adiak::value("Algorithm", "QuickSort");                 // The name of the algorithm you are using (e.g., "MergeSort", "BitonicSort")
-    adiak::value("ProgrammingModel", "MPI");                // e.g., "MPI", "CUDA", "MPIwithCUDA"
-    adiak::value("SizeOfDatatype", sizeof(int));            // sizeof(datatype) of input elements in bytes (e.g., 1, 2, 4)
-    adiak::value("number_of_elements", number_of_elements); // The number of elements in input dataset (1000)
-    adiak::value("process_counts", process_count);          // The number of processors (MPI ranks)
-
-    // Flush Caliper output before finalizing MPI
-    mgr.stop();
-    mgr.flush();
+    CALI_MARK_END(mainRegion);
     MPI_Finalize();
+    return 0;
 }
