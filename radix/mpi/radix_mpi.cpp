@@ -189,11 +189,11 @@ int* radix_sort(int *a, List* buckets, const int P, const int rank, int * n) {
     CALI_MARK_END(comp);
 
     // do one-to-all transpose
+    CALI_MARK_BEGIN(comm);
+    CALI_MARK_BEGIN(comm_small);
     for (int p = 0; p < P; p++) {
       if (p != rank) {
         // send counts of this process to others
-        CALI_MARK_BEGIN(comm);
-        CALI_MARK_BEGIN(comm_small);
         MPI_Isend(
             l_count,
             B,
@@ -203,11 +203,13 @@ int* radix_sort(int *a, List* buckets, const int P, const int rank, int * n) {
             MPI_COMM_WORLD,
             &req);
       }
-      CALI_MARK_END(comm_small);
-      CALI_MARK_END(comm);
     }
+    CALI_MARK_END(comm_small);
+    CALI_MARK_END(comm);
 
     // receive counts from others
+    CALI_MARK_BEGIN(comp);
+    CALI_MARK_BEGIN(comp_small);
     for (int p = 0; p < P; p++) {
       if (p != rank) {
         // comp_small
@@ -220,16 +222,14 @@ int* radix_sort(int *a, List* buckets, const int P, const int rank, int * n) {
             MPI_COMM_WORLD,
             &stat);
 
-        CALI_MARK_BEGIN(comp);
-        CALI_MARK_BEGIN(comp_small);
         // populate counts per bucket for other processes
         for (int i = 0; i < B; i++) {
           count[i][p] = l_count[i];
         }
-        CALI_MARK_END(comp_small);
-        CALI_MARK_END(comp);
       }
     }
+    CALI_MARK_END(comp_small);
+    CALI_MARK_END(comp);
 
     // calculate new size based on values received from all processes
     int new_size = 0;
@@ -255,13 +255,13 @@ int* radix_sort(int *a, List* buckets, const int P, const int rank, int * n) {
     }
 
     // send keys of this process to others
+    CALI_MARK_BEGIN(comm);
+    CALI_MARK_BEGIN(comm_large);
     for (int j = 0; j < B; j++) {
       int p = j / l_B;   // determine which process this buckets belongs to
       int p_j = j % l_B; // transpose to that process local bucket index
       if (p != rank && buckets[j].length > 0) {
 
-        CALI_MARK_BEGIN(comm);
-        CALI_MARK_BEGIN(comm_large);
         MPI_Isend(
             buckets[j].array,
             buckets[j].length,
@@ -271,9 +271,9 @@ int* radix_sort(int *a, List* buckets, const int P, const int rank, int * n) {
             MPI_COMM_WORLD,
             &req);
       }
-      CALI_MARK_END(comm_large);
-      CALI_MARK_END(comm);
     }
+    CALI_MARK_END(comm_large);
+    CALI_MARK_END(comm);
 
     // receive keys from other processes
     for (int j = 0; j < l_B; j++) {
@@ -321,7 +321,6 @@ int main(int argc, char** argv)
   CALI_CXX_MARK_FUNCTION;
 
 
-
   int rank, size;
   int print_results = 0;
 
@@ -341,7 +340,6 @@ int main(int argc, char** argv)
     print_results = atoi(argv[2]);
   }
 
-  CALI_MARK_BEGIN(main_timing);
   // initialize vars and allocate memory
   int n_total = atoi(argv[1]);
   int n = n_total/size;
@@ -398,9 +396,7 @@ int main(int argc, char** argv)
   CALI_MARK_END(data_init);
 
   // let all processes get here
-  CALI_MARK_BEGIN(comm);
   MPI_Barrier(MPI_COMM_WORLD);
-  CALI_MARK_END(comm);
 
   if(print_results) {
     for(int i = 0; i < n; i++) {
