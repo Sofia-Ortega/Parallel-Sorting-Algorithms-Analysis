@@ -1,18 +1,20 @@
-
 /**
  * -------------------- SOURCE -----------------------------------
  * Code: https://github.com/ashantanu/Odd-Even-Sort-using-MPI/blob/master/oddEven.cpp
  * Author: Shantanu Agarwal
  * University: IIT Guwahati
- * Date: August 4, 2016
- *
+ * Date: August 4, 2016 
+ * 
 */
 
 #include <iostream>
 #include <stdio.h>
 #include <mpi.h>
 #include <stdlib.h>
-#include <algorithm>
+#include <algorithm> 
+
+#include <caliper/cali.h>
+#include <caliper/cali-manager.h>
 
 using namespace std;
 
@@ -23,36 +25,38 @@ int compare (const void * a, const void * b)
 
 int main(int argc, char *argv[]){
 
-        CALI_CXX_MARK_FUNCTION;
+	CALI_CXX_MARK_FUNCTION;
 
-        const char* Main_Time;
-        const char* Input_Gen_Time;
-        const char* Comm_Small;
-        const char* Comm_Large;
-        const char* Comp_Large;
-        const char* Input_Time;
-        const char* Sort_Time;
-        const char* Is_Sorted_Time;
+	const char* Main_Time;
+	const char* Input_Gen_Time;
+	const char* Comm_Small;
+	const char* Comm_Large;
+	const char* Comp_Large;
+	const char* Input_Time;
+	const char* Sort_Time;
+	const char* Is_Sorted_Time;
+
+	int nump,rank;
+	int n = atoi(argv[1]);
+	int localn;
+	int *data,recdata[100],recdata2[100];
+	int *temp;
+	int ierr,i;
+	int root_process;
+	int sendcounts;
+	
+        MPI_Status status;
+        ierr = MPI_Init(&argc, &argv);
 
         // Time main
         double MMainTime = MPI_Wtime();
         CALI_MARK_BEGIN(Main_Time);
 
-        int nump,rank;
-        int n = atoi(argv[1]);
-        int localn;
-        int *data,recdata[100],recdata2[100];
-        int *temp;
-        int ierr,i;
-        int root_process;
-        int sendcounts;
-        MPI_Status status;
-	
-	ierr = MPI_Init(&argc, &argv);
     root_process = 0;
     ierr = MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     ierr = MPI_Comm_size(MPI_COMM_WORLD, &nump);
 	double MInput_Gen_Time;
+	double MCompLargeTime;
 
       if(rank == root_process) {
          printf("please enter the number of numbers to sort: ");
@@ -144,11 +148,12 @@ for (p=0; p<nump-1; p++) {
  for(i=0;i<localn;i++){
  	temp[i]=recdata[i];
  }
- if(status.MPI_SOURCE==MPI_PROC_NULL)	continue;
- // comp_large
- double MCompLargeTime = MPI_Wtime();
+
+ MCompLargeTime = MPI_Wtime();
  CALI_MARK_BEGIN(Comp_Large);
 
+ if(status.MPI_SOURCE==MPI_PROC_NULL)	continue;
+ // comp_large
  else if(rank<status.MPI_SOURCE){
  	//store the smaller of the two
  	int i,j,k;
@@ -217,13 +222,13 @@ CALI_MARK_END(Main_Time);
 MMainTime = MPI_Wtime() - MMainTime;
 
 // Create caliper object
-	cali::ConfigManager mgr;
-	mgr.start();
+//	cali::ConfigManager mgr;
+//	mgr.start();
 
-	adaik::init(NULL);
-   	adiak::user();
-   	adiak::clustername();	
-   	adiak::value("num_procs", nump);
-   	adiak::value("num_values", n);
-   	adiak::value("program_name", "OETSort");
+//	adaik::init(NULL);
+// 	adiak::user();
+//   	adiak::clustername();	
+//  	adiak::value("num_procs", nump);
+// 	adiak::value("num_values", n);
+// 	adiak::value("program_name", "OETSort");
 }
