@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.12)
+set(CMAKE_BUILD_TYPE Debug)
 
 find_package(MPI REQUIRED)
 find_package(caliper REQUIRED)
