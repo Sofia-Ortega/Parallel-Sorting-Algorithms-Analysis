@@ -108,23 +108,20 @@ int main(int argc, char *argv[])
 
     // Read in CLI arguments - size, threads
     int number_of_elements = atoi(argv[1]); // size of array
-    cout << "Number of elements: " << number_of_elements << endl;
     int process_id;
     int process_count = atoi(argv[2]); // number of threads
-    cout << "Number of processes: " << process_count << endl;
-    cout << "Process ID: " << process_id << endl;
     double compTime = 0.0;
-    // Array of ints to be sorted
-    int *data;
+    int *data = NULL;
     int chunk_size, own_chunk_size;
     int *chunk;
     double dataInitTime, barrierTime, commTime, correctTime, totalTime;
     MPI_Status status;
 
+    totalTime = MPI_Wtime();
     CALI_MARK_BEGIN("totalTime");
+
     // Initialize MPI
     MPI_Init(&argc, &argv);
-    totalTime = MPI_Wtime();
     MPI_Comm_rank(MPI_COMM_WORLD, &process_id);
     MPI_Comm_size(MPI_COMM_WORLD, &process_count);
 
@@ -133,9 +130,8 @@ int main(int argc, char *argv[])
     CALI_MARK_BEGIN("dataInitTime");
     if (process_id == 0)
     {
-        data = new int[number_of_elements];
+        genValues(process_id, process_count, number_of_elements, false, data, 0);
     }
-    genValues(process_id, process_count, number_of_elements, false, data, 0);
     CALI_MARK_END("dataInitTime");
     dataInitTime = MPI_Wtime() - dataInitTime;
 
@@ -156,11 +152,9 @@ int main(int argc, char *argv[])
               MPI_COMM_WORLD);
 
     // Computing chunk size
-    chunk_size
-        = (number_of_elements % process_count == 0)
-              ? (number_of_elements / process_count)
-              : number_of_elements
-                    / (process_count - 1);
+    chunk_size = (number_of_elements % process_count == 0)
+                     ? (number_of_elements / process_count)
+                     : (number_of_elements / process_count - 1);
 
     // Allocate memory for chunk
     chunk = (int *)malloc(chunk_size * sizeof(int));
@@ -175,27 +169,19 @@ int main(int argc, char *argv[])
     // Compute own chunk size
     compTime = MPI_Wtime();
     CALI_MARK_BEGIN("compTime");
-    own_chunk_size = (number_of_elements
-                      >= chunk_size * (process_id + 1))
-                         ? chunk_size
-                         : (number_of_elements
-                            - chunk_size * process_id);
+    own_chunk_size = (process_id == process_count - 1)
+                         ? (chunk_size + number_of_elements % process_count)
+                         : chunk_size;
 
     // Sort the data for every chunk called by process
     quicksort(chunk, 0, own_chunk_size);
-    for (int step = 1; step < process_count;
-         step = 2 * step)
+    for (int step = 1; step < process_count; step *= 2)
     {
-        cout << "Step: " << step << endl;
-        cout << "Process ID: " << process_id << endl;
         if (process_id % (2 * step) != 0)
         {
-            MPI_Send(chunk, own_chunk_size, MPI_INT,
-                     process_id - step, 0,
-                     MPI_COMM_WORLD);
+            MPI_Send(chunk, own_chunk_size, MPI_INT, process_id - step, 0, MPI_COMM_WORLD);
             break;
         }
-
         if (process_id + step < process_count)
         {
             int received_chunk_size = (number_of_elements >= chunk_size * (process_id + 2 * step))
@@ -220,19 +206,15 @@ int main(int argc, char *argv[])
     }
 
     CALI_MARK_END("compTime");
-
+    
     compTime = MPI_Wtime() - compTime;
 
     correctTime = MPI_Wtime();
     CALI_MARK_BEGIN("correctTime");
-    if (process_id == 0)
-    {
-        if (isSorted(data, number_of_elements))
-        {
+    if (process_id == 0) {
+        if (isSorted(data, number_of_elements)) {
             printf("Array is sorted\n");
-        }
-        else
-        {
+        } else {
             printf("Array is not sorted\n");
         }
     }
@@ -256,6 +238,7 @@ int main(int argc, char *argv[])
     adiak::value("SizeOfDatatype", sizeof(int));            // sizeof(datatype) of input elements in bytes (e.g., 1, 2, 4)
     adiak::value("number_of_elements", number_of_elements); // The number of elements in input dataset (1000)
     adiak::value("process_counts", process_count);          // The number of processors (MPI ranks)
+
 
     // Flush Caliper output before finalizing MPI
     mgr.stop();
