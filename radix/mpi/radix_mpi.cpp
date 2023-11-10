@@ -36,6 +36,17 @@
 #define NUM_TAG PRINT_TAG_NUM + 1
 #define CHECK_SORTED NUM_TAG + 1
 
+const char* data_init = "data_init";
+const char* correctness_check = "correctness_check";
+const char* comm = "comm";
+const char* comm_small = "comm_small";
+const char* comm_large = "comm_large";
+const char* comp = "comp";
+const char* comp_small = "comp_small";
+const char* comp_large = "comp_large";
+
+const char* sorting = "sorting_time";
+
 // structure encapsulating buckets with arrays of elements
 typedef struct list List;
 struct list {
@@ -164,6 +175,8 @@ int* radix_sort(int *a, List* buckets, const int P, const int rank, int * n) {
     } 
 
     // count items per bucket
+    CALI_MARK_BEGIN(comp);
+    CALI_MARK_BEGIN(comp_large);
     for (int i = 0; i < *n; i++) {
       unsigned int idx = bits(a[i], pass*g, g);
       count[idx][rank]++; 
@@ -172,8 +185,12 @@ int* radix_sort(int *a, List* buckets, const int P, const int rank, int * n) {
         return NULL;
       }
     }
+    CALI_MARK_END(comp_large);
+    CALI_MARK_END(comp);
 
     // do one-to-all transpose
+    CALI_MARK_BEGIN(comm);
+    CALI_MARK_BEGIN(comm_small);
     for (int p = 0; p < P; p++) {
       if (p != rank) {
         // send counts of this process to others
@@ -187,10 +204,15 @@ int* radix_sort(int *a, List* buckets, const int P, const int rank, int * n) {
             &req);
       }
     }
+    CALI_MARK_END(comm_small);
+    CALI_MARK_END(comm);
 
     // receive counts from others
+    CALI_MARK_BEGIN(comp);
+    CALI_MARK_BEGIN(comp_small);
     for (int p = 0; p < P; p++) {
       if (p != rank) {
+        // comp_small
         MPI_Recv(
             l_count,
             B,
@@ -206,6 +228,8 @@ int* radix_sort(int *a, List* buckets, const int P, const int rank, int * n) {
         }
       }
     }
+    CALI_MARK_END(comp_small);
+    CALI_MARK_END(comp);
 
     // calculate new size based on values received from all processes
     int new_size = 0;
@@ -231,10 +255,13 @@ int* radix_sort(int *a, List* buckets, const int P, const int rank, int * n) {
     }
 
     // send keys of this process to others
+    CALI_MARK_BEGIN(comm);
+    CALI_MARK_BEGIN(comm_large);
     for (int j = 0; j < B; j++) {
       int p = j / l_B;   // determine which process this buckets belongs to
       int p_j = j % l_B; // transpose to that process local bucket index
       if (p != rank && buckets[j].length > 0) {
+
         MPI_Isend(
             buckets[j].array,
             buckets[j].length,
@@ -245,6 +272,8 @@ int* radix_sort(int *a, List* buckets, const int P, const int rank, int * n) {
             &req);
       }
     }
+    CALI_MARK_END(comm_large);
+    CALI_MARK_END(comm);
 
     // receive keys from other processes
     for (int j = 0; j < l_B; j++) {
@@ -291,8 +320,6 @@ int main(int argc, char** argv)
 
   CALI_CXX_MARK_FUNCTION;
 
-  const char* createSortedArray = "sorted_array_time";
-  const char* sorting = "sorting_time";
 
   int rank, size;
   int print_results = 0;
@@ -364,9 +391,9 @@ int main(int argc, char** argv)
   }
 
   // initialize local array
-  CALI_MARK_BEGIN(createSortedArray);
+  CALI_MARK_BEGIN(data_init);
   fillValsRandParallel(a, n, 10 + rank);
-  CALI_MARK_END(createSortedArray);
+  CALI_MARK_END(data_init);
 
   // let all processes get here
   MPI_Barrier(MPI_COMM_WORLD);
@@ -384,9 +411,7 @@ int main(int argc, char** argv)
   }
 
   // then run the sorting algorithm
-  CALI_MARK_BEGIN(sorting);
   a = radix_sort(&a[0], buckets, size, rank, &n);
-  CALI_MARK_END(sorting);
 
   if (a == NULL) {
     printf("ERROR: Sort failed, exiting ...\n");
@@ -410,6 +435,7 @@ int main(int argc, char** argv)
   }
 
 
+  CALI_MARK_BEGIN(correctness_check);
   // check if sorted
   if(rank == 0) {
     if(print_results) printf("%i\n", a[0]);
@@ -421,22 +447,29 @@ int main(int argc, char** argv)
     }
     printf("[PASSED] Sorted Array Checked\n");
   }
+  CALI_MARK_END(correctness_check);
+
 
   // create caliper ConfigManager object
   cali::ConfigManager mgr;
   mgr.start();
 
-  adiak::init(NULL);
-  adiak::user();
-  adiak::launchdate();
-  adiak::libraries();
-  adiak::cmdline();
-  adiak::clustername();
-  adiak::value("num_processes", size);
-  adiak::value("total_elements_sorted", n_total);
-  adiak::value("array_per_process", n);
-  adiak::value("program_name", "radix_sort");
-  adiak::value("datatype_size", sizeof(int));
+adiak::init(NULL);
+adiak::launchdate();    // launch date of the job
+adiak::libraries();     // Libraries used
+adiak::cmdline();       // Command line used to launch the job
+adiak::clustername();   // Name of the cluster
+adiak::value("Algorithm", "RadixSort"); // The name of the algorithm you are using (e.g., "MergeSort", "BitonicSort")
+adiak::value("ProgrammingModel", "MPI"); // e.g., "MPI", "CUDA", "MPIwithCUDA"
+adiak::value("Datatype", "int"); // The datatype of input elements (e.g., double, int, float)
+adiak::value("SizeOfDatatype", sizeof(int)); // sizeof(datatype) of input elements in bytes (e.g., 1, 2, 4)
+adiak::value("InputSize", n_total); // The number of elements in input dataset (1000)
+adiak::value("InputType", "Random"); // For sorting, this would be "Sorted", "ReverseSorted", "Random", "1%perturbed"
+adiak::value("num_procs", size); // The number of processors (MPI ranks)
+adiak::value("num_threads", size); // The number of CUDA or OpenMP threads
+adiak::value("num_blocks", 0); // The number of CUDA blocks 
+adiak::value("group_num", 23); // The number of your group (integer, e.g., 1, 10)
+adiak::value("implementation_source", "Online"); // Where you got the source code of your algorithm; choices: ("Online", "AI", "Handwritten").
 
   // Flush Caliper output before finalizing MPI
   mgr.stop();

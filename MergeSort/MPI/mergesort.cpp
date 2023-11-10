@@ -2,7 +2,6 @@
 #include <cmath>
 #include <string>
 
-const char * mainRegion = "main";
 const char * parallel = "parallel";
 const char * sequential = "sequential";
 const char * genValuesTime = "data_init";
@@ -204,7 +203,6 @@ int main (int argc, char *argv[])
 {
 	CALI_CXX_MARK_FUNCTION;
 
-	CALI_MARK_BEGIN(mainRegion);
 	int numberOfVals = atoi(argv[1]);
 	int option = atoi(argv[2]);
 
@@ -352,7 +350,6 @@ int main (int argc, char *argv[])
 	delete[] localArray;
 
 	CALI_MARK_END(paraMergeTime);
-	CALI_MARK_END(mainRegion);
 	// Create caliper ConfigManager object
 	cali::ConfigManager mgr;
 	mgr.start();

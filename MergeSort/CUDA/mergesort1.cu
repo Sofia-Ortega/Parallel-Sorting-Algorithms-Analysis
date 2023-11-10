@@ -4,7 +4,6 @@
 #include <cstdlib>
 #include <chrono>
 
-const char * mainRegion = "main";
 const char * parallel = "parallel";
 const char * sequential = "sequential";
 const char * genValuesTime = "data_init";
@@ -140,8 +139,6 @@ void mergesort(double* data, long size, dim3 threadsPerBlock, dim3 blocksPerGrid
 int main(int argc, char** argv) {
 	CALI_CXX_MARK_FUNCTION;
 
-	CALI_MARK_BEGIN(mainRegion);
-
     dim3 threadsPerBlock;
     dim3 blocksPerGrid;
 
@@ -185,8 +182,6 @@ int main(int argc, char** argv) {
 		}
 	}
     CALI_MARK_END(correctness);
-
-    CALI_MARK_END(mainRegion);
 
 	std::cout << "The list is sorted: " << isSorted << std::endl;
 
