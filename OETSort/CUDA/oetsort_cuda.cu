@@ -9,22 +9,21 @@
 #include<stdio.h>
 #include<cuda.h>
 
-const char* main = "main";
-const char * genValuesTime = "data_init";
-const char * correctness = "correctness_check";
-const char * compSmall = "comp_small";
-const char * compLarge = "comp_large";
-const char * comm = "comm";
-const char * commSmall = "comm_small";
-const char * commLarge = "comm_large_h2d";
-const char * commLarge = "comm_large_d2h";
+#include <caliper/cali.h>
+#include <caliper/cali-manager.h>
+
+	const char* main = "main";
+	const char * genValuesTime = "data_init";
+	const char * correctness = "correctness_check";
+	const char * compSmall = "comp_small";
+	const char * compLarge = "comp_large";
+	const char * comm = "comm";
+	const char * commSmall = "comm_small";
+	const char * commLarge = "comm_large_h2d";
+	const char * commLarge = "comm_large_d2h";
 
 __global__ void oddeven(int* x,int I,int n)
 {
-	CALI_CXX_MARK_FUNCTION;
-
-	CALI_MARK_BEGIN("comp_small");
-	
 	int id=blockIdx.x;
 	if(I==0 && ((id*2+1)< n)){
 		if(x[id*2]>x[id*2+1]){
@@ -40,12 +39,12 @@ __global__ void oddeven(int* x,int I,int n)
 			x[id*2+2]=X;
 		}
 	}
-
-	CALI_MARK_END("comp_small")
 }
 
 int main()
 {
+
+
 	CALI_CXX_MARK_FUNCTION;
 	CALI_MARK_BEGIN("main");
 
@@ -81,9 +80,9 @@ int main()
 
 	for(i=0;i<n;i++){
 		//int size=n/2;
-
+		CALI_MARK_BEGIN("comp_small");
 		oddeven<<<n/2,1>>>(d,i%2,n);
-
+		CALI_MARK_END("comp_small")
 	}
 	printf("\n");
 
