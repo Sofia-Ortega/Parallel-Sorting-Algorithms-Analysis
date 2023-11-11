@@ -128,6 +128,9 @@ for (p=0; p<nump-1; p++) {
  
     CALI_MARK_END(Comm_Large);
      MCommLargeTime = MPI_Wtime() - MCommLargeTime;
+     
+      MCompLargeTime = MPI_Wtime();
+ CALI_MARK_BEGIN(Comp_Large);
  //extract localn after sorting the two
  temp=(int*)malloc(localn*sizeof(int));
  for(i=0;i<localn;i++){
@@ -136,8 +139,7 @@ for (p=0; p<nump-1; p++) {
  
       
  
- MCompLargeTime = MPI_Wtime();
- CALI_MARK_BEGIN(Comp_Large);
+
  
  if(status.MPI_SOURCE==MPI_PROC_NULL)	continue;
  else if(rank<status.MPI_SOURCE){
@@ -161,10 +163,8 @@ for (p=0; p<nump-1; p++) {
  			recdata[k]=recdata2[j--];
  	}
  }//else
-
- 	CALI_MARK_END(Comp_Large);
-	MCompLargeTime = MPI_Wtime() - MCompLargeTime;
-	
+ CALI_MARK_END(Comp_Large);
+MCompLargeTime = MPI_Wtime() - MCompLargeTime;
  }//for
 
 
