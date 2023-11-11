@@ -15,15 +15,15 @@ int compare (const void * a, const void * b)
 
 int main(int argc, char *argv[]){
 
-    // CALI_CXX_MARK_FUNCTION;
+    CALI_CXX_MARK_FUNCTION;
 
-//  	const char* Main_Time;
-//  	const char* Input_Gen_Time;
-//  	const char* Comm_Small;
-//  	const char* Comm_Large;
-//  	const char* Comp_Large;
-//  	const char* Sort_Time;
-//  	const char* Is_Sorted_Time;
+ 	const char* Main_Time = "Main_Time";
+ 	const char* Input_Gen_Time = "Input_Gen_Time";
+ 	const char* Comm_Small = "Comm_Small";
+ 	const char* Comm_Large = "Comm_Large";
+ 	const char* Comp_Large = "Comp_Large";
+ 	const char* Sort_Time = "Sort_Time";
+ 	const char* Is_Sorted_Time = "Is_Sorted_Time";
  	
 	int nump,rank;
 	int n,localn;
@@ -36,8 +36,8 @@ int main(int argc, char *argv[]){
 	
 	ierr = MPI_Init(&argc, &argv);
 	
-// 	double MMainTime = MPI_Wtime();
-//  	CALI_MARK_BEGIN(Main_Time);
+	double MMainTime = MPI_Wtime();
+ 	CALI_MARK_BEGIN(Main_Time);
  	
     root_process = 0;
      n = atoi(argv[1]);
@@ -52,8 +52,8 @@ int main(int argc, char *argv[]){
          int avgn = n / nump;
          localn=avgn;
          
-//          double MInput_Gen_Time = MPI_Wtime();
-// 		CALI_MARK_BEGIN(Input_Gen_Time);
+         double MInput_Gen_Time = MPI_Wtime();
+		CALI_MARK_BEGIN(Input_Gen_Time);
 
     	data=(int*)malloc(sizeof(int)*n);
          for(i = 0; i < n; i++) {
@@ -65,8 +65,8 @@ int main(int argc, char *argv[]){
         //  }
         //  printf("\n");
         
-//         CALI_MARK_END(Input_Gen_Time);
-// 		MInput_Gen_Time = MPI_Wtime() - MInput_Gen_Time;
+        CALI_MARK_END(Input_Gen_Time);
+		MInput_Gen_Time = MPI_Wtime() - MInput_Gen_Time;
 		
     }
     else{
@@ -74,8 +74,8 @@ int main(int argc, char *argv[]){
     }
     
     	// time comm_small
-// 	double MSmallCommTime = MPI_Wtime();
-// 	CALI_MARK_BEGIN(Comm_Small);
+	double MSmallCommTime = MPI_Wtime();
+	CALI_MARK_BEGIN(Comm_Small);
 	
     ierr=MPI_Bcast(&localn,1,MPI_INT,0,MPI_COMM_WORLD);
     ierr=MPI_Scatter(data, localn, MPI_INT, &recdata, 100, MPI_INT, 0, MPI_COMM_WORLD);
@@ -85,15 +85,15 @@ int main(int argc, char *argv[]){
         //  }
     // printf("\n");
     
-//     	CALI_MARK_END(Comm_Small);
-// 	MSmallCommTime = MPI_Wtime() - MSmallCommTime;
+    	CALI_MARK_END(Comm_Small);
+	MSmallCommTime = MPI_Wtime() - MSmallCommTime;
 	
     sort(recdata,recdata+localn);
 
     //begin the odd-even sort
     
-//     double MSortTime = MPI_Wtime();
-// 	CALI_MARK_BEGIN(Sort_Time);
+    double MSortTime = MPI_Wtime();
+	CALI_MARK_BEGIN(Sort_Time);
 	
     int oddrank,evenrank;
 
@@ -111,30 +111,33 @@ if (oddrank == -1 || oddrank == nump)
 if (evenrank == -1 || evenrank == nump)
  evenrank = MPI_PROC_NULL;
     
-    // double MCommLargeTime = MPI_Wtime();
-    // CALI_MARK_BEGIN(Comm_Large);
+
 
 int p;
  double MCompLargeTime;
 for (p=0; p<nump-1; p++) {
+    double MCommLargeTime = MPI_Wtime();
+    CALI_MARK_BEGIN(Comm_Large);
+    
  if (p%2 == 1) /* Odd phase */
  MPI_Sendrecv(recdata, localn, MPI_INT, oddrank, 1, recdata2,
  localn, MPI_INT, oddrank, 1, MPI_COMM_WORLD, &status);
  else /* Even phase */
  MPI_Sendrecv(recdata, localn, MPI_INT, evenrank, 1, recdata2,
  localn, MPI_INT, evenrank, 1, MPI_COMM_WORLD, &status);
-
-
-    //  CALI_MARK_END(Comm_Large);
-    //  MCommLargeTime = MPI_Wtime() - MCommLargeTime;
+ 
+    CALI_MARK_END(Comm_Large);
+     MCommLargeTime = MPI_Wtime() - MCommLargeTime;
  //extract localn after sorting the two
  temp=(int*)malloc(localn*sizeof(int));
  for(i=0;i<localn;i++){
  	temp[i]=recdata[i];
  }
  
-//  MCompLargeTime = MPI_Wtime();
-//  CALI_MARK_BEGIN(Comp_Large);
+      
+ 
+ MCompLargeTime = MPI_Wtime();
+ CALI_MARK_BEGIN(Comp_Large);
  
  if(status.MPI_SOURCE==MPI_PROC_NULL)	continue;
  else if(rank<status.MPI_SOURCE){
@@ -158,15 +161,19 @@ for (p=0; p<nump-1; p++) {
  			recdata[k]=recdata2[j--];
  	}
  }//else
+
+ 	CALI_MARK_END(Comp_Large);
+	MCompLargeTime = MPI_Wtime() - MCompLargeTime;
+	
  }//for
 
-//  CALI_MARK_END(Comp_Large);
-//  MCompLargeTime = MPI_Wtime() - MCompLargeTime;
+
+ 
+CALI_MARK_END(Sort_Time);
+MSortTime = MPI_Wtime() - MSortTime;
 
 ierr=MPI_Gather(recdata,localn,MPI_INT,data,localn,MPI_INT,0,MPI_COMM_WORLD);
 
-// CALI_MARK_END(Sort_Time);
-// MSortTime = MPI_Wtime() - MSortTime;
 
 if(rank==root_process){
 // printf("final sorted data:");
@@ -177,8 +184,8 @@ if(rank==root_process){
 
 // check if the data is sorted
 
-// 	double MIsSortedTime = MPI_Wtime();
-// 	CALI_MARK_BEGIN(Is_Sorted_Time);
+	double MIsSortedTime = MPI_Wtime();
+	CALI_MARK_BEGIN(Is_Sorted_Time);
 	
 int flag=0;
 for(i=0;i<n-1;i++){
@@ -188,8 +195,8 @@ for(i=0;i<n-1;i++){
 	}
 }
 
-// 	CALI_MARK_END(Is_Sorted_Time);
-// 	MIsSortedTime = MPI_Wtime() - MIsSortedTime;
+	CALI_MARK_END(Is_Sorted_Time);
+	MIsSortedTime = MPI_Wtime() - MIsSortedTime;
 
 if(flag==1){
 	printf("data is not sorted\n");
@@ -198,19 +205,20 @@ else{
 	printf("data is sorted\n");
 }
 }
+
+CALI_MARK_END(Main_Time);
+MMainTime = MPI_Wtime() - MMainTime;
+
 ierr = MPI_Finalize();
 
-// CALI_MARK_END(Main_Time);
-// MMainTime = MPI_Wtime() - MMainTime;
+	cali::ConfigManager mgr;
+	mgr.start();
 
-// 	cali::ConfigManager mgr;
-// 	mgr.start();
-
-// 	adiak::init(NULL);
-//   	adiak::user();
-//   	adiak::clustername();	
-//   	adiak::value("num_procs", nump);
-//   	adiak::value("num_values", n);
-//   	adiak::value("program_name", "OETSort");
+	adiak::init(NULL);
+   	adiak::user();
+   	adiak::clustername();	
+   	adiak::value("num_procs", nump);
+   	adiak::value("num_values", n);
+   	adiak::value("program_name", "OETSort");
 
 }
