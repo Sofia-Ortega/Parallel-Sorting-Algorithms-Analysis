@@ -1,4 +1,4 @@
-# Install script for directory: /home/will.t4221/FinalProject/ParallelComputingProject/MergeSort/MPI
+# Install script for directory: /scratch/user/will.t4221/ParallelComputingProject/MergeSort/MPI
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -45,5 +45,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/will.t4221/FinalProject/ParallelComputingProject/MergeSort/MPI/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/scratch/user/will.t4221/ParallelComputingProject/MergeSort/MPI/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

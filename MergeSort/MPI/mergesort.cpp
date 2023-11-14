@@ -129,7 +129,7 @@ void mergeParallel(double *arr1, double *arr2, double *arr3, int size)
  */
 double* mergeSortParallel(int height, int id, double *localArray, int size, MPI_Comm comm, double *globalArray)
 {
-	CALI_CXX_MARK_FUNCTION;
+	//CALI_CXX_MARK_FUNCTION;
 
 	int parent, rightChild, myHeight;
 	double *half1, *half2, *mergeResult;

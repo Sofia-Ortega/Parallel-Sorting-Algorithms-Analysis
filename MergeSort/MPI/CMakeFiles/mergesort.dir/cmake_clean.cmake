@@ -1,6 +1,6 @@
 file(REMOVE_RECURSE
   "CMakeFiles/mergesort.dir/mergesort.cpp.o"
-  "CMakeFiles/mergesort.dir/home/will.t4221/FinalProject/ParallelComputingProject/InputGeneration/inputgen.cpp.o"
+  "CMakeFiles/mergesort.dir/scratch/user/will.t4221/ParallelComputingProject/InputGeneration/inputgen.cpp.o"
   "mergesort.pdb"
   "mergesort"
 )
