@@ -16,18 +16,14 @@
 
 using namespace std;
 
-const char *mainRegion = "main";
-const char *parallel = "parallel";
-const char *sequential = "sequential";
-const char *genValuesTime = "data_init";
-const char *barrier = "barrier";
-const char *correctness = "correctness_check";
-const char *comp = "comp";
-const char *compSmall = "comp_small";
-const char *compLarge = "comp_large";
-const char *commRegion = "comm";
-const char *commSmall = "comm_small";
-const char *commLarge = "comm_large";
+const char* data_init = "data_init";
+const char* comm = "comm";
+const char* comm_small = "comm_small";
+const char* comm_large = "comm_large";
+const char* comp = "comp";
+const char* comp_small = "comp_small";
+const char* comp_large = "comp_large";
+const char* correctness_check = "correctness_check";
 
 // Function to swap two numbers
 void swap(int *arr, int i, int j)
@@ -66,8 +62,6 @@ void quicksort(int *arr, int start, int end)
     index = start;
 
     // Iterate over the range [start, end]
-    CALI_MARK_BEGIN(comp);
-    CALI_MARK_BEGIN(compSmall);
     for (int i = start + 1; i < start + end; i++)
     {
 
@@ -82,15 +76,11 @@ void quicksort(int *arr, int start, int end)
 
     // Swap the pivot into place
     swap(arr, start, index);
-    CALI_MARK_END(compSmall);
 
     // Recursive Call for sorting
     // of quick sort function
-    CALI_MARK_BEGIN(compLarge);
     quicksort(arr, start, index - start);
     quicksort(arr, index + 1, start + end - index - 1);
-    CALI_MARK_END(compLarge);
-    CALI_MARK_END(comp);
 }
 
 // Function that merges the two arrays
@@ -137,23 +127,33 @@ int main(int argc, char *argv[])
 {
     CALI_CXX_MARK_FUNCTION;
 
-    CALI_MARK_BEGIN(mainRegion);
 
     int number_of_elements = atoi(argv[1]);
+
+    int printArray = 1;
+    if(argc == 3) 
+        printArray = atoi(argv[2]);
+
     int *data = NULL;
     int chunk_size, own_chunk_size;
     int *chunk;
     MPI_Status status;
+
     double dataInitTime, barrierTime, commSmallTime, commLargeTime, compSmallTime, compLargeTime, correctTime, totalTime;
 
     int number_of_process, rank_of_process;
     // Initialize the MPI environment
     int rc = MPI_Init(&argc, &argv);
     totalTime = MPI_Wtime();
+
     MPI_Comm_size(MPI_COMM_WORLD, &number_of_process);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank_of_process);
 
-    CALI_MARK_BEGIN(genValuesTime);
+    if(rank_of_process == 0) {
+        printf("Sorting %i elements with %i processes\n", number_of_elements, number_of_process);
+    }
+
+    CALI_MARK_BEGIN(data_init);
     dataInitTime = MPI_Wtime();
     if (rank_of_process == 0)
     {
@@ -165,24 +165,34 @@ int main(int argc, char *argv[])
         }
     }
     dataInitTime = MPI_Wtime() - dataInitTime;
-    CALI_MARK_END(genValuesTime);
+    CALI_MARK_END(data_init);
 
     // Blocks all process until reach this point
-    CALI_MARK_BEGIN(commRegion);
-    CALI_MARK_BEGIN(barrier);
     barrierTime = MPI_Wtime();
+
+    CALI_MARK_BEGIN(comm);
+    CALI_MARK_BEGIN("MPI_Barrier");
     MPI_Barrier(MPI_COMM_WORLD);
+    CALI_MARK_END("MPI_Barrier");
+    CALI_MARK_END(comm);
+
     barrierTime = MPI_Wtime() - barrierTime;
-    CALI_MARK_END(barrier);
 
     // BroadCast the Size to all the
     // process from root process
-    CALI_MARK_BEGIN(commSmall);
     commSmallTime = MPI_Wtime();
+
+    CALI_MARK_BEGIN(comm);
+    CALI_MARK_BEGIN(comm_small);
+    CALI_MARK_BEGIN("MPI_Bcast");
     MPI_Bcast(&number_of_elements, 1, MPI_INT, 0,
               MPI_COMM_WORLD);
+    CALI_MARK_END("MPI_Bcast");
+    CALI_MARK_END(comm_small);
+    CALI_MARK_END(comm);
+
     commSmallTime = MPI_Wtime() - commSmallTime;
-    CALI_MARK_END(commSmall);
+
 
     // Computing chunk size
     chunk_size = (number_of_elements % number_of_process == 0)
@@ -194,15 +204,23 @@ int main(int argc, char *argv[])
     chunk = (int *)malloc(chunk_size * sizeof(int));
 
     // Scatter the chuck size data to all process
-    CALI_MARK_BEGIN(commLarge);
     commLargeTime = MPI_Wtime();
+
+    CALI_MARK_BEGIN(comm);
+    CALI_MARK_BEGIN(comm_large);
+    CALI_MARK_BEGIN("MPI_Scatter");
     MPI_Scatter(data, chunk_size, MPI_INT, chunk,
                 chunk_size, MPI_INT, 0, MPI_COMM_WORLD);
+    CALI_MARK_END("MPI_Scatter");
+    CALI_MARK_END(comm_large);
+    CALI_MARK_END(comm);
+
     commLargeTime = MPI_Wtime() - commLargeTime;
-    CALI_MARK_END(commLarge);
+
+
     free(data);
     data = NULL;
-    CALI_MARK_END(commRegion);
+
 
     // Compute size of own chunk and
     // then sort them
@@ -214,25 +232,31 @@ int main(int argc, char *argv[])
 
     // Sorting array with quick sort for every
     // chunk as called by process
-    CALI_MARK_BEGIN(comp);
-    CALI_MARK_BEGIN(compLarge);
     compLargeTime = MPI_Wtime();
+
+    CALI_MARK_BEGIN(comp);
+    CALI_MARK_BEGIN(comp_large);
     quicksort(chunk, 0, own_chunk_size);
-    compLargeTime = MPI_Wtime() - compLargeTime;
-    CALI_MARK_END(compLarge);
+    CALI_MARK_END(comp_large);
     CALI_MARK_END(comp);
 
-    CALI_MARK_BEGIN(commRegion);
+    compLargeTime = MPI_Wtime() - compLargeTime;
+
+
     for (int step = 1; step < number_of_process;
          step = 2 * step)
     {
         if (rank_of_process % (2 * step) != 0)
         {
-            CALI_MARK_BEGIN(commLarge);
+            CALI_MARK_BEGIN(comm);
+            CALI_MARK_BEGIN(comm_large);
+            CALI_MARK_BEGIN("MPI_Send");
             MPI_Send(chunk, own_chunk_size, MPI_INT,
                      rank_of_process - step, 0,
                      MPI_COMM_WORLD);
-            CALI_MARK_END(commLarge);
+            CALI_MARK_END("MPI_Send");
+            CALI_MARK_END(comm_large);
+            CALI_MARK_END(comm);
 
             break;
         }
@@ -245,22 +269,28 @@ int main(int argc, char *argv[])
             int *chunk_received;
             chunk_received = (int *)malloc(
                 received_chunk_size * sizeof(int));
-            CALI_MARK_BEGIN(commSmall);
-
+            CALI_MARK_BEGIN(comm);
+            CALI_MARK_BEGIN(comm_large);
+            CALI_MARK_BEGIN("MPI_Recv");
             MPI_Recv(chunk_received, received_chunk_size,
                      MPI_INT, rank_of_process + step, 0,
                      MPI_COMM_WORLD, &status);
-            CALI_MARK_END(commSmall);
+            CALI_MARK_END("MPI_Recv");
+            CALI_MARK_END(comm_large);
+            CALI_MARK_END(comm);
+
+
+            compSmallTime = MPI_Wtime();
 
             CALI_MARK_BEGIN(comp);
-            CALI_MARK_BEGIN(compSmall);
-            compSmallTime = MPI_Wtime();
+            CALI_MARK_BEGIN(comp_small);
             data = merge(chunk, own_chunk_size,
                          chunk_received,
                          received_chunk_size);
-            compSmallTime = MPI_Wtime() - compSmallTime;
-            CALI_MARK_END(compSmall);
+            CALI_MARK_END(comp_small);
             CALI_MARK_END(comp);
+
+            compSmallTime = MPI_Wtime() - compSmallTime;
 
             free(chunk);
             free(chunk_received);
@@ -268,15 +298,15 @@ int main(int argc, char *argv[])
             own_chunk_size = own_chunk_size + received_chunk_size;
         }
     }
-    CALI_MARK_END(commRegion);
 
     // Opening the other file as taken form input
     // and writing it to the file and giving it
     // as the output
     if (rank_of_process == 0)
     {
-        CALI_MARK_BEGIN(correctness);
         correctTime = MPI_Wtime();
+
+        CALI_MARK_BEGIN(correctness_check);
         // check if array is sorted or not
         if (isSorted(chunk, number_of_elements))
         {
@@ -286,18 +316,21 @@ int main(int argc, char *argv[])
         {
             printf("Array is not sorted (womp womp)\n");
         }
+        CALI_MARK_END(correctness_check);
+
         correctTime = MPI_Wtime() - correctTime;
-        CALI_MARK_END(correctness);
 
         // Print sorted array
-        for (int i = 0; i < number_of_elements; i++)
-        {
-            printf("%d ", chunk[i]);
-            if (i % 10 == 0) {
-                printf("\n");
+        if(printArray) {
+            for (int i = 0; i < number_of_elements; i++)
+            {
+                printf("%d ", chunk[i]);
+                if (i % 10 == 0) {
+                    printf("\n");
+                }
             }
+            printf("\n");
         }
-        printf("\n");
 
         totalTime = MPI_Wtime() - totalTime;
         printf("Time taken: %f\n", totalTime);
@@ -311,7 +344,6 @@ int main(int argc, char *argv[])
     }
 
     totalTime = MPI_Wtime() - totalTime;
-    CALI_MARK_END(mainRegion);
 
     // create caliper ConfigManager object
     cali::ConfigManager mgr;
