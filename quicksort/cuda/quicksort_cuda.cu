@@ -25,7 +25,6 @@ float commLargeTime;
 float compSmallTime;
 float compLargeTime;
 
-const char *mainRegion = "main";
 const char *parallel = "parallel";
 const char *sequential = "sequential";
 const char *genValuesTime = "data_init";
@@ -101,7 +100,6 @@ __global__ static void quicksort(int *values, int N)
 int main(int argc, char **argv)
 {
     CALI_CXX_MARK_FUNCTION;
-    CALI_MARK_BEGIN(mainRegion);
 
     cudaEvent_t dataInitStart, dataInitStop, correctnessStart, correctnessStop;
     cudaEvent_t compSmallStart, compSmallStop, commSmallStart, commSmallStop;
@@ -150,14 +148,18 @@ int main(int argc, char **argv)
     cudaEventElapsedTime(&dataInitTime, dataInitStart, dataInitStop);
 
     // Copy data from host to device
+    cudaEventRecord(commLargeStart, 0);
+
     CALI_MARK_BEGIN(commRegion);
     CALI_MARK_BEGIN(commLarge);
-    cudaEventRecord(commLargeStart, 0);
+    CALI_MARK_BEGIN("cudaMemcpy");
     cudaMemcpy(d_values, r_values, size * sizeof(int), cudaMemcpyHostToDevice);
-    cudaEventRecord(commLargeStop, 0);
-    cudaEventSynchronize(commLargeStop);
+    CALI_MARK_END("cudaMemcpy");
     CALI_MARK_END(commLarge);
     CALI_MARK_END(commRegion);
+
+    cudaEventRecord(commLargeStop, 0);
+    cudaEventSynchronize(commLargeStop);
 
     cudaEventElapsedTime(&commLargeTime, commLargeStart, commLargeStop);
 
@@ -166,12 +168,16 @@ int main(int argc, char **argv)
     cudaThreadSynchronize();
 
     // Execute kernel
-    CALI_MARK_BEGIN(comp);
     cudaEventRecord(compLargeStart, 0);
+
+    CALI_MARK_BEGIN(comp);
+    CALI_MARK_BEGIN(compLarge);
     quicksort<<<MAX_THREADS / cThreadsPerBlock, MAX_THREADS / cThreadsPerBlock, cThreadsPerBlock>>>(d_values, size);
+    CALI_MARK_END(compLarge);
+    CALI_MARK_END(comp);
+
     cudaEventRecord(compLargeStop, 0);
     cudaEventSynchronize(compLargeStop);
-    CALI_MARK_END(comp);
 
     cudaEventElapsedTime(&compLargeTime, compLargeStart, compLargeStop);
 
@@ -182,12 +188,15 @@ int main(int argc, char **argv)
     // copy data back to host
     CALI_MARK_BEGIN(commRegion);
     CALI_MARK_BEGIN(commLarge);
+    CALI_MARK_BEGIN("cudaMemcpy");
     cudaMemcpy(r_values, d_values, size * sizeof(int), cudaMemcpyDeviceToHost);
+    CALI_MARK_END("cudaMemcpy");
     CALI_MARK_END(commLarge);
     CALI_MARK_END(commRegion);
 
-    CALI_MARK_BEGIN("correctness");
     cudaEventRecord(correctnessStart, 0);
+
+    CALI_MARK_BEGIN(correctness);
     bool isSorted = true;
     for (int i = 0; i < size - 1; i++)
     {
@@ -197,8 +206,8 @@ int main(int argc, char **argv)
             break;
         }
     }
+    CALI_MARK_END(correctness);
     cudaEventRecord(correctnessStop, 0);
-    CALI_MARK_END("correctness");
 
     cudaEventElapsedTime(&correctnessTime, correctnessStart, correctnessStop);
 
@@ -232,9 +241,31 @@ int main(int argc, char **argv)
     free(r_values);
     cudaFree(d_values);
 
+    cali::ConfigManager mgr;
+    mgr.start();
+
+    adiak::init(NULL);
+    adiak::launchdate();    // launch date of the job
+    adiak::libraries();     // Libraries used
+    adiak::cmdline();       // Command line used to launch the job
+    adiak::clustername();   // Name of the cluster
+    adiak::value("Algorithm", "quicksort"); // The name of the algorithm you are using (e.g., "MergeSort", "BitonicSort")
+    adiak::value("ProgrammingModel", "CUDA"); // e.g., "MPI", "CUDA", "MPIwithCUDA"
+    adiak::value("Datatype", "int"); // The datatype of input elements (e.g., double, int, float)
+    adiak::value("SizeOfDatatype", sizeof(int)); // sizeof(datatype) of input elements in bytes (e.g., 1, 2, 4)
+    adiak::value("InputSize", size); // The number of elements in input dataset (1000)
+    adiak::value("InputType", "Random"); // For sorting, this would be "Sorted", "ReverseSorted", "Random", "1%perturbed"
+    adiak::value("num_threads", cThreadsPerBlock); // The number of CUDA or OpenMP threads
+    adiak::value("num_blocks", MAX_THREADS / cThreadsPerBlock ); // The number of CUDA blocks 
+    adiak::value("group_num", 23); // The number of your group (integer, e.g., 1, 10)
+    adiak::value("implementation_source", "online"); // Where you got the source code of your algorithm; choices: ("Online", "AI", "Handwritten"). 
+    
+    // Flush Caliper output
+    mgr.stop();
+    mgr.flush();
+    
     // exit
     cudaThreadExit();
     cudaDeviceReset();
 
-    CALI_MARK_END(mainRegion);
 }
