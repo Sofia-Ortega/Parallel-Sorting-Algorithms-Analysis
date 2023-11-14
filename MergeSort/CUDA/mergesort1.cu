@@ -95,7 +95,6 @@ void mergesort(double* data, long size, dim3 threadsPerBlock, dim3 blocksPerGrid
 
     CALI_MARK_BEGIN(comp);
     CALI_MARK_BEGIN(compLarge);
-    CALI_MARK_BEGIN("Mergesort");
 
     for (int width = 2; width < (size << 1); width <<= 1) {
         long slices = size / ((nThreads) * width) + 1;
@@ -108,7 +107,6 @@ void mergesort(double* data, long size, dim3 threadsPerBlock, dim3 blocksPerGrid
         B = B == D_data ? D_swp : D_data;
     }
 
-    CALI_MARK_END("Mergesort");
     CALI_MARK_END(compLarge);
     CALI_MARK_END(comp);
 
@@ -139,14 +137,16 @@ void mergesort(double* data, long size, dim3 threadsPerBlock, dim3 blocksPerGrid
 int main(int argc, char** argv) {
 	CALI_CXX_MARK_FUNCTION;
 
+	int threads = atoi(argv[1]);
+
     dim3 threadsPerBlock;
     dim3 blocksPerGrid;
 
-    threadsPerBlock.x = 32;
+    threadsPerBlock.x = threads;
     threadsPerBlock.y = 1;
     threadsPerBlock.z = 1;
 
-    blocksPerGrid.x = 8;
+    blocksPerGrid.x = 1;
     blocksPerGrid.y = 1;
     blocksPerGrid.z = 1;
 
@@ -156,13 +156,14 @@ int main(int argc, char** argv) {
     //
     // Generate numbers
     //
-    CALI_MARK_BEGIN(genValuesTime);
-    int numprocs = atoi(argv[1]);
 	int size = atoi(argv[2]);
     int option = atoi(argv[3]);
+    CALI_MARK_BEGIN(genValuesTime);
     double* data = new double[size];
-	srand(10);
-	for(int i=0; i<size; ++i) data[i] = (double)(rand() % 100);
+	// TODO add inputgen
+	//srand(10);
+	//for(int i=0; i<size; ++i) data[i] = (double)(rand() % 100);
+	fillValsRandParallel(data, size, 0);
 	CALI_MARK_END(genValuesTime);
 
     // merge-sort the data
@@ -183,12 +184,9 @@ int main(int argc, char** argv) {
 	}
     CALI_MARK_END(correctness);
 
-	std::cout << "The list is sorted: " << isSorted << std::endl;
-
     // Create caliper ConfigManager object
 	cali::ConfigManager mgr;
 	mgr.start();
-
 	
     adiak::init(NULL);
     adiak::launchdate();    // launch date of the job
@@ -204,7 +202,7 @@ int main(int argc, char** argv) {
 	if (option == 1) inputType = "Sorted";
 	else if (option == 2) inputType = "ReverseSorted";
     adiak::value("InputType", inputType); // For sorting, this would be "Sorted", "ReverseSorted", "Random", "1%perturbed"
-    adiak::value("num_procs", numprocs); // The number of processors (MPI ranks)
+    adiak::value("num_procs", threads); // The number of processors (MPI ranks)
     adiak::value("num_threads", nThreads); // The number of CUDA or OpenMP threads
     adiak::value("num_blocks", nBlocks); // The number of CUDA blocks 
     adiak::value("group_num", 23); // The number of your group (integer, e.g., 1, 10)
@@ -213,8 +211,6 @@ int main(int argc, char** argv) {
     // Flush Caliper output before finalizing MPI
    	mgr.stop();
    	mgr.flush();
-
-
 }
 
 // GPU helper function

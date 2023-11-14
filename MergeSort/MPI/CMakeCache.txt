@@ -281,7 +281,7 @@ Project_SOURCE_DIR:STATIC=/home/will.t4221/FinalProject/ParallelComputingProject
 adiak_DIR:UNINITIALIZED=/scratch/group/csce435-f23/Adiak/adiak/lib/cmake/adiak
 
 //No help, variable specified on the command line.
-caliper_DIR:UNINITIALIZED=/scratch/group/csce435-f23/Caliper-MPI/caliper/share/cmake/caliper
+caliper_DIR:UNINITIALIZED=/scratch/group/csce435-f23/Caliper/caliper/share/cmake/caliper
 
 
 ########################

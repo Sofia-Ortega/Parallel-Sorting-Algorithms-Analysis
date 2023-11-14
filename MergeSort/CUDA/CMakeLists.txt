@@ -6,9 +6,12 @@ find_package(MPI REQUIRED)
 find_package(caliper REQUIRED)
 find_package(adiak REQUIRED)
 
-#set(SOURCE_FILES ../../InputGeneration/inputgen.cpp)
+set(SOURCE_FILES 
+	mergesort1.cu
+	../../InputGeneration/inputgen.cpp
+	)
 
-add_executable(mergesort mergesort1.cu)
+add_executable(mergesort ${SOURCE_FILES})
 
 message(STATUS "MPI includes : ${MPI_INCLUDE_PATH}")
 message(STATUS "CUDA includes : ${CUDA_INCLUDE_DIRS}")

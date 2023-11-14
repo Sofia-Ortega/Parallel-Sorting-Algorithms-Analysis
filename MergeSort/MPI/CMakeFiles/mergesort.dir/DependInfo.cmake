@@ -13,7 +13,7 @@ set(CMAKE_CXX_COMPILER_ID "GNU")
 set(CMAKE_CXX_TARGET_INCLUDE_PATH
   "/scratch/group/csce435-f23/Adiak/adiak/include"
   "/sw/eb/sw/impi/2019.9.304-iccifort-2020.4.304/intel64/include"
-  "/scratch/group/csce435-f23/Caliper-MPI/caliper/include"
+  "/scratch/group/csce435-f23/Caliper/caliper/include"
   )
 
 # Targets to which this target links.

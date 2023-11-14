@@ -94,7 +94,7 @@ mergesort_EXTERNAL_OBJECTS =
 mergesort: CMakeFiles/mergesort.dir/mergesort.cpp.o
 mergesort: CMakeFiles/mergesort.dir/home/will.t4221/FinalProject/ParallelComputingProject/InputGeneration/inputgen.cpp.o
 mergesort: CMakeFiles/mergesort.dir/build.make
-mergesort: /scratch/group/csce435-f23/Caliper-MPI/caliper/lib64/libcaliper.so.2.10.0
+mergesort: /scratch/group/csce435-f23/Caliper/caliper/lib64/libcaliper.so.2.11.0-dev
 mergesort: /sw/eb/sw/impi/2019.9.304-iccifort-2020.4.304/intel64/lib/libmpicxx.so
 mergesort: /sw/eb/sw/impi/2019.9.304-iccifort-2020.4.304/intel64/lib/release/libmpi.so
 mergesort: /lib64/librt.so

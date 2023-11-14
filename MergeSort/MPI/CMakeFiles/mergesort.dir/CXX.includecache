@@ -66,15 +66,15 @@ cstring
 cstdlib
 -
 
-/scratch/group/csce435-f23/Caliper-MPI/caliper/include/caliper/Annotation.h
+/scratch/group/csce435-f23/Caliper/caliper/include/caliper/Annotation.h
 caliper/common/Variant.h
-/scratch/group/csce435-f23/Caliper-MPI/caliper/include/caliper/caliper/common/Variant.h
+/scratch/group/csce435-f23/Caliper/caliper/include/caliper/caliper/common/Variant.h
 map
 -
 
-/scratch/group/csce435-f23/Caliper-MPI/caliper/include/caliper/ChannelController.h
+/scratch/group/csce435-f23/Caliper/caliper/include/caliper/ChannelController.h
 cali_definitions.h
-/scratch/group/csce435-f23/Caliper-MPI/caliper/include/caliper/cali_definitions.h
+/scratch/group/csce435-f23/Caliper/caliper/include/caliper/cali_definitions.h
 map
 -
 memory
@@ -82,7 +82,7 @@ memory
 string
 -
 
-/scratch/group/csce435-f23/Caliper-MPI/caliper/include/caliper/ConfigManager.h
+/scratch/group/csce435-f23/Caliper/caliper/include/caliper/ConfigManager.h
 map
 -
 memory
@@ -92,25 +92,25 @@ string
 vector
 -
 ChannelController.h
-/scratch/group/csce435-f23/Caliper-MPI/caliper/include/caliper/ChannelController.h
+/scratch/group/csce435-f23/Caliper/caliper/include/caliper/ChannelController.h
 common/StringConverter.h
-/scratch/group/csce435-f23/Caliper-MPI/caliper/include/caliper/common/StringConverter.h
+/scratch/group/csce435-f23/Caliper/caliper/include/caliper/common/StringConverter.h
 
-/scratch/group/csce435-f23/Caliper-MPI/caliper/include/caliper/cali-manager.h
+/scratch/group/csce435-f23/Caliper/caliper/include/caliper/cali-manager.h
 wrapConfigManager.h
-/scratch/group/csce435-f23/Caliper-MPI/caliper/include/caliper/wrapConfigManager.h
+/scratch/group/csce435-f23/Caliper/caliper/include/caliper/wrapConfigManager.h
 ConfigManager.h
-/scratch/group/csce435-f23/Caliper-MPI/caliper/include/caliper/ConfigManager.h
+/scratch/group/csce435-f23/Caliper/caliper/include/caliper/ConfigManager.h
 ChannelController.h
-/scratch/group/csce435-f23/Caliper-MPI/caliper/include/caliper/ChannelController.h
+/scratch/group/csce435-f23/Caliper/caliper/include/caliper/ChannelController.h
 
-/scratch/group/csce435-f23/Caliper-MPI/caliper/include/caliper/cali.h
+/scratch/group/csce435-f23/Caliper/caliper/include/caliper/cali.h
 cali_definitions.h
-/scratch/group/csce435-f23/Caliper-MPI/caliper/include/caliper/cali_definitions.h
+/scratch/group/csce435-f23/Caliper/caliper/include/caliper/cali_definitions.h
 common/cali_types.h
-/scratch/group/csce435-f23/Caliper-MPI/caliper/include/caliper/common/cali_types.h
+/scratch/group/csce435-f23/Caliper/caliper/include/caliper/common/cali_types.h
 common/cali_variant.h
-/scratch/group/csce435-f23/Caliper-MPI/caliper/include/caliper/common/cali_variant.h
+/scratch/group/csce435-f23/Caliper/caliper/include/caliper/common/cali_variant.h
 stddef.h
 -
 iostream
@@ -120,19 +120,19 @@ map
 string
 -
 cali_macros.h
-/scratch/group/csce435-f23/Caliper-MPI/caliper/include/caliper/cali_macros.h
+/scratch/group/csce435-f23/Caliper/caliper/include/caliper/cali_macros.h
 
-/scratch/group/csce435-f23/Caliper-MPI/caliper/include/caliper/cali_definitions.h
+/scratch/group/csce435-f23/Caliper/caliper/include/caliper/cali_definitions.h
 
-/scratch/group/csce435-f23/Caliper-MPI/caliper/include/caliper/cali_macros.h
+/scratch/group/csce435-f23/Caliper/caliper/include/caliper/cali_macros.h
 Annotation.h
-/scratch/group/csce435-f23/Caliper-MPI/caliper/include/caliper/Annotation.h
+/scratch/group/csce435-f23/Caliper/caliper/include/caliper/Annotation.h
 
-/scratch/group/csce435-f23/Caliper-MPI/caliper/include/caliper/caliper-config.h
+/scratch/group/csce435-f23/Caliper/caliper/include/caliper/caliper-config.h
 
-/scratch/group/csce435-f23/Caliper-MPI/caliper/include/caliper/common/StringConverter.h
+/scratch/group/csce435-f23/Caliper/caliper/include/caliper/common/StringConverter.h
 cali_types.h
-/scratch/group/csce435-f23/Caliper-MPI/caliper/include/caliper/common/cali_types.h
+/scratch/group/csce435-f23/Caliper/caliper/include/caliper/common/cali_types.h
 map
 -
 string
@@ -140,13 +140,13 @@ string
 vector
 -
 
-/scratch/group/csce435-f23/Caliper-MPI/caliper/include/caliper/common/Variant.h
+/scratch/group/csce435-f23/Caliper/caliper/include/caliper/common/Variant.h
 cali_types.h
-/scratch/group/csce435-f23/Caliper-MPI/caliper/include/caliper/common/cali_types.h
+/scratch/group/csce435-f23/Caliper/caliper/include/caliper/common/cali_types.h
 cali_variant.h
-/scratch/group/csce435-f23/Caliper-MPI/caliper/include/caliper/common/cali_variant.h
+/scratch/group/csce435-f23/Caliper/caliper/include/caliper/common/cali_variant.h
 caliper/caliper-config.h
-/scratch/group/csce435-f23/Caliper-MPI/caliper/include/caliper/common/caliper/caliper-config.h
+/scratch/group/csce435-f23/Caliper/caliper/include/caliper/common/caliper/caliper-config.h
 iostream
 -
 string
@@ -154,15 +154,15 @@ string
 type_traits
 -
 
-/scratch/group/csce435-f23/Caliper-MPI/caliper/include/caliper/common/cali_types.h
+/scratch/group/csce435-f23/Caliper/caliper/include/caliper/common/cali_types.h
 stddef.h
 -
 stdint.h
 -
 
-/scratch/group/csce435-f23/Caliper-MPI/caliper/include/caliper/common/cali_variant.h
+/scratch/group/csce435-f23/Caliper/caliper/include/caliper/common/cali_variant.h
 cali_types.h
-/scratch/group/csce435-f23/Caliper-MPI/caliper/include/caliper/common/cali_types.h
+/scratch/group/csce435-f23/Caliper/caliper/include/caliper/common/cali_types.h
 stdbool.h
 -
 stddef.h
@@ -170,15 +170,15 @@ stddef.h
 string.h
 -
 
-/scratch/group/csce435-f23/Caliper-MPI/caliper/include/caliper/typesCaliper.h
+/scratch/group/csce435-f23/Caliper/caliper/include/caliper/typesCaliper.h
 stddef.h
 -
 
-/scratch/group/csce435-f23/Caliper-MPI/caliper/include/caliper/wrapConfigManager.h
+/scratch/group/csce435-f23/Caliper/caliper/include/caliper/wrapConfigManager.h
 stdbool.h
 -
 typesCaliper.h
-/scratch/group/csce435-f23/Caliper-MPI/caliper/include/caliper/typesCaliper.h
+/scratch/group/csce435-f23/Caliper/caliper/include/caliper/typesCaliper.h
 
 /sw/eb/sw/impi/2019.9.304-iccifort-2020.4.304/intel64/include/mpi.h
 stddef.h

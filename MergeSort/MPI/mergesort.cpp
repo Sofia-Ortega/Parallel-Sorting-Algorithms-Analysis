@@ -137,9 +137,7 @@ double* mergeSortParallel(int height, int id, double *localArray, int size, MPI_
 	myHeight = 0;
 	CALI_MARK_BEGIN(comp);
 	CALI_MARK_BEGIN(compLarge);
-	CALI_MARK_BEGIN("Serial_Mergesort");
 	mergeSort(localArray, 0, size - 1);
-	CALI_MARK_END("Serial_Mergesort");
 	CALI_MARK_END(compLarge);
 	CALI_MARK_END(comp);
 	half1 = localArray;
@@ -166,9 +164,7 @@ double* mergeSortParallel(int height, int id, double *localArray, int size, MPI_
 			mergeResult = new double[2*size];
 			CALI_MARK_BEGIN(comp);
 			CALI_MARK_BEGIN(compLarge);
-			CALI_MARK_BEGIN("Merging_Arrays");
 			mergeParallel(half1, half2, mergeResult, size);
-			CALI_MARK_END("Merging_Arrays");
 			CALI_MARK_END(compLarge);
 			CALI_MARK_END(comp);
 			half1 = mergeResult;
@@ -222,6 +218,7 @@ int main (int argc, char *argv[])
 
 	/* ********** Sequential Mergesort ********** */
 	
+	/*
 	CALI_MARK_BEGIN(sequential);
 	double genValuesTimes = MPI_Wtime();
 	// TODO time the input gen
@@ -266,6 +263,8 @@ int main (int argc, char *argv[])
 	}
 
 	CALI_MARK_END(sequential);
+	*/
+
 	/* ********** Parallel Mergesort ********** */
 	/*
 	 * A lot of the code below was found from the same
@@ -275,9 +274,9 @@ int main (int argc, char *argv[])
 	 *
 	 */
 
-	CALI_MARK_BEGIN(paraMergeTime);
+	//CALI_MARK_BEGIN(paraMergeTime);
 
-	genValuesTimes = MPI_Wtime();
+	double genValuesTimes = MPI_Wtime();
 	CALI_MARK_BEGIN(genValuesTime);
 	genValues(taskid, numprocs, numberOfVals, 1, valuesDouble, option);
 	CALI_MARK_END(genValuesTime);
@@ -349,7 +348,7 @@ int main (int argc, char *argv[])
 
 	delete[] localArray;
 
-	CALI_MARK_END(paraMergeTime);
+	//CALI_MARK_END(paraMergeTime);
 	// Create caliper ConfigManager object
 	cali::ConfigManager mgr;
 	mgr.start();
