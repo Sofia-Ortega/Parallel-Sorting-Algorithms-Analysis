@@ -16,6 +16,8 @@
 
 using namespace std;
 
+#define SEED 10
+
 const char* data_init = "data_init";
 const char* comm = "comm";
 const char* comm_small = "comm_small";
@@ -159,10 +161,7 @@ int main(int argc, char *argv[])
     {
         // create a array of size number_of_elements of random integers
         data = (int *)malloc(number_of_elements * sizeof(int));
-        for (int i = 0; i < number_of_elements; i++)
-        {
-            data[i] = rand() % 1000;
-        }
+        fillValsRandParallel(data, number_of_elements, SEED);
     }
     dataInitTime = MPI_Wtime() - dataInitTime;
     CALI_MARK_END(data_init);
@@ -357,8 +356,11 @@ int main(int argc, char *argv[])
     adiak::value("Algorithm", "QuickSort");                 // The name of the algorithm you are using (e.g., "MergeSort", "BitonicSort")
     adiak::value("ProgrammingModel", "MPI");                // e.g., "MPI", "CUDA", "MPIwithCUDA"
     adiak::value("SizeOfDatatype", sizeof(int));            // sizeof(datatype) of input elements in bytes (e.g., 1, 2, 4)
-    adiak::value("number_of_elements", number_of_elements); // The number of elements in input dataset (1000)
-    adiak::value("process_counts", number_of_process);      // The number of processors (MPI ranks)
+    adiak::value("InputSize", number_of_elements); // The number of elements in input dataset (1000)
+    adiak::value("InputType", "Random"); // The number of elements in input dataset (1000)
+    adiak::value("num_procs", number_of_process);      // The number of processors (MPI ranks)
+    adiak::value("group_num", 23);
+    adiak::value("implementation_source", "Online");
 
     // Flush Caliper output before finalizing MPI
     mgr.stop();
