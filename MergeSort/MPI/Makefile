@@ -48,10 +48,10 @@ RM = /sw/eb/sw/CMake/3.12.1/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/will.t4221/FinalProject/ParallelComputingProject/MergeSort/MPI
+CMAKE_SOURCE_DIR = /scratch/user/will.t4221/ParallelComputingProject/MergeSort/MPI
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/will.t4221/FinalProject/ParallelComputingProject/MergeSort/MPI
+CMAKE_BINARY_DIR = /scratch/user/will.t4221/ParallelComputingProject/MergeSort/MPI
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -80,9 +80,9 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/will.t4221/FinalProject/ParallelComputingProject/MergeSort/MPI/CMakeFiles /home/will.t4221/FinalProject/ParallelComputingProject/MergeSort/MPI/CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /scratch/user/will.t4221/ParallelComputingProject/MergeSort/MPI/CMakeFiles /scratch/user/will.t4221/ParallelComputingProject/MergeSort/MPI/CMakeFiles/progress.marks
 	$(MAKE) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/will.t4221/FinalProject/ParallelComputingProject/MergeSort/MPI/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /scratch/user/will.t4221/ParallelComputingProject/MergeSort/MPI/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -123,33 +123,6 @@ mergesort/fast:
 	$(MAKE) -f CMakeFiles/mergesort.dir/build.make CMakeFiles/mergesort.dir/build
 .PHONY : mergesort/fast
 
-home/will.t4221/FinalProject/ParallelComputingProject/InputGeneration/inputgen.o: home/will.t4221/FinalProject/ParallelComputingProject/InputGeneration/inputgen.cpp.o
-
-.PHONY : home/will.t4221/FinalProject/ParallelComputingProject/InputGeneration/inputgen.o
-
-# target to build an object file
-home/will.t4221/FinalProject/ParallelComputingProject/InputGeneration/inputgen.cpp.o:
-	$(MAKE) -f CMakeFiles/mergesort.dir/build.make CMakeFiles/mergesort.dir/home/will.t4221/FinalProject/ParallelComputingProject/InputGeneration/inputgen.cpp.o
-.PHONY : home/will.t4221/FinalProject/ParallelComputingProject/InputGeneration/inputgen.cpp.o
-
-home/will.t4221/FinalProject/ParallelComputingProject/InputGeneration/inputgen.i: home/will.t4221/FinalProject/ParallelComputingProject/InputGeneration/inputgen.cpp.i
-
-.PHONY : home/will.t4221/FinalProject/ParallelComputingProject/InputGeneration/inputgen.i
-
-# target to preprocess a source file
-home/will.t4221/FinalProject/ParallelComputingProject/InputGeneration/inputgen.cpp.i:
-	$(MAKE) -f CMakeFiles/mergesort.dir/build.make CMakeFiles/mergesort.dir/home/will.t4221/FinalProject/ParallelComputingProject/InputGeneration/inputgen.cpp.i
-.PHONY : home/will.t4221/FinalProject/ParallelComputingProject/InputGeneration/inputgen.cpp.i
-
-home/will.t4221/FinalProject/ParallelComputingProject/InputGeneration/inputgen.s: home/will.t4221/FinalProject/ParallelComputingProject/InputGeneration/inputgen.cpp.s
-
-.PHONY : home/will.t4221/FinalProject/ParallelComputingProject/InputGeneration/inputgen.s
-
-# target to generate assembly for a file
-home/will.t4221/FinalProject/ParallelComputingProject/InputGeneration/inputgen.cpp.s:
-	$(MAKE) -f CMakeFiles/mergesort.dir/build.make CMakeFiles/mergesort.dir/home/will.t4221/FinalProject/ParallelComputingProject/InputGeneration/inputgen.cpp.s
-.PHONY : home/will.t4221/FinalProject/ParallelComputingProject/InputGeneration/inputgen.cpp.s
-
 mergesort.o: mergesort.cpp.o
 
 .PHONY : mergesort.o
@@ -177,6 +150,33 @@ mergesort.cpp.s:
 	$(MAKE) -f CMakeFiles/mergesort.dir/build.make CMakeFiles/mergesort.dir/mergesort.cpp.s
 .PHONY : mergesort.cpp.s
 
+scratch/user/will.t4221/ParallelComputingProject/InputGeneration/inputgen.o: scratch/user/will.t4221/ParallelComputingProject/InputGeneration/inputgen.cpp.o
+
+.PHONY : scratch/user/will.t4221/ParallelComputingProject/InputGeneration/inputgen.o
+
+# target to build an object file
+scratch/user/will.t4221/ParallelComputingProject/InputGeneration/inputgen.cpp.o:
+	$(MAKE) -f CMakeFiles/mergesort.dir/build.make CMakeFiles/mergesort.dir/scratch/user/will.t4221/ParallelComputingProject/InputGeneration/inputgen.cpp.o
+.PHONY : scratch/user/will.t4221/ParallelComputingProject/InputGeneration/inputgen.cpp.o
+
+scratch/user/will.t4221/ParallelComputingProject/InputGeneration/inputgen.i: scratch/user/will.t4221/ParallelComputingProject/InputGeneration/inputgen.cpp.i
+
+.PHONY : scratch/user/will.t4221/ParallelComputingProject/InputGeneration/inputgen.i
+
+# target to preprocess a source file
+scratch/user/will.t4221/ParallelComputingProject/InputGeneration/inputgen.cpp.i:
+	$(MAKE) -f CMakeFiles/mergesort.dir/build.make CMakeFiles/mergesort.dir/scratch/user/will.t4221/ParallelComputingProject/InputGeneration/inputgen.cpp.i
+.PHONY : scratch/user/will.t4221/ParallelComputingProject/InputGeneration/inputgen.cpp.i
+
+scratch/user/will.t4221/ParallelComputingProject/InputGeneration/inputgen.s: scratch/user/will.t4221/ParallelComputingProject/InputGeneration/inputgen.cpp.s
+
+.PHONY : scratch/user/will.t4221/ParallelComputingProject/InputGeneration/inputgen.s
+
+# target to generate assembly for a file
+scratch/user/will.t4221/ParallelComputingProject/InputGeneration/inputgen.cpp.s:
+	$(MAKE) -f CMakeFiles/mergesort.dir/build.make CMakeFiles/mergesort.dir/scratch/user/will.t4221/ParallelComputingProject/InputGeneration/inputgen.cpp.s
+.PHONY : scratch/user/will.t4221/ParallelComputingProject/InputGeneration/inputgen.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -186,12 +186,12 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... mergesort"
-	@echo "... home/will.t4221/FinalProject/ParallelComputingProject/InputGeneration/inputgen.o"
-	@echo "... home/will.t4221/FinalProject/ParallelComputingProject/InputGeneration/inputgen.i"
-	@echo "... home/will.t4221/FinalProject/ParallelComputingProject/InputGeneration/inputgen.s"
 	@echo "... mergesort.o"
 	@echo "... mergesort.i"
 	@echo "... mergesort.s"
+	@echo "... scratch/user/will.t4221/ParallelComputingProject/InputGeneration/inputgen.o"
+	@echo "... scratch/user/will.t4221/ParallelComputingProject/InputGeneration/inputgen.i"
+	@echo "... scratch/user/will.t4221/ParallelComputingProject/InputGeneration/inputgen.s"
 .PHONY : help
 
 

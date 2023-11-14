@@ -1,21 +1,21 @@
 Determining if the pthread_create exist failed with the following output:
-Change Dir: /home/will.t4221/FinalProject/ParallelComputingProject/MergeSort/MPI/CMakeFiles/CMakeTmp
+Change Dir: /scratch/user/will.t4221/ParallelComputingProject/MergeSort/MPI/CMakeFiles/CMakeTmp
 
-Run Build Command:"/usr/bin/gmake" "cmTC_07a32/fast"
-/usr/bin/gmake -f CMakeFiles/cmTC_07a32.dir/build.make CMakeFiles/cmTC_07a32.dir/build
-gmake[1]: Entering directory `/home/will.t4221/FinalProject/ParallelComputingProject/MergeSort/MPI/CMakeFiles/CMakeTmp'
-Building C object CMakeFiles/cmTC_07a32.dir/CheckSymbolExists.c.o
-/sw/eb/sw/GCCcore/10.2.0/bin/cc    -o CMakeFiles/cmTC_07a32.dir/CheckSymbolExists.c.o   -c /home/will.t4221/FinalProject/ParallelComputingProject/MergeSort/MPI/CMakeFiles/CMakeTmp/CheckSymbolExists.c
-Linking C executable cmTC_07a32
-/sw/eb/sw/CMake/3.12.1/bin/cmake -E cmake_link_script CMakeFiles/cmTC_07a32.dir/link.txt --verbose=1
-/sw/eb/sw/GCCcore/10.2.0/bin/cc      CMakeFiles/cmTC_07a32.dir/CheckSymbolExists.c.o  -o cmTC_07a32 
-CMakeFiles/cmTC_07a32.dir/CheckSymbolExists.c.o:CheckSymbolExists.c:function main: error: undefined reference to 'pthread_create'
+Run Build Command:"/usr/bin/gmake" "cmTC_b21b4/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_b21b4.dir/build.make CMakeFiles/cmTC_b21b4.dir/build
+gmake[1]: Entering directory `/scratch/user/will.t4221/ParallelComputingProject/MergeSort/MPI/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_b21b4.dir/CheckSymbolExists.c.o
+/sw/eb/sw/GCCcore/10.2.0/bin/cc    -o CMakeFiles/cmTC_b21b4.dir/CheckSymbolExists.c.o   -c /scratch/user/will.t4221/ParallelComputingProject/MergeSort/MPI/CMakeFiles/CMakeTmp/CheckSymbolExists.c
+Linking C executable cmTC_b21b4
+/sw/eb/sw/CMake/3.12.1/bin/cmake -E cmake_link_script CMakeFiles/cmTC_b21b4.dir/link.txt --verbose=1
+/sw/eb/sw/GCCcore/10.2.0/bin/cc      CMakeFiles/cmTC_b21b4.dir/CheckSymbolExists.c.o  -o cmTC_b21b4 
+CMakeFiles/cmTC_b21b4.dir/CheckSymbolExists.c.o:CheckSymbolExists.c:function main: error: undefined reference to 'pthread_create'
 collect2: error: ld returned 1 exit status
-gmake[1]: *** [cmTC_07a32] Error 1
-gmake[1]: Leaving directory `/home/will.t4221/FinalProject/ParallelComputingProject/MergeSort/MPI/CMakeFiles/CMakeTmp'
-gmake: *** [cmTC_07a32/fast] Error 2
+gmake[1]: *** [cmTC_b21b4] Error 1
+gmake[1]: Leaving directory `/scratch/user/will.t4221/ParallelComputingProject/MergeSort/MPI/CMakeFiles/CMakeTmp'
+gmake: *** [cmTC_b21b4/fast] Error 2
 
-File /home/will.t4221/FinalProject/ParallelComputingProject/MergeSort/MPI/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
+File /scratch/user/will.t4221/ParallelComputingProject/MergeSort/MPI/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
 /* */
 #include <pthread.h>
 
@@ -31,21 +31,21 @@ int main(int argc, char** argv)
 }
 
 Determining if the function pthread_create exists in the pthreads failed with the following output:
-Change Dir: /home/will.t4221/FinalProject/ParallelComputingProject/MergeSort/MPI/CMakeFiles/CMakeTmp
+Change Dir: /scratch/user/will.t4221/ParallelComputingProject/MergeSort/MPI/CMakeFiles/CMakeTmp
 
-Run Build Command:"/usr/bin/gmake" "cmTC_9987a/fast"
-/usr/bin/gmake -f CMakeFiles/cmTC_9987a.dir/build.make CMakeFiles/cmTC_9987a.dir/build
-gmake[1]: Entering directory `/home/will.t4221/FinalProject/ParallelComputingProject/MergeSort/MPI/CMakeFiles/CMakeTmp'
-Building C object CMakeFiles/cmTC_9987a.dir/CheckFunctionExists.c.o
-/sw/eb/sw/GCCcore/10.2.0/bin/cc   -DCHECK_FUNCTION_EXISTS=pthread_create   -o CMakeFiles/cmTC_9987a.dir/CheckFunctionExists.c.o   -c /sw/eb/sw/CMake/3.12.1/share/cmake-3.12/Modules/CheckFunctionExists.c
-Linking C executable cmTC_9987a
-/sw/eb/sw/CMake/3.12.1/bin/cmake -E cmake_link_script CMakeFiles/cmTC_9987a.dir/link.txt --verbose=1
-/sw/eb/sw/GCCcore/10.2.0/bin/cc  -DCHECK_FUNCTION_EXISTS=pthread_create    CMakeFiles/cmTC_9987a.dir/CheckFunctionExists.c.o  -o cmTC_9987a -lpthreads 
+Run Build Command:"/usr/bin/gmake" "cmTC_b7aab/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_b7aab.dir/build.make CMakeFiles/cmTC_b7aab.dir/build
+gmake[1]: Entering directory `/scratch/user/will.t4221/ParallelComputingProject/MergeSort/MPI/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_b7aab.dir/CheckFunctionExists.c.o
+/sw/eb/sw/GCCcore/10.2.0/bin/cc   -DCHECK_FUNCTION_EXISTS=pthread_create   -o CMakeFiles/cmTC_b7aab.dir/CheckFunctionExists.c.o   -c /sw/eb/sw/CMake/3.12.1/share/cmake-3.12/Modules/CheckFunctionExists.c
+Linking C executable cmTC_b7aab
+/sw/eb/sw/CMake/3.12.1/bin/cmake -E cmake_link_script CMakeFiles/cmTC_b7aab.dir/link.txt --verbose=1
+/sw/eb/sw/GCCcore/10.2.0/bin/cc  -DCHECK_FUNCTION_EXISTS=pthread_create    CMakeFiles/cmTC_b7aab.dir/CheckFunctionExists.c.o  -o cmTC_b7aab -lpthreads 
 /sw/eb/sw/binutils/2.35-GCCcore-10.2.0/bin/ld.gold: error: cannot find -lpthreads
-CMakeFiles/cmTC_9987a.dir/CheckFunctionExists.c.o:CheckFunctionExists.c:function main: error: undefined reference to 'pthread_create'
+CMakeFiles/cmTC_b7aab.dir/CheckFunctionExists.c.o:CheckFunctionExists.c:function main: error: undefined reference to 'pthread_create'
 collect2: error: ld returned 1 exit status
-gmake[1]: *** [cmTC_9987a] Error 1
-gmake[1]: Leaving directory `/home/will.t4221/FinalProject/ParallelComputingProject/MergeSort/MPI/CMakeFiles/CMakeTmp'
-gmake: *** [cmTC_9987a/fast] Error 2
+gmake[1]: *** [cmTC_b7aab] Error 1
+gmake[1]: Leaving directory `/scratch/user/will.t4221/ParallelComputingProject/MergeSort/MPI/CMakeFiles/CMakeTmp'
+gmake: *** [cmTC_b7aab/fast] Error 2
 
 
