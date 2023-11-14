@@ -19,6 +19,7 @@
 #include <time.h>
 
 #include "scan.h"
+#include "inputgen.h"
 
 using namespace std;
 
@@ -41,6 +42,7 @@ const char* cudaMemcpy_device_to_host = "cudaMemcpy_device_to_host";
 #define NUM_BANKS 32
 #define LOG_NUM_BANKS 5
 
+#define SEED 10
 
 #define CONFLICT_FREE_OFFSET(n) ((n) >> LOG_NUM_BANKS)
 
@@ -360,7 +362,6 @@ int main(int argc, char** argv)
     // argv:
     // 0          1            2                 3
     // radix_cuda num_threasds num_vals_to_sort  [optional: printArray]
-    struct timespec start, stop;
 
     CALI_CXX_MARK_FUNCTION;
 
@@ -390,9 +391,7 @@ int main(int argc, char** argv)
     // initialize local array
     CALI_MARK_BEGIN(data_init);
     unsigned int* numbers = new unsigned int[n_values];
-    for(int i = 0; i < n_values; i++) {
-      numbers[i] = (rand() % 10000) + 1;
-    }
+    fillValsRandParallel((int*)numbers, n_values, SEED);
     CALI_MARK_END(data_init);
 
 
@@ -404,11 +403,7 @@ int main(int argc, char** argv)
     }
 
     // sorting
-    clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &start);
     radixsort_gpu(numbers, n_values, num_threads, printArray);
-    clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &stop);
-    double dt = (stop.tv_sec - start.tv_sec) * 1e6 + (stop.tv_nsec - start.tv_nsec) / 1e3;    // in microseconds
-    printf("@time of CUDA run:\t\t\t[%.3f] microseconds\n", dt);
 
     delete[] numbers;
 
