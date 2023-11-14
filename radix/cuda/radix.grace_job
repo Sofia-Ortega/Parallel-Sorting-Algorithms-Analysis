@@ -22,10 +22,11 @@
 num_threads=$1
 num_vals=$2
 #
-module load intel/2020b       # load Intel software stack
 module load CUDA                #load CUDA module
+module load intel/2020b       # load Intel software stack
 module load GCCcore/7.3.0
 #
 
-CALI_CONFIG="spot(output=${num_threads}-${num_vals}.cali)" \
+CALI_CONFIG="spot(output=${num_threads}-${num_vals}.cali), \
+  cuda.gputime" \
 ./radix_cuda $num_threads $num_vals 0
