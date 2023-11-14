@@ -256,10 +256,10 @@ void radix_sort(unsigned int* const d_out,
 
     // for every 2 bits from LSB to MSB:
     //  block-wise radix sort (write blocks back to global memory)
-    CALI_MARK_BEGIN("comp");
+    CALI_MARK_BEGIN(comp);
+    CALI_MARK_BEGIN(comp_large);
     for (unsigned int shift_width = 0; shift_width <= 30; shift_width += 2)
     {
-        CALI_MARK_BEGIN("comp_large");
         gpu_radix_sort_local<<<grid_sz, block_sz, shmem_sz>>>(d_out, 
                                                                 d_prefix_sums, 
                                                                 d_block_sums, 
@@ -268,12 +268,10 @@ void radix_sort(unsigned int* const d_out,
                                                                 d_in_len, 
                                                                 max_elems_per_block);
 
-        CALI_MARK_END("comp_large");
         // scan global block sum array
         sum_scan_blelloch(d_scan_block_sums, d_block_sums, d_block_sums_len);
 
         // scatter/shuffle block-wise sorted array to final positions
-        CALI_MARK_BEGIN("comp_small");
         gpu_glbl_shuffle<<<grid_sz, block_sz>>>(d_in, 
                                                     d_out, 
                                                     d_scan_block_sums, 
@@ -281,15 +279,17 @@ void radix_sort(unsigned int* const d_out,
                                                     shift_width, 
                                                     d_in_len, 
                                                     max_elems_per_block);
-        CALI_MARK_END("comp_small");
     }
-    CALI_MARK_END("comp");
+    CALI_MARK_END(comp_large);
+    CALI_MARK_END(comp);
 
-    CALI_MARK_BEGIN("comm");
-    CALI_MARK_BEGIN("comm_small");
+    CALI_MARK_BEGIN(comm);
+    CALI_MARK_BEGIN(comm_large);
+    CALI_MARK_BEGIN("cudaMemcpy");
     cudaMemcpy(d_out, d_in, sizeof(unsigned int) * d_in_len, cudaMemcpyDeviceToDevice);
-    CALI_MARK_END("comm_small");
-    CALI_MARK_END("comm");
+    CALI_MARK_END("cudaMemcpy");
+    CALI_MARK_END(comm_large);
+    CALI_MARK_END(comm);
 
     cudaFree(d_scan_block_sums);
     cudaFree(d_block_sums);
@@ -307,7 +307,9 @@ void radixsort_gpu(unsigned int* h_in, unsigned int num, unsigned int num_thread
 
     CALI_MARK_BEGIN(comm);
     CALI_MARK_BEGIN(comm_large);
+    CALI_MARK_BEGIN("cudaMemcpy");
     cudaMemcpy(d_in, h_in, sizeof(unsigned int) * num, cudaMemcpyHostToDevice);
+    CALI_MARK_END("cudaMemcpy");
     CALI_MARK_END(comm_large);
     CALI_MARK_END(comm);
 
@@ -315,7 +317,9 @@ void radixsort_gpu(unsigned int* h_in, unsigned int num, unsigned int num_thread
 
     CALI_MARK_BEGIN(comm);
     CALI_MARK_BEGIN(comm_large);
+    CALI_MARK_BEGIN("cudaMemcpy");
     cudaMemcpy(out_gpu, d_out, sizeof(unsigned int) * num, cudaMemcpyDeviceToHost);
+    CALI_MARK_END("cudaMemcpy");
     CALI_MARK_END(comm_large);
     CALI_MARK_END(comm);
 
@@ -384,10 +388,12 @@ int main(int argc, char** argv)
 
 
     // initialize local array
+    CALI_MARK_BEGIN(data_init);
     unsigned int* numbers = new unsigned int[n_values];
     for(int i = 0; i < n_values; i++) {
       numbers[i] = (rand() % 10000) + 1;
     }
+    CALI_MARK_END(data_init);
 
 
     // print array
