@@ -107,6 +107,7 @@ int main(int argc, char **argv)
     size_t size = atoi(argv[1]); // CHANGE TO CLI ARG
     printf("./quicksort starting with %d numbers...\n", size * sizeof(int));
     const int MAX_THREADS = atoi(argv[2]); // CHANGE TO CLI ARG
+    const int option = atoi(argv[3]);      // CHANGE TO CLI ARG
 
     std::cout << "MAX_THREADS: " << MAX_THREADS << std::endl;
 
@@ -137,9 +138,28 @@ int main(int argc, char **argv)
     CALI_MARK_BEGIN(genValuesTime);
     cudaEventRecord(dataInitStart, 0);
     srand(time(NULL));
-    for (int i = 0; i < size; i++)
+    if (option == 0) // random
     {
-        r_values[i] = rand() % 100;
+        for (int i = 0; i < size; i++)
+        {
+            r_values[i] = rand() % 100;
+        }
+    } else if (option == 1) { //sorted
+        for (int i = 0; i < size; i++) {
+            r_values[i] = i;
+        }
+    } else if (option == 2) { // reverse
+        for (int i = 0; i < size; i++) {
+            r_values[i] = size - i;
+        }
+    } else if (option == 3) { // 1% perturbed
+        for (int i = 0; i < size; i++) {
+            r_values[i] = i;
+        }
+        for (int i = 0; i < size / 100; i++) {
+            int index = rand() % size;
+            r_values[index] = size - index;
+        }
     }
     cudaEventRecord(dataInitStop, 0);
     cudaEventSynchronize(dataInitStop);
@@ -245,27 +265,26 @@ int main(int argc, char **argv)
     mgr.start();
 
     adiak::init(NULL);
-    adiak::launchdate();    // launch date of the job
-    adiak::libraries();     // Libraries used
-    adiak::cmdline();       // Command line used to launch the job
-    adiak::clustername();   // Name of the cluster
-    adiak::value("Algorithm", "quicksort"); // The name of the algorithm you are using (e.g., "MergeSort", "BitonicSort")
-    adiak::value("ProgrammingModel", "CUDA"); // e.g., "MPI", "CUDA", "MPIwithCUDA"
-    adiak::value("Datatype", "int"); // The datatype of input elements (e.g., double, int, float)
-    adiak::value("SizeOfDatatype", sizeof(int)); // sizeof(datatype) of input elements in bytes (e.g., 1, 2, 4)
-    adiak::value("InputSize", size); // The number of elements in input dataset (1000)
-    adiak::value("InputType", "Random"); // For sorting, this would be "Sorted", "ReverseSorted", "Random", "1%perturbed"
-    adiak::value("num_threads", cThreadsPerBlock); // The number of CUDA or OpenMP threads
-    adiak::value("num_blocks", MAX_THREADS / cThreadsPerBlock ); // The number of CUDA blocks 
-    adiak::value("group_num", 23); // The number of your group (integer, e.g., 1, 10)
-    adiak::value("implementation_source", "online"); // Where you got the source code of your algorithm; choices: ("Online", "AI", "Handwritten"). 
-    
+    adiak::launchdate();                                        // launch date of the job
+    adiak::libraries();                                         // Libraries used
+    adiak::cmdline();                                           // Command line used to launch the job
+    adiak::clustername();                                       // Name of the cluster
+    adiak::value("Algorithm", "quicksort");                     // The name of the algorithm you are using (e.g., "MergeSort", "BitonicSort")
+    adiak::value("ProgrammingModel", "CUDA");                   // e.g., "MPI", "CUDA", "MPIwithCUDA"
+    adiak::value("Datatype", "int");                            // The datatype of input elements (e.g., double, int, float)
+    adiak::value("SizeOfDatatype", sizeof(int));                // sizeof(datatype) of input elements in bytes (e.g., 1, 2, 4)
+    adiak::value("InputSize", size);                            // The number of elements in input dataset (1000)
+    adiak::value("InputType", "Random");                        // For sorting, this would be "Sorted", "ReverseSorted", "Random", "1%perturbed"
+    adiak::value("num_threads", cThreadsPerBlock);              // The number of CUDA or OpenMP threads
+    adiak::value("num_blocks", MAX_THREADS / cThreadsPerBlock); // The number of CUDA blocks
+    adiak::value("group_num", 23);                              // The number of your group (integer, e.g., 1, 10)
+    adiak::value("implementation_source", "online");            // Where you got the source code of your algorithm; choices: ("Online", "AI", "Handwritten").
+
     // Flush Caliper output
     mgr.stop();
     mgr.flush();
-    
+
     // exit
     cudaThreadExit();
     cudaDeviceReset();
-
 }

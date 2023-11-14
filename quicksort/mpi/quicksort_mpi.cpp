@@ -135,6 +135,8 @@ int main(int argc, char *argv[])
     int printArray = 1;
     if(argc == 3) 
         printArray = atoi(argv[2]);
+    
+    int option = atoi(argv[3])
 
     int *data = NULL;
     int chunk_size, own_chunk_size;
@@ -161,7 +163,22 @@ int main(int argc, char *argv[])
     {
         // create a array of size number_of_elements of random integers
         data = (int *)malloc(number_of_elements * sizeof(int));
-        fillValsRandParallel(data, number_of_elements, SEED);
+        if (option == 0) { // random
+            fillValsRandParallel(data, number_of_elements, SEED);
+        } else if (option == 1) { // sorted
+            fillValsSortedParallel(data, 0, number_of_elements);
+        } else if (option == 2) { // reverse
+            fillValsReverseParallel(data, 0, number_of_elements);
+        } else if (option == 3) { // 1% perturbed
+            for (int i = 0; i < number_of_elements; i++) {
+                data[i] = i;
+            }
+            for (int i = 0; i < 0.01 * number_of_elements; i++) {
+                int index1 = rand() % number_of_elements;
+                int index2 = rand() % number_of_elements;
+                swap(data, index1, index2);
+            }
+        }
     }
     dataInitTime = MPI_Wtime() - dataInitTime;
     CALI_MARK_END(data_init);
