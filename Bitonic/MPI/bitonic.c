@@ -20,6 +20,10 @@
 #include "mpi.h"        // MPI Library
 #include "bitonic.h"
 
+#include <caliper/cali.h>
+#include <caliper/cali-manager.h>
+#include <adiak.hpp>
+
 #define MASTER 0        // Who should do the final processing?
 #define OUTPUT_NUM 10   // Number of elements to display in output
 
@@ -32,10 +36,23 @@ int num_processes;
 int * array;
 int array_size;
 
+// CALI variables 
+const char* main_time = "main";
+const char* data_init = "data_init";
+const char* mpibarrier = "mpibarrier";
+const char* comm_small = "comm_small";
+const char* comm_large = "comm_large";
+const char* comp_small = "comp_small";
+const char* correct_check = "correct_check";
+
 ///////////////////////////////////////////////////
 // Main
 ///////////////////////////////////////////////////
 int main(int argc, char * argv[]) {
+
+    // CALI_CXX_MARK_FUNCTION;
+    
+    CALI_MARK_BEGIN("main");
     int i, j;
 
     // Initialization, get # of processes & this PID/rank
@@ -43,6 +60,7 @@ int main(int argc, char * argv[]) {
     MPI_Comm_size(MPI_COMM_WORLD, &num_processes);
     MPI_Comm_rank(MPI_COMM_WORLD, &process_rank);
 
+    CALI_MARK_BEGIN("data_init");
     // Initialize Array for Storing Random Numbers
     array_size = atoi(argv[1]) / num_processes;
     array = (int *) malloc(array_size * sizeof(int));
@@ -54,9 +72,13 @@ int main(int argc, char * argv[]) {
         array[i] = rand() % (atoi(argv[1]));
     }
 
+    CALI_MARK_BEGIN("mpibarrier");
     // Blocks until all processes have finished generating
     MPI_Barrier(MPI_COMM_WORLD);
 
+    CALI_MARK_END("mpibarrier");
+
+    CALI_MARK_END("data_init");
     // Begin Parallel Bitonic Sort Algorithm from Assignment Supplement
 
     // Cube Dimension
@@ -71,6 +93,7 @@ int main(int argc, char * argv[]) {
     // Sequential Sort
     qsort(array, array_size, sizeof(int), ComparisonFunc);
 
+    CALI_MARK_BEGIN("comp_large");
     // Bitonic Sort follows
     for (i = 0; i < dimensions; i++) {
         for (j = i; j >= 0; j--) {
@@ -83,12 +106,23 @@ int main(int argc, char * argv[]) {
             }
         }
     }
+    CALI_MARK_END("comp_large");
 
     // Blocks until all processes have finished sorting
     MPI_Barrier(MPI_COMM_WORLD);
 
     if (process_rank == MASTER) {
         timer_end = MPI_Wtime();
+
+        CALI_MARK_BEGIN("correct_check");
+        // Check if array is sorted
+        for (i = 0; i < array_size - 1; i++) {
+            if (array[i] > array[i + 1]) {
+                printf("Array is not sorted!\n");
+                break;
+            }
+        }
+        CALI_MARK_END("correct_check");
 
         printf("Displaying sorted array (only 10 elements for quick verification)\n");
 
@@ -108,6 +142,8 @@ int main(int argc, char * argv[]) {
 
     // Done
     MPI_Finalize();
+
+    CALI_MARK_END("main");
     return 0;
 }
 
@@ -126,6 +162,7 @@ void CompareLow(int j) {
 
     /* Sends the biggest of the list and receive the smallest of the list */
 
+    CALI_MARK_BEGIN("comm_small");
     // Send entire array to paired H Process
     // Exchange with a neighbor whose (d-bit binary) processor number differs only at the jth bit.
     int send_counter = 0;
@@ -138,7 +175,7 @@ void CompareLow(int j) {
         0,                          // tag 0
         MPI_COMM_WORLD              // default comm.
     );
-
+    CALI_MARK_END("comm_small");
     // Receive new min of sorted numbers
     int recv_counter;
     int * buffer_recieve = malloc((array_size + 1) * sizeof(int));
@@ -162,6 +199,7 @@ void CompareLow(int j) {
         }
     }
 
+    CALI_MARK_BEGIN("comm_large");
     buffer_send[0] = send_counter;
 
     // send partition to paired H process
@@ -185,6 +223,7 @@ void CompareLow(int j) {
         MPI_STATUS_IGNORE           // ignore info about message received
     );
 
+    CALI_MARK_END("comm_large");
     // Take received buffer of values from H Process which are smaller than current max
     for (i = 1; i < buffer_recieve[0] + 1; i++) {
         if (array[array_size - 1] < buffer_recieve[i]) {
@@ -195,8 +234,10 @@ void CompareLow(int j) {
         }
     }
 
+    CALI_MARK_BEGIN("comp_small");
     // Sequential Sort
     qsort(array, array_size, sizeof(int), ComparisonFunc);
+    CALI_MARK_END("comp_small");
 
     // Reset the state of the heap from Malloc
     free(buffer_send);
