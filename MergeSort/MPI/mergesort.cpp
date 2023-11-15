@@ -204,7 +204,7 @@ int main (int argc, char *argv[])
 
 	int taskid;
 	int numprocs;
-    
+
 	MPI_Init(&argc, &argv);
 	MPI_Comm_rank(MPI_COMM_WORLD, &taskid);
 	MPI_Comm_size(MPI_COMM_WORLD, &numprocs);
@@ -297,6 +297,7 @@ int main (int argc, char *argv[])
 	double mergeParallelTime = MPI_Wtime();
 	double rootTime;
 	double procTime;
+
 	if (taskid == ROOT)
 	{
 		//printArr(valuesDouble, numberOfVals);
@@ -324,6 +325,7 @@ int main (int argc, char *argv[])
 	CALI_MARK_END("MPI_Reduce");
 	CALI_MARK_END(commLarge);
 	CALI_MARK_END(commRegion);
+
 
 	if (taskid == ROOT)
 	{

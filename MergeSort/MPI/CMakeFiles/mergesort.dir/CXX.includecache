@@ -156,10 +156,6 @@ stdbool.h
 typesCaliper.h
 /scratch/group/csce435-f23/Caliper/caliper/include/caliper/typesCaliper.h
 
-/scratch/user/will.t4221/ParallelComputingProject/InputGeneration/inputgen.cpp
-inputgen.h
-/scratch/user/will.t4221/ParallelComputingProject/InputGeneration/inputgen.h
-
 /scratch/user/will.t4221/ParallelComputingProject/InputGeneration/inputgen.h
 mpi.h
 /scratch/user/will.t4221/ParallelComputingProject/InputGeneration/mpi.h
