@@ -40,9 +40,12 @@ int array_size;
 const char* main_time = "main";
 const char* data_init = "data_init";
 const char* mpibarrier = "mpibarrier";
+const char* comm = "comm";
 const char* comm_small = "comm_small";
 const char* comm_large = "comm_large";
+const char* comp = "comp";
 const char* comp_small = "comp_small";
+const char* comp_large = "comp_large";
 const char* correct_check = "correct_check";
 
 ///////////////////////////////////////////////////
@@ -71,6 +74,7 @@ int main(int argc, char * argv[]) {
     for (i = 0; i < array_size; i++) {
         array[i] = rand() % (atoi(argv[1]));
     }
+    CALI_MARK_END("data_init");
 
     CALI_MARK_BEGIN("mpibarrier");
     // Blocks until all processes have finished generating
@@ -78,7 +82,7 @@ int main(int argc, char * argv[]) {
 
     CALI_MARK_END("mpibarrier");
 
-    CALI_MARK_END("data_init");
+    
     // Begin Parallel Bitonic Sort Algorithm from Assignment Supplement
 
     // Cube Dimension
@@ -93,7 +97,7 @@ int main(int argc, char * argv[]) {
     // Sequential Sort
     qsort(array, array_size, sizeof(int), ComparisonFunc);
 
-    CALI_MARK_BEGIN("comp_large");
+    // CALI_MARK_BEGIN("comp_large");
     // Bitonic Sort follows
     for (i = 0; i < dimensions; i++) {
         for (j = i; j >= 0; j--) {
@@ -106,7 +110,7 @@ int main(int argc, char * argv[]) {
             }
         }
     }
-    CALI_MARK_END("comp_large");
+    // CALI_MARK_END("comp_large");
 
     // Blocks until all processes have finished sorting
     MPI_Barrier(MPI_COMM_WORLD);
@@ -161,6 +165,7 @@ void CompareLow(int j) {
     int i, min;
 
     /* Sends the biggest of the list and receive the smallest of the list */
+    CALI_MARK_BEGIN("comm");
 
     CALI_MARK_BEGIN("comm_small");
     // Send entire array to paired H Process
@@ -224,6 +229,12 @@ void CompareLow(int j) {
     );
 
     CALI_MARK_END("comm_large");
+
+    CALI_MARK_END("comm");
+
+    CALI_MARK_BEGIN("comp");
+    CALI_MARK_BEGIN("comp_small");
+
     // Take received buffer of values from H Process which are smaller than current max
     for (i = 1; i < buffer_recieve[0] + 1; i++) {
         if (array[array_size - 1] < buffer_recieve[i]) {
@@ -233,12 +244,15 @@ void CompareLow(int j) {
             break;      // Important! Saves lots of cycles!
         }
     }
-
-    CALI_MARK_BEGIN("comp_small");
-    // Sequential Sort
-    qsort(array, array_size, sizeof(int), ComparisonFunc);
+    
     CALI_MARK_END("comp_small");
 
+    CALI_MARK_BEGIN("comp_large");
+    // Sequential Sort
+    qsort(array, array_size, sizeof(int), ComparisonFunc);
+    CALI_MARK_END("comp_large");
+
+    CALI_MARK_END("comp");
     // Reset the state of the heap from Malloc
     free(buffer_send);
     free(buffer_recieve);
