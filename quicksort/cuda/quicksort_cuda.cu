@@ -48,6 +48,7 @@ __global__ static void quicksort(int *values, int N)
 
     start[idx] = idx;
     end[idx] = N - 1;
+
     while (idx >= 0)
     {
         L = start[idx];
@@ -107,7 +108,7 @@ int main(int argc, char **argv)
     size_t size = atoi(argv[1]); // CHANGE TO CLI ARG
     printf("./quicksort starting with %d numbers...\n", size * sizeof(int));
     const int MAX_THREADS = atoi(argv[2]); // CHANGE TO CLI ARG
-    const int option = atoi(argv[3]);      // CHANGE TO CLI ARG
+    int option = atoi(argv[3]);            // CHANGE TO CLI ARG
 
     std::cout << "MAX_THREADS: " << MAX_THREADS << std::endl;
 
@@ -140,6 +141,7 @@ int main(int argc, char **argv)
     srand(time(NULL));
     if (option == 0) // random
     {
+        std::cout << "RANDOM NUMMIES" << std::endl;
         for (int i = 0; i < size; i++)
         {
             r_values[i] = rand() % 100;
@@ -161,6 +163,7 @@ int main(int argc, char **argv)
             r_values[index] = size - index;
         }
     }
+
     cudaEventRecord(dataInitStop, 0);
     cudaEventSynchronize(dataInitStop);
     CALI_MARK_END(genValuesTime);
@@ -168,8 +171,6 @@ int main(int argc, char **argv)
     cudaEventElapsedTime(&dataInitTime, dataInitStart, dataInitStop);
 
     // Copy data from host to device
-    cudaEventRecord(commLargeStart, 0);
-
     CALI_MARK_BEGIN(commRegion);
     CALI_MARK_BEGIN(commLarge);
     CALI_MARK_BEGIN("cudaMemcpy");
@@ -192,7 +193,10 @@ int main(int argc, char **argv)
 
     CALI_MARK_BEGIN(comp);
     CALI_MARK_BEGIN(compLarge);
-    quicksort<<<MAX_THREADS / cThreadsPerBlock, MAX_THREADS / cThreadsPerBlock, cThreadsPerBlock>>>(d_values, size);
+    std::cout << "MAX THREADS: " << MAX_THREADS << std::endl;
+    std::cout << "cThreadsPerBlock: " << cThreadsPerBlock << std::endl;
+    std::cout << "Launching kernel with " << MAX_THREADS / cThreadsPerBlock << " blocks and " << cThreadsPerBlock << " threads per block" << std::endl;
+    quicksort<<< MAX_THREADS / cThreadsPerBlock, MAX_THREADS / cThreadsPerBlock, cThreadsPerBlock >>>(d_values, size);
     CALI_MARK_END(compLarge);
     CALI_MARK_END(comp);
 
@@ -214,8 +218,6 @@ int main(int argc, char **argv)
     CALI_MARK_END(commLarge);
     CALI_MARK_END(commRegion);
 
-    cudaEventRecord(correctnessStart, 0);
-
     CALI_MARK_BEGIN(correctness);
     bool isSorted = true;
     for (int i = 0; i < size - 1; i++)
@@ -230,7 +232,6 @@ int main(int argc, char **argv)
     cudaEventRecord(correctnessStop, 0);
 
     cudaEventElapsedTime(&correctnessTime, correctnessStart, correctnessStop);
-
     if (isSorted)
     {
         printf("Array is sorted (LESSGO)\n");
@@ -245,6 +246,7 @@ int main(int argc, char **argv)
     printf("Comm large time: %f ms\n", commLargeTime);
     printf("Comp large time: %f ms\n", compLargeTime);
     printf("Correctness check time: %f ms\n", correctnessTime);
+
     // free memory
     cudaEventDestroy(dataInitStart);
     cudaEventDestroy(dataInitStop);
