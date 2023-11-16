@@ -164,7 +164,7 @@ int main(int argc, char * argv[]) {
 	std::string inputType = "Random";
 	if (option == 1) inputType = "Sorted";
 	else if (option == 2) inputType = "ReverseSorted";
-    adiak::value("InputType", inputType); // For sorting, this would be "Sorted", "ReverseSorted", "Random", "1%perturbed"
+    adiak::value("InputType", "Random"); // For sorting, this would be "Sorted", "ReverseSorted", "Random", "1%perturbed"
     adiak::value("num_procs", num_processes); // The number of processors (MPI ranks)
     adiak::value("group_num", 23); // The number of your group (integer, e.g., 1, 10)
     adiak::value("implementation_source", "Online/Handwritten"); // Where you got the source code of your algorithm; choices: ("Online", "AI", "Handwritten").
