@@ -22,7 +22,7 @@
 
 #include <caliper/cali.h>
 #include <caliper/cali-manager.h>
-#include <adiak.hpp>
+#include <adiak.h>
 
 #define MASTER 0        // Who should do the final processing?
 #define OUTPUT_NUM 10   // Number of elements to display in output
