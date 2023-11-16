@@ -1,4 +1,3 @@
-
 /**
  * -------------------- Adapted From -----------------------------------
  * Code: https://github.com/adrianlee/mpi-bitonic-sort/tree/master
@@ -19,10 +18,12 @@
 #include <stdlib.h>     // Malloc
 #include "mpi.h"        // MPI Library
 #include "bitonic.h"
+#include <string.h>
 
 #include <caliper/cali.h>
 #include <caliper/cali-manager.h>
-#include <adiak.h>
+#include <adiak.hpp>
+// #include <adiak.h>
 
 #define MASTER 0        // Who should do the final processing?
 #define OUTPUT_NUM 10   // Number of elements to display in output
@@ -35,25 +36,26 @@ int process_rank;
 int num_processes;
 int * array;
 int array_size;
+int option = 0;
 
 // CALI variables 
 const char* main_time = "main";
 const char* data_init = "data_init";
-const char* MPI_Barrier = "MPI_Barrier";
+const char* mpibarrier = "mpibarrier";
 const char* comm = "comm";
 const char* comm_small = "comm_small";
 const char* comm_large = "comm_large";
 const char* comp = "comp";
 const char* comp_small = "comp_small";
 const char* comp_large = "comp_large";
-const char* correctness_check = "correctness_check";
+const char* correct_check = "correct_check";
 
 ///////////////////////////////////////////////////
 // Main
 ///////////////////////////////////////////////////
 int main(int argc, char * argv[]) {
 
-    // CALI_CXX_MARK_FUNCTION;
+    CALI_CXX_MARK_FUNCTION;
     
     CALI_MARK_BEGIN("main");
     int i, j;
@@ -76,11 +78,11 @@ int main(int argc, char * argv[]) {
     }
     CALI_MARK_END("data_init");
 
-    CALI_MARK_BEGIN("MPI_Barrier");
+    CALI_MARK_BEGIN("mpibarrier");
     // Blocks until all processes have finished generating
     MPI_Barrier(MPI_COMM_WORLD);
 
-    CALI_MARK_END("MPI_Barrier");
+    CALI_MARK_END("mpibarrier");
 
     
     // Begin Parallel Bitonic Sort Algorithm from Assignment Supplement
@@ -118,15 +120,16 @@ int main(int argc, char * argv[]) {
     if (process_rank == MASTER) {
         timer_end = MPI_Wtime();
 
-        CALI_MARK_BEGIN("correctness_check");
+        CALI_MARK_BEGIN("correct_check");
         // Check if array is sorted
         for (i = 0; i < array_size - 1; i++) {
             if (array[i] > array[i + 1]) {
                 printf("Array is not sorted!\n");
+                
                 break;
             }
         }
-        CALI_MARK_END("correctness_check");
+        CALI_MARK_END("correct_check");
 
         printf("Displaying sorted array (only 10 elements for quick verification)\n");
 
@@ -144,10 +147,37 @@ int main(int argc, char * argv[]) {
     // Reset the state of the heap from Malloc
     free(array);
 
+    	// Create caliper ConfigManager object
+	cali::ConfigManager mgr;
+	mgr.start();
+
+	adiak::init(NULL);
+    adiak::launchdate();    // launch date of the job
+    adiak::libraries();     // Libraries used
+    adiak::cmdline();       // Command line used to launch the job
+    adiak::clustername();   // Name of the cluster
+    adiak::value("Algorithm", "BitonicSort"); // The name of the algorithm you are using (e.g., "MergeSort", "BitonicSort")
+    adiak::value("ProgrammingModel", "MPI"); // e.g., "MPI", "CUDA", "MPIwithCUDA"
+    adiak::value("Datatype", "double"); // The datatype of input elements (e.g., double, int, float)
+    adiak::value("SizeOfDatatype", 8); // sizeof(datatype) of input elements in bytes (e.g., 1, 2, 4)
+    adiak::value("InputSize", atoi(argv[1])); // The number of elements in input dataset (1000)
+	std::string inputType = "Random";
+	if (option == 1) inputType = "Sorted";
+	else if (option == 2) inputType = "ReverseSorted";
+    adiak::value("InputType", inputType); // For sorting, this would be "Sorted", "ReverseSorted", "Random", "1%perturbed"
+    adiak::value("num_procs", num_processes); // The number of processors (MPI ranks)
+    adiak::value("group_num", 23); // The number of your group (integer, e.g., 1, 10)
+    adiak::value("implementation_source", "Online/Handwritten"); // Where you got the source code of your algorithm; choices: ("Online", "AI", "Handwritten").
+
+   	// Flush Caliper output before finalizing MPI
+   	mgr.stop();
+   	mgr.flush();
+
     // Done
     MPI_Finalize();
 
     CALI_MARK_END("main");
+    
     return 0;
 }
 
@@ -155,6 +185,8 @@ int main(int argc, char * argv[]) {
 // Comparison Function
 ///////////////////////////////////////////////////
 int ComparisonFunc(const void * a, const void * b) {
+    
+    
     return ( * (int *)a - * (int *)b );
 }
 
@@ -162,6 +194,7 @@ int ComparisonFunc(const void * a, const void * b) {
 // Compare Low
 ///////////////////////////////////////////////////
 void CompareLow(int j) {
+    
     int i, min;
 
     /* Sends the biggest of the list and receive the smallest of the list */
@@ -171,7 +204,8 @@ void CompareLow(int j) {
     // Send entire array to paired H Process
     // Exchange with a neighbor whose (d-bit binary) processor number differs only at the jth bit.
     int send_counter = 0;
-    int * buffer_send = malloc((array_size + 1) * sizeof(int));
+    int *buffer_send = static_cast<int*>(malloc((array_size + 1) * sizeof(int)));
+    
     MPI_Send(
         &array[array_size - 1],     // entire array
         1,                          // one data item
@@ -183,7 +217,7 @@ void CompareLow(int j) {
     CALI_MARK_END("comm_small");
     // Receive new min of sorted numbers
     int recv_counter;
-    int * buffer_recieve = malloc((array_size + 1) * sizeof(int));
+    int *buffer_recieve = static_cast<int*>(malloc((array_size + 1) * sizeof(int)));
     MPI_Recv(
         &min,                       // buffer the message
         1,                          // one data item
@@ -200,6 +234,7 @@ void CompareLow(int j) {
             buffer_send[send_counter + 1] = array[i];
             send_counter++;
         } else {
+            
             break;      // Important! Saves lots of cycles!
         }
     }
@@ -241,6 +276,7 @@ void CompareLow(int j) {
             // Store value from message
             array[array_size - 1] = buffer_recieve[i];
         } else {
+            
             break;      // Important! Saves lots of cycles!
         }
     }
@@ -256,7 +292,7 @@ void CompareLow(int j) {
     // Reset the state of the heap from Malloc
     free(buffer_send);
     free(buffer_recieve);
-
+    
     return;
 }
 
@@ -265,11 +301,12 @@ void CompareLow(int j) {
 // Compare High
 ///////////////////////////////////////////////////
 void CompareHigh(int j) {
+    
     int i, max;
 
     // Receive max from L Process's entire array
     int recv_counter;
-    int * buffer_recieve = malloc((array_size + 1) * sizeof(int));
+    int *buffer_recieve = static_cast<int*>(malloc((array_size + 1) * sizeof(int)));
     MPI_Recv(
         &max,                       // buffer max value
         1,                          // one item
@@ -282,7 +319,7 @@ void CompareHigh(int j) {
 
     // Send min to L Process of current process's array
     int send_counter = 0;
-    int * buffer_send = malloc((array_size + 1) * sizeof(int));
+    int *buffer_send = static_cast<int*>(malloc((array_size + 1) * sizeof(int)));
     MPI_Send(
         &array[0],                  // send min
         1,                          // one item
@@ -298,6 +335,7 @@ void CompareHigh(int j) {
             buffer_send[send_counter + 1] = array[i];
             send_counter++;
         } else {
+            
             break;      // Important! Saves lots of cycles!
         }
     }
@@ -331,6 +369,7 @@ void CompareHigh(int j) {
             // Store value from message
             array[0] = buffer_recieve[i];
         } else {
+            
             break;      // Important! Saves lots of cycles!
         }
     }
@@ -341,6 +380,7 @@ void CompareHigh(int j) {
     // Reset the state of the heap from Malloc
     free(buffer_send);
     free(buffer_recieve);
-
+    
+    
     return;
 }
