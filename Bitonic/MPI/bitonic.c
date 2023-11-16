@@ -39,14 +39,14 @@ int array_size;
 // CALI variables 
 const char* main_time = "main";
 const char* data_init = "data_init";
-const char* mpibarrier = "mpibarrier";
+const char* MPI_Barrier = "MPI_Barrier";
 const char* comm = "comm";
 const char* comm_small = "comm_small";
 const char* comm_large = "comm_large";
 const char* comp = "comp";
 const char* comp_small = "comp_small";
 const char* comp_large = "comp_large";
-const char* correct_check = "correct_check";
+const char* correctness_check = "correctness_check";
 
 ///////////////////////////////////////////////////
 // Main
@@ -76,11 +76,11 @@ int main(int argc, char * argv[]) {
     }
     CALI_MARK_END("data_init");
 
-    CALI_MARK_BEGIN("mpibarrier");
+    CALI_MARK_BEGIN("MPI_Barrier");
     // Blocks until all processes have finished generating
     MPI_Barrier(MPI_COMM_WORLD);
 
-    CALI_MARK_END("mpibarrier");
+    CALI_MARK_END("MPI_Barrier");
 
     
     // Begin Parallel Bitonic Sort Algorithm from Assignment Supplement
@@ -118,7 +118,7 @@ int main(int argc, char * argv[]) {
     if (process_rank == MASTER) {
         timer_end = MPI_Wtime();
 
-        CALI_MARK_BEGIN("correct_check");
+        CALI_MARK_BEGIN("correctness_check");
         // Check if array is sorted
         for (i = 0; i < array_size - 1; i++) {
             if (array[i] > array[i + 1]) {
@@ -126,7 +126,7 @@ int main(int argc, char * argv[]) {
                 break;
             }
         }
-        CALI_MARK_END("correct_check");
+        CALI_MARK_END("correctness_check");
 
         printf("Displaying sorted array (only 10 elements for quick verification)\n");
 
