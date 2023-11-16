@@ -18,14 +18,14 @@ using namespace std;
 
 #define SEED 10
 
-const char* data_init = "data_init";
-const char* comm = "comm";
-const char* comm_small = "comm_small";
-const char* comm_large = "comm_large";
-const char* comp = "comp";
-const char* comp_small = "comp_small";
-const char* comp_large = "comp_large";
-const char* correctness_check = "correctness_check";
+const char *data_init = "data_init";
+const char *comm = "comm";
+const char *comm_small = "comm_small";
+const char *comm_large = "comm_large";
+const char *comp = "comp";
+const char *comp_small = "comp_small";
+const char *comp_large = "comp_large";
+const char *correctness_check = "correctness_check";
 
 // Function to swap two numbers
 void swap(int *arr, int i, int j)
@@ -129,14 +129,11 @@ int main(int argc, char *argv[])
 {
     CALI_CXX_MARK_FUNCTION;
 
-
     int number_of_elements = atoi(argv[1]);
-
-    int printArray = 1;
-    if(argc == 3) 
-        printArray = atoi(argv[2]);
-    
-    int option = atoi(argv[3])
+    int option = atoi(argv[2]);
+    // int printArray = 1;
+    // if(argc == 3)
+    //     printArray = atoi(argv[2]);
 
     int *data = NULL;
     int chunk_size, own_chunk_size;
@@ -146,6 +143,7 @@ int main(int argc, char *argv[])
     double dataInitTime, barrierTime, commSmallTime, commLargeTime, compSmallTime, compLargeTime, correctTime, totalTime;
 
     int number_of_process, rank_of_process;
+
     // Initialize the MPI environment
     int rc = MPI_Init(&argc, &argv);
     totalTime = MPI_Wtime();
@@ -153,8 +151,9 @@ int main(int argc, char *argv[])
     MPI_Comm_size(MPI_COMM_WORLD, &number_of_process);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank_of_process);
 
-    if(rank_of_process == 0) {
-        printf("Sorting %i elements with %i processes\n", number_of_elements, number_of_process);
+    if (rank_of_process == 0)
+    {
+        printf("Sorting %i elements with %i processes on option %i\n", number_of_elements, number_of_process, option);
     }
 
     CALI_MARK_BEGIN(data_init);
@@ -163,17 +162,30 @@ int main(int argc, char *argv[])
     {
         // create a array of size number_of_elements of random integers
         data = (int *)malloc(number_of_elements * sizeof(int));
-        if (option == 0) { // random
+        if (option == 0)
+        { // random
+            printf("RANDOM ARRAY\n");
             fillValsRandParallel(data, number_of_elements, SEED);
-        } else if (option == 1) { // sorted
+        }
+        else if (option == 1)
+        { // sorted
+            printf("SORTED ARRAY\n");
             fillValsSortedParallel(data, 0, number_of_elements);
-        } else if (option == 2) { // reverse
+        }
+        else if (option == 2)
+        { // reverse
+            printf("REVERSE SORTED ARRAY\n");
             fillValsReverseParallel(data, 0, number_of_elements);
-        } else if (option == 3) { // 1% perturbed
-            for (int i = 0; i < number_of_elements; i++) {
+        }
+        else if (option == 3)
+        { // 1% perturbed
+            printf("1%% PERTURBED ARRAY\n");
+            for (int i = 0; i < number_of_elements; i++)
+            {
                 data[i] = i;
             }
-            for (int i = 0; i < 0.01 * number_of_elements; i++) {
+            for (int i = 0; i < 0.01 * number_of_elements; i++)
+            {
                 int index1 = rand() % number_of_elements;
                 int index2 = rand() % number_of_elements;
                 swap(data, index1, index2);
@@ -209,7 +221,6 @@ int main(int argc, char *argv[])
 
     commSmallTime = MPI_Wtime() - commSmallTime;
 
-
     // Computing chunk size
     chunk_size = (number_of_elements % number_of_process == 0)
                      ? (number_of_elements / number_of_process)
@@ -233,10 +244,8 @@ int main(int argc, char *argv[])
 
     commLargeTime = MPI_Wtime() - commLargeTime;
 
-
     free(data);
     data = NULL;
-
 
     // Compute size of own chunk and
     // then sort them
@@ -257,7 +266,6 @@ int main(int argc, char *argv[])
     CALI_MARK_END(comp);
 
     compLargeTime = MPI_Wtime() - compLargeTime;
-
 
     for (int step = 1; step < number_of_process;
          step = 2 * step)
@@ -294,7 +302,6 @@ int main(int argc, char *argv[])
             CALI_MARK_END("MPI_Recv");
             CALI_MARK_END(comm_large);
             CALI_MARK_END(comm);
-
 
             compSmallTime = MPI_Wtime();
 
@@ -337,16 +344,16 @@ int main(int argc, char *argv[])
         correctTime = MPI_Wtime() - correctTime;
 
         // Print sorted array
-        if(printArray) {
-            for (int i = 0; i < number_of_elements; i++)
-            {
-                printf("%d ", chunk[i]);
-                if (i % 10 == 0) {
-                    printf("\n");
-                }
-            }
-            printf("\n");
-        }
+        // if(printArray) {
+        //     for (int i = 0; i < number_of_elements; i++)
+        //     {
+        //         printf("%d ", chunk[i]);
+        //         if (i % 10 == 0) {
+        //             printf("\n");
+        //         }
+        //     }
+        //     printf("\n");
+        // }
 
         totalTime = MPI_Wtime() - totalTime;
         printf("Time taken: %f\n", totalTime);
@@ -366,16 +373,16 @@ int main(int argc, char *argv[])
     mgr.start();
 
     adiak::init(NULL);
-    adiak::launchdate();                                    // launch date of the job
-    adiak::libraries();                                     // Libraries used
-    adiak::cmdline();                                       // Command line used to launch the job
-    adiak::clustername();                                   // Name of the cluster
-    adiak::value("Algorithm", "QuickSort");                 // The name of the algorithm you are using (e.g., "MergeSort", "BitonicSort")
-    adiak::value("ProgrammingModel", "MPI");                // e.g., "MPI", "CUDA", "MPIwithCUDA"
-    adiak::value("SizeOfDatatype", sizeof(int));            // sizeof(datatype) of input elements in bytes (e.g., 1, 2, 4)
+    adiak::launchdate();                           // launch date of the job
+    adiak::libraries();                            // Libraries used
+    adiak::cmdline();                              // Command line used to launch the job
+    adiak::clustername();                          // Name of the cluster
+    adiak::value("Algorithm", "QuickSort");        // The name of the algorithm you are using (e.g., "MergeSort", "BitonicSort")
+    adiak::value("ProgrammingModel", "MPI");       // e.g., "MPI", "CUDA", "MPIwithCUDA"
+    adiak::value("SizeOfDatatype", sizeof(int));   // sizeof(datatype) of input elements in bytes (e.g., 1, 2, 4)
     adiak::value("InputSize", number_of_elements); // The number of elements in input dataset (1000)
-    adiak::value("InputType", "Random"); // The number of elements in input dataset (1000)
-    adiak::value("num_procs", number_of_process);      // The number of processors (MPI ranks)
+    adiak::value("InputType", "Random");           // The number of elements in input dataset (1000)
+    adiak::value("num_procs", number_of_process);  // The number of processors (MPI ranks)
     adiak::value("group_num", 23);
     adiak::value("implementation_source", "Online");
 
