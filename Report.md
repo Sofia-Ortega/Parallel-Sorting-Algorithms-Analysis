@@ -262,13 +262,13 @@ sbatch mergesort.grace_job <n> <p> <option>
  1. I was also confused on comp_small and comm_small for mergesort. I feel that everything is a large computation and a large communication.
  2. Would you guys have any good resources on how the CUDA verson of mergesort works that goes into the details. I was unable to find any great resources and find the code a little bit confusing.
 
-## Odd Even Transposition Sort
+## Bitonic Sort
 
 ### MPI
 
 #### Summary
 
-The input gets generated using a for loop that picks random numbers between 0 and 99. The data is evenly distributed across all the processers, the odd even phases are then used to swap as needed, followed by the processes communicating with each other to exchange data until it is sorted.
+The input gets generated using a for loop that picks random numbers between 0 and 99. The data is evenly distributed across all the processers, then a bitonic sequence is constructed, followed by the processes communicating with each other to exchange data until it is sorted.
 
 The input is 
 #### Running
@@ -278,21 +278,24 @@ The input is
 2. Run sbatch:
 
 ```
-sbatch mergesort.grace_job <n> 
+sbatch mpi.grace_job <p> <n> 
 ```
 
+- `p`: number of processes
 - `n`: length of array you want to sort
 
 #### Adapted From 
 
 
-* Source Code: https://github.com/ashantanu/Odd-Even-Sort-using-MPI/blob/master/oddEven.cpp
+* Source Code: https://github.com/adrianlee/mpi-bitonic-sort/tree/master
+
+ * Author: Adrian Lee
 
 ### CUDA
 
 #### Summary
 
-The CUDA implementation is different in that it goes through the CUDA kernel, and is called with the array of integers, and each GPU thread getting a unique id. The oddeven function then does the same alternating and swapping as above till sorted. 
+The CUDA implementation is different in that it goes through the CUDA kernel, and is called with the array of integers, and each GPU thread getting a unique id. The bitonic_sort function then does the same alternating and swapping as above till sorted. 
 
 #### Running
 
@@ -301,18 +304,19 @@ The CUDA implementation is different in that it goes through the CUDA kernel, an
 2. Run sbatch:
 
 ```
-sbatch mergesort.grace_job <n> 
+sbatch mergesort.grace_job <t> <n> 
 ```
 
+- `t`: number of threads
 - `n`: how many numbers you want to sort 
 
 
 #### Adapted From 
 
 
-* Source Code: https://github.com/Kshitij421/Odd-Even-Sort-using-Cuda-/blob/master/oddeven.cu
+* Source Code: http://www.tools-of-computing.com/tc/CS/Sorts/bitonic_sort.htm
 
- * Author: @Kshitij421
+ * Author: Adapted from Lab 3
 
 ## Quicksort
 
