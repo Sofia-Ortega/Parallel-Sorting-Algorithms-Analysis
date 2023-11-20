@@ -357,3 +357,5 @@ sbatch quicksort.grace_job <n> <p>
 # 4. Performance Evaluation
 
 Please see our pdf file attached. Called **Parallel Computing Plots.pdf**
+
+You may also find it at this [link](https://docs.google.com/document/d/1r1xJd--YJmMYDUgpxQBdYJppri3Gfnrgwj0WtUlYIFU/edit)
