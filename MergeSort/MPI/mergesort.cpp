@@ -278,7 +278,23 @@ int main (int argc, char *argv[])
 
 	double genValuesTimes = MPI_Wtime();
 	CALI_MARK_BEGIN(genValuesTime);
-	genValues(taskid, numprocs, numberOfVals, 1, valuesDouble, option);
+	if (option != 3) genValues(taskid, numprocs, numberOfVals, 1, valuesDouble, option);
+	else if(taskid == ROOT){
+		srand(10);
+		for(int i=0; i<numberOfVals; ++i){
+			valuesDouble[i] = rand();	
+		}
+
+		for(int i=0; i<numberOfVals; ++i){
+			int randomVal = rand() % 10;
+			if(randomVal == 5){
+				int randIdx = rand() % numberOfVals;
+				int temp = valuesDouble[randIdx];
+				valuesDouble[randIdx] = valuesDouble[i];
+				valuesDouble[i] = temp;
+			}
+		}
+	} 
 	CALI_MARK_END(genValuesTime);
 	genValuesTimes = MPI_Wtime() - genValuesTimes;
 
