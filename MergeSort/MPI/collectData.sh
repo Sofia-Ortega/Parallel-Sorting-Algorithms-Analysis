@@ -17,11 +17,9 @@ then
 		done
 	done
 else
-	for numprocs in 2 4 8 16 32 64 128 256 512;
+	for val in 65536 262144 1048576 4194304 16777216 67108864;
 	do
-		sbatch mergesort.grace_job $numprocs $inputSize $inputType
-
-		sleep $waitTime
+		sbatch mergesort.grace_job $inputSize $val $inputType
 	done
 fi
 
