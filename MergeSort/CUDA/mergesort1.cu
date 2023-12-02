@@ -163,7 +163,35 @@ int main(int argc, char** argv) {
 	// TODO add inputgen
 	//srand(10);
 	//for(int i=0; i<size; ++i) data[i] = (double)(rand() % 100);
-	fillValsRandParallel(data, size, 0);
+	if (option == 0){
+		//random
+		fillValsRandParallel(data, size, 0);
+	}
+	else if (option == 1){
+		//sorted
+		for(int i=0; i<size; ++i) data[i] = i;
+	}
+	else if (option == 2){
+		//reverse
+		int idx = 0;
+		for(int i=size-1; i>=0; --i) data[idx++] = i;
+	}
+	else{
+		//1%perturbed
+		for(int i=0; i<size; ++i) data[i] = i;
+
+		srand(10);
+		for(int i=0; i<size; ++i){
+			int randNum = rand() % 10;
+			if (randNum == 5){
+				int swapIdx = rand() % size;
+				double temp = data[swapIdx];
+				data[swapIdx] = data[i];
+				data[i] = temp;
+			}
+		}
+	
+	}
 	CALI_MARK_END(genValuesTime);
 
     // merge-sort the data
