@@ -21,8 +21,9 @@
 #include <time.h>
 #include <string.h>
 
-#include "timing.h"
-#include "inputgen.h"
+#include <caliper/cali.h>
+#include <caliper/cali-manager.h>
+#include <adiak.hpp>
 
 // global constants definitions
 #define b 32           // number of bits for integer
@@ -30,11 +31,20 @@
 #define N b / g        // number of passes
 #define B (1 << g)     // number of buckets, 2^g
 
+#define RANDOM          0
+#define SORTED          1
+#define REVERSE_SORTED  2
+#define PERTURBED       3
+
+  // 0: random
+  // 1: sorted
+  // 2: reverse sorted
+
 // MPI tags constants, offset by max bucket to avoid collisions
 #define COUNTS_TAG_NUM  B + 1 
 #define PRINT_TAG_NUM  COUNTS_TAG_NUM + 1 
 #define NUM_TAG PRINT_TAG_NUM + 1
-#define CHECK_SORTED NUM_TAG + 1
+#define CHECK_SORTED_TAG NUM_TAG + 1
 
 const char* data_init = "data_init";
 const char* correctness_check = "correctness_check";
@@ -297,8 +307,16 @@ int* radix_sort(int *a, List* buckets, const int P, const int rank, int * n) {
 int main(int argc, char** argv)
 {
   // argv:
-  // 0          1                           2 
-  // radix_mpi  number_of_elements_to_sort [optional: printArray]
+  // 0          1                          2              3
+  // radix_mpi  number_of_elements_to_sort genArrayOption [optional: printArray]
+
+  // genArrayOption
+  // 0: random
+  // 1: sorted
+  // 2: reverse sorted
+  // 3: perturbed
+
+  const int requiredInputNum = 3;
 
   CALI_CXX_MARK_FUNCTION;
 
@@ -313,18 +331,18 @@ int main(int argc, char** argv)
   MPI_Comm_size(MPI_COMM_WORLD, &size);
 
   // check for correct number of arguments
-  if (argc < 2)
+  if (argc < requiredInputNum)
   {
     if (rank == 0) usage("Not enough arguments!");
     MPI_Finalize();
     return EXIT_FAILURE;
-  } else if (argc > 2) {
-    print_results = atoi(argv[2]);
+  } else if (argc > requiredInputNum) {
+    print_results = atoi(argv[requiredInputNum]);
   }
 
-  // initialize vars and allocate memory
+  // initialize vars
   int n_total = atoi(argv[1]);
-  int n = n_total/size;
+  int n = n_total/size; // how many variables MY process has to sort
   if (n < 1) {
     if (rank == 0) {
       printf("Number of elements: %i\n", n_total);
@@ -335,8 +353,16 @@ int main(int argc, char** argv)
     return EXIT_FAILURE;
   }
 
+  int genValueOption = atoi(argv[2]);
+  if(genValueOption < 0 || genValueOption > 3) {
+    if (rank == 0) printf ("genValueOption %i is not a valid option. Must be [0, 3]", genValueOption);
+    MPI_Finalize();
+    return EXIT_FAILURE;
+  } 
+
   if(rank == 0) {
     printf("n_total: %i\n", n_total);
+    printf("genValueOption: %i\n", genValueOption);
     printf("size: %i\n", size);
     printf("print_results: %i\n", print_results);
   }
@@ -362,7 +388,7 @@ int main(int argc, char** argv)
   const int s = n * rank;
   int* a = (int*)malloc(sizeof(int) * n);
 
-  int b_capacity = n / B;
+  int b_capacity = n / B; // how much each bucket is going to store
   if (b_capacity < B) {
     b_capacity = B;
   }
@@ -374,7 +400,62 @@ int main(int argc, char** argv)
 
   // initialize local array
   CALI_MARK_BEGIN(data_init);
-  fillValsRandParallel(a, n, 10 + rank);
+
+  printf("Rank %d creating %i elements\n", rank, n);
+
+
+  std::string inputType;
+  switch (genValueOption)
+  {
+  case RANDOM:
+    inputType = "Random";
+    for(int i = 0; i < n; i++) {
+      a[i] = rand() % 1000000;
+    }
+    break;
+
+  case SORTED:
+    inputType = "Sorted";
+    printf("Rank %d [%d, %d]\n", rank, n * rank, (n * rank) + n);
+    for(int i = 0; i < n; i++) {
+      a[i] = i + (n * rank);
+    }
+    break;
+
+  case REVERSE_SORTED: {
+
+    inputType = "ReverseSorted";
+    
+    int num = (n * rank) + n;
+    for(int i = 0; i >= n; i--) {
+      a[i] = num--;
+    }
+
+    printf("Rank %d [%d, %d]\n", (n * rank) + n, num++);
+    break;
+  }
+
+  case PERTURBED:
+    inputType = "1%perturbed";
+    printf("Perturbed indeed\n");
+    for(int i = 0; i < n; i++) {
+      a[i] = i + (n * rank);
+    }
+
+    // randomize 1% of the values
+    for(int i = 0; i < n * 0.1; i++) {
+      int randIndex = rand() % n;
+      a[randIndex] = rand() % 1000000;
+    }
+
+    break;
+  
+  default:
+    printf("Error in setting sorting");
+    MPI_Finalize();
+    return EXIT_FAILURE;
+  }
+
   CALI_MARK_END(data_init);
 
   // let all processes get here
@@ -408,8 +489,78 @@ int main(int argc, char** argv)
   }
 
 
-  CALI_MARK_BEGIN(correctness_check);
+
+  // check own array 
+  /*
+  bool isMineSorted = true;
+  bool isOverallSorted = true;
+  for(int i = 0; i < n - 1; i++) {
+    if(a[i] > a[i + 1]) {
+      isMineSorted = false;
+      break;
+    }
+  }
+
+  if(rank != 0) {
+    // if not rank 0, send data
+    int sendBuf[3];
+
+    sendBuf[0] = isMineSorted;
+    sendBuf[1] = a[0]; // min
+    sendBuf[2] = a[n - 1]; // max
+
+    MPI_Send(sendBuf, 3, MPI_INT, 0, CHECK_SORTED_TAG, MPI_COMM_WORLD);
+
+  } else {
+
+    // check if rank 0 has sorted array 
+    if (!isMineSorted) {
+      printf("[FAIL] Rank %d did not sort\n");
+      isOverallSorted = false;
+    } else {
+
+      int prevTop = a[n - 1];
+
+      // receive other's status
+      for(int r = 1; r < size; r++) { // iterate through all the processors
+        MPI_Status stat;
+        int buff[3];
+
+        MPI_Recv(buff, 3, MPI_INT, r,CHECK_SORTED_TAG, MPI_COMM_WORLD, &stat );
+
+        int isRankSorted = buff[0];
+        if(!isRankSorted) {
+          printf("[FAIL] Rank %d did not sort\n", r);
+          isOverallSorted = false;
+          break;
+        }
+
+        int currBottom = buff[1];
+
+        if (prevTop > currBottom) {
+          printf("[FAIL] Failed at the boundary between Rank %d[%i] ,%d[%i]\n", r - 1, prevTop, r, currBottom);
+          isOverallSorted = false;
+        }
+
+        // update boundaries
+        prevTop = buff[2]; // currMax
+        
+
+      }
+
+
+    }
+
+    if(isOverallSorted) {
+      printf("[SUCCESS] Array sorted\n");
+    }
+
+  }
+  */
+
+
   // check if sorted
+  CALI_MARK_BEGIN(correctness_check);
   if(rank == 0) {
     if(print_results) printf("%i\n", a[0]);
     for(int i = 1; i < n_total; i++) {
@@ -420,7 +571,50 @@ int main(int argc, char** argv)
     }
     printf("[PASSED] Sorted Array Checked\n");
   }
+
   CALI_MARK_END(correctness_check);
+
+ // store number of items per each process after the sort
+  int* p_n = (int*)malloc(size*sizeof(int));
+
+  // first store our own number
+  p_n[rank] = n;
+
+  // communicate number of items among other processes
+  MPI_Request req;
+  MPI_Status stat;
+
+  for (int i = 0; i < size; i++) {
+    if (i != rank) {
+      MPI_Isend(
+          &n,
+          1,
+          MPI_INT,
+          i,
+          NUM_TAG,
+          MPI_COMM_WORLD,
+          &req);
+    }
+  }
+
+  for (int i = 0; i < size; i++) {
+    if (i != rank) {
+      MPI_Recv(
+         &p_n[i],
+         1,
+         MPI_INT,
+         i,
+         NUM_TAG,
+         MPI_COMM_WORLD,
+         &stat);
+    }
+  }
+  
+  // print results
+  print_array(size, rank, &a[0], p_n);
+
+
+
 
 
   // create caliper ConfigManager object
@@ -437,10 +631,8 @@ int main(int argc, char** argv)
   adiak::value("Datatype", "int"); // The datatype of input elements (e.g., double, int, float)
   adiak::value("SizeOfDatatype", sizeof(int)); // sizeof(datatype) of input elements in bytes (e.g., 1, 2, 4)
   adiak::value("InputSize", n_total); // The number of elements in input dataset (1000)
-  adiak::value("InputType", "Random"); // For sorting, this would be "Sorted", "ReverseSorted", "Random", "1%perturbed"
+  adiak::value("InputType", inputType); // For sorting, this would be "Sorted", "ReverseSorted", "Random", "1%perturbed"
   adiak::value("num_procs", size); // The number of processors (MPI ranks)
-  adiak::value("num_threads", size); // The number of CUDA or OpenMP threads
-  adiak::value("num_blocks", 0); // The number of CUDA blocks 
   adiak::value("group_num", 23); // The number of your group (integer, e.g., 1, 10)
   adiak::value("implementation_source", "Online"); // Where you got the source code of your algorithm; choices: ("Online", "AI", "Handwritten").
 
