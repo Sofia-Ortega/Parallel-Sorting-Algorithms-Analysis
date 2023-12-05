@@ -381,7 +381,7 @@ int main(int argc, char *argv[])
     adiak::value("ProgrammingModel", "MPI");       // e.g., "MPI", "CUDA", "MPIwithCUDA"
     adiak::value("SizeOfDatatype", sizeof(int));   // sizeof(datatype) of input elements in bytes (e.g., 1, 2, 4)
     adiak::value("InputSize", number_of_elements); // The number of elements in input dataset (1000)
-    adiak::value("InputType", "Random");           // The number of elements in input dataset (1000)
+    adiak::value("InputType", "1% Perturbed");           // The number of elements in input dataset (1000)
     adiak::value("num_procs", number_of_process);  // The number of processors (MPI ranks)
     adiak::value("group_num", 23);
     adiak::value("implementation_source", "Online");
