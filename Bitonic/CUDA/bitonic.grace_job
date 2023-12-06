@@ -21,10 +21,11 @@
 
 num_threads=$1
 num_vals=$2
+option=$3
 #
 module load CUDA                #load CUDA module
 module load GCCcore/7.3.0
 #
 
-CALI_CONFIG="spot(output=${num_threads}-${num_vals}.cali)" \
-./bitonic $num_threads $num_vals
+CALI_CONFIG="spot(output=t${num_threads}-v${num_vals}-option${option}.cali)" \
+./bitonic $num_threads $num_vals $option
