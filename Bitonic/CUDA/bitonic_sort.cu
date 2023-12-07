@@ -22,7 +22,7 @@ int NUM_VALS;
 
 const char* main_time = "main";
 const char* data_init = "data_init";
-const char* comm_small = "comm_small_1";
+const char* comm_small_1 = "comm_small_1";
 const char* comm_small_2 = "comm_small_2";
 const char* comp_small = "comp_small";
 const char* comp_large = "comp_large";
@@ -104,7 +104,7 @@ __global__ void bitonic_sort_step(float *dev_values, int j, int k)
  */
 void bitonic_sort(float *values)
 {
-  CALI_MARK_BEGIN(main);
+  CALI_MARK_BEGIN(main_time);
   float *dev_values;
   size_t size = NUM_VALS * sizeof(float);
 
@@ -283,20 +283,23 @@ int main(int argc, char *argv[])
 
 
   adiak::init(NULL);
-  adiak::user();
-  adiak::launchdate();
-  adiak::libraries();
-  adiak::cmdline();
-  adiak::clustername();
-  adiak::value("num_threads", THREADS);
-  adiak::value("num_blocks", BLOCKS);
-  adiak::value("num_vals", NUM_VALS);
-  adiak::value("program_name", "cuda_bitonic_sort");
-  adiak::value("datatype_size", sizeof(float));
-  adiak::value("effective_bandwidth (GB/s)", effective_bandwidth_gb_s);
-  adiak::value("bitonic_sort_step_time", bitonic_sort_step_time);
-  adiak::value("cudaMemcpy_host_to_device_time", cudaMemcpy_host_to_device_time);
-  adiak::value("cudaMemcpy_device_to_host_time", cudaMemcpy_device_to_host_time);
+  adiak::launchdate();    // launch date of the job
+  adiak::libraries();     // Libraries used
+  adiak::cmdline();       // Command line used to launch the job
+  adiak::clustername();   // Name of the cluster
+  adiak::value("Algorithm", "BitonicSort"); // The name of the algorithm you are using (e.g., "MergeSort", "BitonicSort")
+  adiak::value("ProgrammingModel", "CUDA"); // e.g., "MPI", "CUDA", "MPIwithCUDA"
+  adiak::value("Datatype", "double"); // The datatype of input elements (e.g., double, int, float)
+  adiak::value("SizeOfDatatype", 8); // sizeof(datatype) of input elements in bytes (e.g., 1, 2, 4)
+  adiak::value("InputSize", atoi(argv[2])); // The number of elements in input dataset (1000)
+  std::string inputType = "Random";
+  if (option == 1) inputType = "Sorted";
+  else if (option == 2) inputType = "ReverseSorted";
+  else if (option == 3) inputType = "1% Perturbed";
+  adiak::value("InputType", inputType); // For sorting, this would be "Sorted", "ReverseSorted", "Random", "1%perturbed"
+  adiak::value("num_procs", atoi(argv[1])); // The number of processors (MPI ranks)
+  adiak::value("group_num", 23); // The number of your group (integer, e.g., 1, 10)
+  adiak::value("implementation_source", "Online/Handwritten"); // Where you got the source code of your algorithm; choices: ("Online", "AI", "Handwritten").
 
   // Flush Caliper output before finalizing MPI
   mgr.stop();

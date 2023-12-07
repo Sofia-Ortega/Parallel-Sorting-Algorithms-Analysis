@@ -36,10 +36,10 @@ int process_rank;
 int num_processes;
 int * array;
 int array_size;
-int option = 0;
+int option;
 
 // CALI variables 
-const char* main_time = "main";
+const char* main_time = "main_time";
 const char* data_init = "data_init";
 const char* mpibarrier = "mpibarrier";
 const char* comm = "comm";
@@ -57,7 +57,7 @@ int main(int argc, char * argv[]) {
 
     CALI_CXX_MARK_FUNCTION;
     
-    CALI_MARK_BEGIN("main");
+    // CALI_MARK_BEGIN("main_time");
     int i, j;
 
     // Initialization, get # of processes & this PID/rank
@@ -70,12 +70,44 @@ int main(int argc, char * argv[]) {
     array_size = atoi(argv[1]) / num_processes;
     array = (int *) malloc(array_size * sizeof(int));
 
+    option = atoi(argv[2]);
+    
     // Generate Random Numbers for Sorting (within each process)
     // Less overhead without MASTER sending random numbers to each slave
     srand(time(NULL));  // Needed for rand()
-    for (i = 0; i < array_size; i++) {
+ 
+    // array_fill(array, array_size);
+    if (option == 0) {
+        // random
+        for (int i = 0; i < array_size; i++) {
         array[i] = rand() % (atoi(argv[1]));
+        }
+    } 
+    else if (option == 1) {
+        // sorted
+        for (int i = 0; i < array_size; i++) {
+        array[i] = i;
+        }
     }
+    else if (option == 2) {
+        // reverse sorted
+        for (int i = 0; i < array_size; i++) {
+        array[i] = array_size - i;
+        }
+    }
+    else if (option == 3) {
+        // perturb 1& of values
+        for (int i = 0; i < array_size; i++) {
+        array[i] = i;
+        }
+
+        int num_perturb = array_size / 100;
+        for (int i = 0; i < num_perturb; i++) {
+        int index = rand() % array_size;
+        array[index] = rand() % array_size;
+        }
+    }
+
     CALI_MARK_END("data_init");
 
     CALI_MARK_BEGIN("mpibarrier");
@@ -164,6 +196,7 @@ int main(int argc, char * argv[]) {
 	std::string inputType = "Random";
 	if (option == 1) inputType = "Sorted";
 	else if (option == 2) inputType = "ReverseSorted";
+    else if (option == 3) inputType = "1% Perturbed";
     adiak::value("InputType", "Random"); // For sorting, this would be "Sorted", "ReverseSorted", "Random", "1%perturbed"
     adiak::value("num_procs", num_processes); // The number of processors (MPI ranks)
     adiak::value("group_num", 23); // The number of your group (integer, e.g., 1, 10)
@@ -176,7 +209,7 @@ int main(int argc, char * argv[]) {
     // Done
     MPI_Finalize();
 
-    CALI_MARK_END("main");
+    // CALI_MARK_END("main_time");
     
     return 0;
 }
