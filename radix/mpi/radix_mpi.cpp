@@ -28,7 +28,7 @@
 // global constants definitions
 #define b 32           // number of bits for integer
 #define g 8            // group of bits for each scan
-#define N b / g        // number of passes
+#define N b / g         // number of passes
 #define B (1 << g)     // number of buckets, 2^g
 
 #define RANDOM          0
@@ -368,8 +368,9 @@ int main(int argc, char** argv)
   }
 
   int remainder = B % size;   // in case number of buckets is not divisible
-  if (remainder > 0) {
+  if (remainder > 0 && false) { // fixme
     if (rank == 0) {
+      printf("B[%d], g[%d], size[%d]\n", B, g, size);
       usage("Number of buckets must be divisible by number of processes\n");
     } 
     MPI_Finalize();
@@ -385,8 +386,27 @@ int main(int argc, char** argv)
     }
   }
 
-  const int s = n * rank;
+
   int* a = (int*)malloc(sizeof(int) * n);
+
+  // -------------- for 512 or 1024 -------------------
+  /*
+  int P = size; // use actual number of processes instead
+  const int l_B = B / P; // number of local processes per bucket
+
+  int b_capacity = n / B; // how much each bucket is goin gto store
+  if(b_capacity < l_B) {
+    b_capacity = l_B;
+  }
+
+  List* buckets = (List*)malloc(B*sizeof(List));
+  for (int j = 0; j < B; j++) {
+    buckets[j].array = (int*)malloc(b_capacity*sizeof(int));
+    buckets[j].capacity = l_B;
+  }
+  */
+
+  // ---------------------------------------------------
 
   int b_capacity = n / B; // how much each bucket is going to store
   if (b_capacity < B) {
@@ -401,7 +421,7 @@ int main(int argc, char** argv)
   // initialize local array
   CALI_MARK_BEGIN(data_init);
 
-  printf("Rank %d creating %i elements\n", rank, n);
+  // printf("Rank %d creating %i elements\n", rank, n);
 
 
   std::string inputType;
@@ -437,7 +457,6 @@ int main(int argc, char** argv)
 
   case PERTURBED:
     inputType = "1%perturbed";
-    printf("Perturbed indeed\n");
     for(int i = 0; i < n; i++) {
       a[i] = i + (n * rank);
     }
@@ -445,7 +464,7 @@ int main(int argc, char** argv)
     // randomize 1% of the values
     for(int i = 0; i < n * 0.1; i++) {
       int randIndex = rand() % n;
-      a[randIndex] = rand() % 1000000;
+      a[randIndex] = rand() % n;
     }
 
     break;
@@ -488,77 +507,6 @@ int main(int argc, char** argv)
     printf("%d elements sorted\n", n_total);
   }
 
-
-
-  // check own array 
-  /*
-  bool isMineSorted = true;
-  bool isOverallSorted = true;
-  for(int i = 0; i < n - 1; i++) {
-    if(a[i] > a[i + 1]) {
-      isMineSorted = false;
-      break;
-    }
-  }
-
-  if(rank != 0) {
-    // if not rank 0, send data
-    int sendBuf[3];
-
-    sendBuf[0] = isMineSorted;
-    sendBuf[1] = a[0]; // min
-    sendBuf[2] = a[n - 1]; // max
-
-    MPI_Send(sendBuf, 3, MPI_INT, 0, CHECK_SORTED_TAG, MPI_COMM_WORLD);
-
-  } else {
-
-    // check if rank 0 has sorted array 
-    if (!isMineSorted) {
-      printf("[FAIL] Rank %d did not sort\n");
-      isOverallSorted = false;
-    } else {
-
-      int prevTop = a[n - 1];
-
-      // receive other's status
-      for(int r = 1; r < size; r++) { // iterate through all the processors
-        MPI_Status stat;
-        int buff[3];
-
-        MPI_Recv(buff, 3, MPI_INT, r,CHECK_SORTED_TAG, MPI_COMM_WORLD, &stat );
-
-        int isRankSorted = buff[0];
-        if(!isRankSorted) {
-          printf("[FAIL] Rank %d did not sort\n", r);
-          isOverallSorted = false;
-          break;
-        }
-
-        int currBottom = buff[1];
-
-        if (prevTop > currBottom) {
-          printf("[FAIL] Failed at the boundary between Rank %d[%i] ,%d[%i]\n", r - 1, prevTop, r, currBottom);
-          isOverallSorted = false;
-        }
-
-        // update boundaries
-        prevTop = buff[2]; // currMax
-        
-
-      }
-
-
-    }
-
-    if(isOverallSorted) {
-      printf("[SUCCESS] Array sorted\n");
-    }
-
-  }
-  */
-
-
   // check if sorted
   CALI_MARK_BEGIN(correctness_check);
   if(rank == 0) {
@@ -573,8 +521,9 @@ int main(int argc, char** argv)
   }
 
   CALI_MARK_END(correctness_check);
-
- // store number of items per each process after the sort
+  
+  /*
+ // store number of items Vper each process after the sort
   int* p_n = (int*)malloc(size*sizeof(int));
 
   // first store our own number
@@ -612,9 +561,8 @@ int main(int argc, char** argv)
   
   // print results
   print_array(size, rank, &a[0], p_n);
-
-
-
+  
+  */
 
 
   // create caliper ConfigManager object
