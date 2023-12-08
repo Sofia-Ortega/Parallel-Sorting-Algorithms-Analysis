@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include <time.h>
 
+#include "../../InputGeneration/inputgen.h"
 #include <caliper/cali.h>
 #include <caliper/cali-manager.h>
 #include <adiak.hpp>
@@ -214,6 +215,7 @@ int main(int argc, char *argv[])
 {
   THREADS = atoi(argv[1]);
   NUM_VALS = atoi(argv[2]);
+  int option = atoi(argv[3]);
 
   BLOCKS = NUM_VALS / THREADS;
 
@@ -230,7 +232,35 @@ int main(int argc, char *argv[])
   CALI_MARK_BEGIN(data_init);
 
   float *values = (float*) malloc( NUM_VALS * sizeof(float));
-  array_fill(values, NUM_VALS);
+  // array_fill(values, NUM_VALS);
+  if (option == 0) {
+    // random
+    array_fill(values, NUM_VALS);
+  } 
+  else if (option == 1) {
+    // sorted
+    for (int i = 0; i < NUM_VALS; i++) {
+      values[i] = i;
+    }
+  }
+  else if (option == 2) {
+    // reverse sorted
+    for (int i = 0; i < NUM_VALS; i++) {
+      values[i] = NUM_VALS - i;
+    }
+  }
+  else if (option == 3) {
+    // perturb 1& of values
+    for (int i = 0; i < NUM_VALS; i++) {
+      values[i] = i;
+    }
+
+    int num_perturb = NUM_VALS / 100;
+    for (int i = 0; i < num_perturb; i++) {
+      int index = rand() % NUM_VALS;
+      values[index] = rand() % NUM_VALS;
+    }
+  }
 
   CALI_MARK_END(data_init);
 
