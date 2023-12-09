@@ -32,7 +32,7 @@ __rec=node,id=39,attr=33,data=main
 __rec=ctx,ref=39=67,attr=50=53=56=60=58=63=66,data=0.602968=0.602968=0.602968=0.602968=1=0.602968=2
 __rec=node,id=40,attr=33,data=cudaMemcpy_host_to_device,parent=39
 __rec=ctx,ref=40=67,attr=50=53=56=60=58=63=66,data=0.057219=0.057219=0.057219=0.057219=1=0.057219=3
-__rec=node,id=41,attr=33,data=comm_small_1,parent=40
+__rec=node,id=41,attr=33,data=comm,parent=40
 __rec=ctx,ref=41=67,attr=50=53=56=60=58=63=66,data=0.057168=0.057168=0.057168=0.057168=1=0.057168=4
 __rec=node,id=42,attr=33,data=bitonic_sort_step,parent=39
 __rec=ctx,ref=42=67,attr=50=53=56=60=58=63=66,data=0.163687=0.163687=0.163687=0.163687=1=0.163687=5
