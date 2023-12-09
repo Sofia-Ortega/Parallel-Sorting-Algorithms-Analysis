@@ -370,123 +370,43 @@ You may also find it at this [link](https://docs.google.com/document/d/1r1xJd--Y
     
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_12_0.png)
     
-
-
-
-    
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_12_1.png)
-    
-
-
-
     
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_12_2.png)
     
-
-
-
-    
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_12_3.png)
-    
-
-
-
     
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_12_4.png)
     
-
-
-
-    
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_12_5.png)
-    
-
-
-
     
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_12_6.png)
     
-
-
-
-    
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_12_7.png)
-    
-
-
-
     
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_12_8.png)
     
-
-
-
-    
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_12_9.png)
-    
-
-
-
     
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_12_10.png)
     
-
-
-
-    
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_12_11.png)
-    
-
-
-
     
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_12_12.png)
     
-
-
-
-    
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_12_13.png)
-    
-
-
-
     
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_12_14.png)
     
-
-
-
-    
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_12_15.png)
-    
-
-
-
     
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_12_16.png)
     
-
-
-
-    
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_12_17.png)
-    
-
-
-
     
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_12_18.png)
     
-
-
-
-    
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_12_19.png)
-    
-
-
-
     
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_12_20.png)
     
@@ -499,123 +419,43 @@ You may also find it at this [link](https://docs.google.com/document/d/1r1xJd--Y
     
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_14_0.png)
     
-
-
-
-    
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_14_1.png)
-    
-
-
-
     
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_14_2.png)
     
-
-
-
-    
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_14_3.png)
-    
-
-
-
     
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_14_4.png)
     
-
-
-
-    
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_14_5.png)
-    
-
-
-
     
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_14_6.png)
     
-
-
-
-    
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_14_7.png)
-    
-
-
-
     
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_14_8.png)
     
-
-
-
-    
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_14_9.png)
-    
-
-
-
     
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_14_10.png)
     
-
-
-
-    
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_14_11.png)
-    
-
-
-
     
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_14_12.png)
     
-
-
-
-    
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_14_13.png)
-    
-
-
-
     
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_14_14.png)
     
-
-
-
-    
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_14_15.png)
-    
-
-
-
     
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_14_16.png)
     
-
-
-
-    
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_14_17.png)
-    
-
-
-
     
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_14_18.png)
     
-
-
-
-    
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_14_19.png)
-    
-
-
-
     
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_14_20.png)
     
@@ -628,69 +468,25 @@ You may also find it at this [link](https://docs.google.com/document/d/1r1xJd--Y
     
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_18_0.png)
     
-
-
-
-    
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_18_1.png)
-    
-
-
-
     
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_18_2.png)
     
-
-
-
-    
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_18_3.png)
-    
-
-
-
     
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_18_4.png)
     
-
-
-
-    
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_18_5.png)
-    
-
-
-
     
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_18_6.png)
     
-
-
-
-    
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_18_7.png)
-    
-
-
-
     
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_18_8.png)
     
-
-
-
-    
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_18_9.png)
     
-
-
-
-    
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_18_10.png)
-    
-
-
-
     
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_18_11.png)
     
@@ -702,69 +498,25 @@ You may also find it at this [link](https://docs.google.com/document/d/1r1xJd--Y
     
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_20_0.png)
     
-
-
-
-    
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_20_1.png)
-    
-
-
-
     
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_20_2.png)
     
-
-
-
-    
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_20_3.png)
-    
-
-
-
     
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_20_4.png)
     
-
-
-
-    
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_20_5.png)
-    
-
-
-
     
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_20_6.png)
     
-
-
-
-    
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_20_7.png)
-    
-
-
-
     
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_20_8.png)
     
-
-
-
-    
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_20_9.png)
     
-
-
-
-    
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_20_10.png)
-    
-
-
-
     
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_20_11.png)
     
@@ -778,69 +530,25 @@ You may also find it at this [link](https://docs.google.com/document/d/1r1xJd--Y
     
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_24_0.png)
     
-
-
-
-    
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_24_1.png)
-    
-
-
-
     
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_24_2.png)
     
-
-
-
-    
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_24_3.png)
-    
-
-
-
     
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_24_4.png)
     
-
-
-
-    
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_24_5.png)
-    
-
-
-
     
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_24_6.png)
     
-
-
-
-    
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_24_7.png)
-    
-
-
-
     
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_24_8.png)
     
-
-
-
-    
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_24_9.png)
     
-
-
-
-    
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_24_10.png)
-    
-
-
-
     
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_24_11.png)
     
@@ -851,69 +559,25 @@ You may also find it at this [link](https://docs.google.com/document/d/1r1xJd--Y
     
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_26_0.png)
     
-
-
-
-    
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_26_1.png)
-    
-
-
-
     
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_26_2.png)
     
-
-
-
-    
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_26_3.png)
-    
-
-
-
     
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_26_4.png)
     
-
-
-
-    
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_26_5.png)
-    
-
-
-
     
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_26_6.png)
     
-
-
-
-    
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_26_7.png)
-    
-
-
-
     
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_26_8.png)
     
-
-
-
-    
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_26_9.png)
     
-
-
-
-    
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_26_10.png)
-    
-
-
-
     
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_26_11.png)
     
@@ -957,69 +621,25 @@ You may also find it at this [link](https://docs.google.com/document/d/1r1xJd--Y
     
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_12_0.png)
     
-
-
-
-    
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_12_1.png)
-    
-
-
-
     
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_12_2.png)
     
-
-
-
-    
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_12_3.png)
-    
-
-
-
     
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_12_4.png)
     
-
-
-
-    
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_12_5.png)
-    
-
-
-
     
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_12_6.png)
     
-
-
-
-    
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_12_7.png)
-    
-
-
-
     
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_12_8.png)
     
-
-
-
-    
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_12_9.png)
     
-
-
-
-    
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_12_10.png)
-    
-
-
-
     
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_12_11.png)
     
@@ -1034,69 +654,25 @@ You may also find it at this [link](https://docs.google.com/document/d/1r1xJd--Y
     
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_16_0.png)
     
-
-
-
-    
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_16_1.png)
-    
-
-
-
     
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_16_2.png)
     
-
-
-
-    
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_16_3.png)
-    
-
-
-
     
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_16_4.png)
     
-
-
-
-    
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_16_5.png)
-    
-
-
-
     
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_16_6.png)
     
-
-
-
-    
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_16_7.png)
-    
-
-
-
     
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_16_8.png)
     
-
-
-
-    
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_16_9.png)
     
-
-
-
-    
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_16_10.png)
-    
-
-
-
     
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_16_11.png)
     
@@ -1109,69 +685,25 @@ You may also find it at this [link](https://docs.google.com/document/d/1r1xJd--Y
     
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_18_0.png)
     
-
-
-
-    
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_18_1.png)
-    
-
-
-
     
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_18_2.png)
     
-
-
-
-    
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_18_3.png)
-    
-
-
-
     
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_18_4.png)
     
-
-
-
-    
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_18_5.png)
-    
-
-
-
     
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_18_6.png)
     
-
-
-
-    
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_18_7.png)
-    
-
-
-
     
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_18_8.png)
     
-
-
-
-    
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_18_9.png)
     
-
-
-
-    
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_18_10.png)
-    
-
-
-
     
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_18_11.png)
     
@@ -1187,69 +719,25 @@ You may also find it at this [link](https://docs.google.com/document/d/1r1xJd--Y
     
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_22_0.png)
     
-
-
-
-    
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_22_1.png)
-    
-
-
-
     
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_22_2.png)
     
-
-
-
-    
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_22_3.png)
-    
-
-
-
     
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_22_4.png)
     
-
-
-
-    
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_22_5.png)
-    
-
-
-
     
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_22_6.png)
     
-
-
-
-    
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_22_7.png)
-    
-
-
-
     
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_22_8.png)
     
-
-
-
-    
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_22_9.png)
     
-
-
-
-    
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_22_10.png)
-    
-
-
-
     
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_22_11.png)
     
@@ -1260,69 +748,25 @@ You may also find it at this [link](https://docs.google.com/document/d/1r1xJd--Y
     
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_24_0.png)
     
-
-
-
-    
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_24_1.png)
-    
-
-
-
     
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_24_2.png)
     
-
-
-
-    
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_24_3.png)
-    
-
-
-
     
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_24_4.png)
     
-
-
-
-    
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_24_5.png)
-    
-
-
-
     
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_24_6.png)
     
-
-
-
-    
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_24_7.png)
-    
-
-
-
     
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_24_8.png)
     
-
-
-
-    
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_24_9.png)
     
-
-
-
-    
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_24_10.png)
-    
-
-
-
     
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_24_11.png)
     
