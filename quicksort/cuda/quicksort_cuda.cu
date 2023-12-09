@@ -4,7 +4,7 @@
  * Author: Sai Gowri
  * Date: July 15, 2016
  */
-// #include "inputgen.h"
+
 #include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -36,21 +36,6 @@ const char *compLarge = "comp_large";
 const char *commRegion = "comm";
 const char *commSmall = "comm_small";
 const char *commLarge = "comm_large";
-
-int random_int()
-{
-    return rand() % 1000000;
-}
-
-void array_fill(int *arr, int length)
-{
-    srand(time(NULL));
-    int i;
-    for (i = 0; i < length; ++i)
-    {
-        arr[i] = random_int();
-    }
-}
 
 // Kernel function
 __global__ static void quicksort(int *values, int N)
@@ -120,19 +105,18 @@ int main(int argc, char **argv)
     cudaEvent_t dataInitStart, dataInitStop, correctnessStart, correctnessStop;
     cudaEvent_t compSmallStart, compSmallStop, commSmallStart, commSmallStop;
     cudaEvent_t compLargeStart, compLargeStop, commLargeStart, commLargeStop;
-    int N = atoi(argv[1]);
-    printf("./quicksort starting with %d numbers...\n", N);
-    size_t size = N * sizeof(int);         // CHANGE TO CLI ARG
+    size_t size = atoi(argv[1]); // CHANGE TO CLI ARG
+    printf("./quicksort starting with %d numbers...\n", size * sizeof(int));
     const int MAX_THREADS = atoi(argv[2]); // CHANGE TO CLI ARG
     int option = atoi(argv[3]);            // CHANGE TO CLI ARG
 
     std::cout << "MAX_THREADS: " << MAX_THREADS << std::endl;
 
     // allocate host memory
-    r_values = (int *)malloc(size);
+    r_values = (int *)malloc(size * sizeof(int));
 
     // allocate device memory
-    cudaMalloc((void **)&d_values, size);
+    cudaMalloc((void **)&d_values, size * sizeof(int));
 
     // allocate threads per block
     const unsigned int cThreadsPerBlock = 64; // CHANGE TO CLI ARG
@@ -158,55 +142,42 @@ int main(int argc, char **argv)
     if (option == 0) // random
     {
         std::cout << "RANDOM NUMMIES" << std::endl;
-        array_fill(r_values, N);
-        // fillValsRandParallel(r_values, size, 0);
-    }
-    else if (option == 1)
-    { // sorted
-        for (int i = 0; i < N; i++)
+        for (int i = 0; i < size; i++)
         {
+            r_values[i] = rand() % 100;
+        }
+    } else if (option == 1) { //sorted
+        for (int i = 0; i < size; i++) {
             r_values[i] = i;
         }
-        std::cout << "SORTED NUMMIES GENERATED" << std::endl;
-    }
-    else if (option == 2)
-    { // reverse
-        for (int i = 0; i < N; i++)
-        {
+    } else if (option == 2) { // reverse
+        for (int i = 0; i < size; i++) {
             r_values[i] = size - i;
         }
-    }
-    else if (option == 3)
-    { // 1% perturbed
-        for (int i = 0; i < N; i++)
-        {
+    } else if (option == 3) { // 1% perturbed
+        for (int i = 0; i < size; i++) {
             r_values[i] = i;
         }
-        for (int i = 0; i < N / 100; i++)
-        {
+        for (int i = 0; i < size / 100; i++) {
             int index = rand() % size;
             r_values[index] = size - index;
         }
     }
-    std::cout << "NUMMIES GENERATED" << std::endl;
+
     cudaEventRecord(dataInitStop, 0);
     cudaEventSynchronize(dataInitStop);
-
     CALI_MARK_END(genValuesTime);
-    std::cout << "DATA INITIALIZED AND SYNCHRONIZED" << std::endl;
-    // cudaEventElapsedTime(&dataInitTime, dataInitStart, dataInitStop);
+
+    cudaEventElapsedTime(&dataInitTime, dataInitStart, dataInitStop);
 
     // Copy data from host to device
     CALI_MARK_BEGIN(commRegion);
     CALI_MARK_BEGIN(commLarge);
     CALI_MARK_BEGIN("cudaMemcpy");
-    std::cout << "COPYING DATA FROM HOST TO DEVICE" << std::endl;
-    cudaMemcpy(d_values, r_values, size, cudaMemcpyHostToDevice);
+    cudaMemcpy(d_values, r_values, size * sizeof(int), cudaMemcpyHostToDevice);
     CALI_MARK_END("cudaMemcpy");
     CALI_MARK_END(commLarge);
     CALI_MARK_END(commRegion);
-
-    std::cout << "DATA COPIED FROM HOST TO DEVICE" << std::endl;
 
     cudaEventRecord(commLargeStop, 0);
     cudaEventSynchronize(commLargeStop);
@@ -225,11 +196,9 @@ int main(int argc, char **argv)
     std::cout << "MAX THREADS: " << MAX_THREADS << std::endl;
     std::cout << "cThreadsPerBlock: " << cThreadsPerBlock << std::endl;
     std::cout << "Launching kernel with " << MAX_THREADS / cThreadsPerBlock << " blocks and " << cThreadsPerBlock << " threads per block" << std::endl;
-    quicksort<<<MAX_THREADS / cThreadsPerBlock, MAX_THREADS / cThreadsPerBlock, cThreadsPerBlock>>>(d_values, N);
+    quicksort<<< MAX_THREADS / cThreadsPerBlock, MAX_THREADS / cThreadsPerBlock, cThreadsPerBlock >>>(d_values, size);
     CALI_MARK_END(compLarge);
     CALI_MARK_END(comp);
-
-    std::cout << "KERNEL EXECUTED" << std::endl;
 
     cudaEventRecord(compLargeStop, 0);
     cudaEventSynchronize(compLargeStop);
@@ -244,12 +213,10 @@ int main(int argc, char **argv)
     CALI_MARK_BEGIN(commRegion);
     CALI_MARK_BEGIN(commLarge);
     CALI_MARK_BEGIN("cudaMemcpy");
-    cudaMemcpy(r_values, d_values, size, cudaMemcpyDeviceToHost);
+    cudaMemcpy(r_values, d_values, size * sizeof(int), cudaMemcpyDeviceToHost);
     CALI_MARK_END("cudaMemcpy");
     CALI_MARK_END(commLarge);
     CALI_MARK_END(commRegion);
-
-    std::cout << "DATA COPIED FROM DEVICE TO HOST" << std::endl;
 
     CALI_MARK_BEGIN(correctness);
     bool isSorted = true;
@@ -309,8 +276,8 @@ int main(int argc, char **argv)
     adiak::value("Datatype", "int");                            // The datatype of input elements (e.g., double, int, float)
     adiak::value("SizeOfDatatype", sizeof(int));                // sizeof(datatype) of input elements in bytes (e.g., 1, 2, 4)
     adiak::value("InputSize", size);                            // The number of elements in input dataset (1000)
-    adiak::value("InputType", "Random");                        // For sorting, this would be "Sorted", "ReverseSorted", "Random", "1%perturbed"
-    adiak::value("num_threads", cThreadsPerBlock);              // The number of CUDA or OpenMP threads
+    adiak::value("InputType", "1%_Perturbed");                        // For sorting, this would be "Sorted", "ReverseSorted", "Random", "1%perturbed"
+    adiak::value("num_threads", MAX_THREADS);              // The number of CUDA or OpenMP threads
     adiak::value("num_blocks", MAX_THREADS / cThreadsPerBlock); // The number of CUDA blocks
     adiak::value("group_num", 23);                              // The number of your group (integer, e.g., 1, 10)
     adiak::value("implementation_source", "online");            // Where you got the source code of your algorithm; choices: ("Online", "AI", "Handwritten").
