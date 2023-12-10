@@ -432,6 +432,51 @@ The reason for this phenomenon lies in the inner workings of my MPI Radix Sort. 
 
 With reverse sorted output, we know that the values that a process "owns" will all have to be sent to another process. This results in each process having to both send and receive the entirety array that it owns. Thus, it is no surprise that with a reverse sorted input, the more processes we add, the more time it takes to communicate between processes, and the worse the overall runtime.
 
+Below are the rest of the strong scaling files
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/ab9a1f24-256c-4b3b-8bb4-5c5947df38d5)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/b05dd462-35fc-4ce9-9f95-7900dc5dbcac)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/20b5f851-2906-484b-b5aa-39839e41db90)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/feee5dd3-7ad1-4a06-bf55-50d7780f3cc7)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/aee4e9d8-972c-4982-a1c1-7157f5055a49)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/b7e07a46-ca44-4bb0-b47a-ef33809bc871)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/ae11bc54-e6dc-49d4-b4a9-27451108614b)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/7a5dcf4f-e1e2-4477-a7dc-d7ff77904c30)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/5f39e6b5-c9dc-4190-9885-c36ec3aae964)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/754a4192-8d3a-4d7a-bac9-01d8bbcc644e)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/b76fd6c2-658d-49f7-afe3-b8d47c412152)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/b0c591cb-3900-489e-afbe-0f615a249e7f)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/3c3849c4-46e5-4afe-b99a-064e7870bdb5)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/366fcabb-84d1-43ec-9da6-032e13a19af4)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/f160ee3a-4cd6-4ffb-832a-43bc5b3426a8)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/72474e1a-8366-4e90-bfc0-a1633ff123e4)
+
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/f59dccc6-62c6-4e93-b4e0-cd7f71d07ee9)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/c8cef387-1681-4c89-a437-99e2cba36ced)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/a59d8f9f-7769-4d40-9bc2-d1520153cbed)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/39a32a23-0c5d-4f76-9de5-7ee8ce5d1618)
+
+
+
 #### Weak Scaling
 
 | Comp Large | Comm |
@@ -439,6 +484,33 @@ With reverse sorted output, we know that the values that a process "owns" will a
 | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/3aeb583f-a3a9-45fe-a89f-84f9160e2ff0) |  ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/43a3c104-4adf-419a-923c-31966304bd66) |
 
    With Random Input, we observe that both comp_large and comm weak scale quite well. Although the lines seem to trend upwards, we see that the y axis scale is quite small, and so we may consider both of these trends as practically straight lines, with comp large weak scaling the best.
+
+Below are the remaining Weak Scaling files
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/ee7b4b82-6df8-4b7c-9be9-7300fee5eda2)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/b0145d46-66ed-40da-a360-254b174db7f8)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/2d0cdacc-34a3-413a-9205-f18f05184c74)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/57280eb1-eff8-4cdd-8a55-52ea1a2dbc6d)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/fbdca2b8-9547-42f7-bc41-ebed4668c88e)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/371dd889-6c58-4744-ab58-efed79158e98)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/4717d98b-a5a4-40b3-a2c7-305c4e21978b)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/544df122-4d32-42c9-a8cb-3b7c086688d6)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/c938646c-bd2b-423b-b2ee-ff421761d059)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/200a7d75-19c3-4480-863e-1fe39455109b)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/11cda8ef-89d1-4395-8d68-c1aa97432096)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/8690a6cf-6f94-4522-9adc-694c15d2ecf7)
+
 
 
 #### Speedup
@@ -451,6 +523,31 @@ The speedup for comp_large is relatively decent. That is, we do see an upward tr
 
 We also observe that communication has extremely poor speedup. In fact, we see a downward trend. This makes sense as we increase the number of processors, we increase the communication time, leading to poor and even negative speedup. 
 
+Below are the remaining Speedup Plots
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/cde53e79-1465-4cfc-823d-0503dd3440a1)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/f0008580-cbef-4980-9f9a-9a29ebd0f1b1)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/8f4500a7-807a-4935-baca-4ae2e02dedad)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/c0afcae7-3ab3-4058-9a23-c5c01ee25045)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/02e29163-d22d-41ea-8409-afb213d02ff9)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/42212d63-26ac-4fba-ab78-330c05143286)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/8ad46a2e-fc02-4fa4-82b0-1b28441fd7d5)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/4f6ca8df-0283-497b-b223-28b26b24b4f8)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/118b065d-bbfd-473b-b69e-76331a8f762b)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/f03ac0ea-c03a-4c7c-9b10-187e51833eb0)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/cab9b7b1-a1e0-404a-873f-d1a78c2f3fbd)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/bd8c463e-9341-43a6-98fd-235dcda99acf)
 
 
 ### CUDA
@@ -469,6 +566,52 @@ By observing just an input of 2^28, we see that after 2^7 threads, the overhead 
 ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/9ed5e6dd-4cea-4f51-959e-84c8235b445a)
 
 This exact same trend can be observed through comp_large. After 2^7 processors, the overhead becomes too large to give much benefit.
+
+Below are the remaining Strong Scaling plots
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/a78da7b0-a2b7-4296-a5db-34c31a885847)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/b0664bad-4410-4f79-917f-f51fb8b77891)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/721df98a-93ab-494d-909e-1becdd38b0a0)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/578052f5-d8c4-4c52-a383-ff9d6dde6735)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/7aa4c301-0128-43df-9ec0-c61fc0e1ab9e)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/2af7ea5e-38dd-4b55-b616-50c1e445a338)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/2fc4eda9-65b1-4836-b48e-32a4d94b2746)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/f461388f-6ec1-4c8a-84bf-9b968b8b893e)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/37ca5b3d-857d-4887-865f-4ba1eae282ec)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/3247a9ec-4f86-48b4-be8c-817bc21c381f)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/ad70d1af-badb-4ca4-b636-40ec97ef9815)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/ee10595e-e848-4771-9eb7-5a94b004bf16)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/246644a0-4e94-4d43-8b36-b8dbbb4c4aa2)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/f8d83e89-b14a-49e9-a9c4-a8e288edb716)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/f016af68-2d8e-410d-a852-a36d36a565fd)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/1bdc5864-29ad-4c9e-b3b6-e2631f148da8)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/cf4ad9d3-c47c-40ef-ba5a-93510826d94a)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/55fb2fa3-78fa-4f92-b393-edd70d25e651)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/1b76df98-e372-4f34-abfe-e4b9b9e0dedd)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/d07583fb-625d-490f-96a8-29107d364b6a)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/a052bef2-957b-4f63-b159-2d2fe219131d)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/e56e7fdd-f9ed-482d-a755-50da2f6358fa)
 
 
 #### Weak Scaling
