@@ -360,6 +360,224 @@ Please see our pdf file attached. Called **Parallel Computing Plots.pdf**
 
 You may also find it at this [link](https://docs.google.com/document/d/1r1xJd--YJmMYDUgpxQBdYJppri3Gfnrgwj0WtUlYIFU/edit)
 
+## Mergesort Analysis and Plots
+
+### Strong Scaling
+
+I used the strong scaling plots for the input size of 2^28 for my analysis. I wanted to look at the largest input size to get the best understanding of how well the algorithm scales.
+
+#### MPI
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/MPI/StrongScaling/Comm_Strong_Scaling:_Input_Size_1048576.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/MPI/StrongScaling/Comm_Strong_Scaling:_Input_Size_16777216.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/MPI/StrongScaling/Comm_Strong_Scaling:_Input_Size_262144.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/MPI/StrongScaling/Comm_Strong_Scaling:_Input_Size_268435456.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/MPI/StrongScaling/Comm_Strong_Scaling:_Input_Size_4194304.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/MPI/StrongScaling/Comm_Strong_Scaling:_Input_Size_65536.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/MPI/StrongScaling/Comm_Strong_Scaling:_Input_Size_67108864.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/MPI/StrongScaling/Comp_Large_Strong_Scaling:_Input_Size_1048576.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/MPI/StrongScaling/Comp_Large_Strong_Scaling:_Input_Size_16777216.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/MPI/StrongScaling/Comp_Large_Strong_Scaling:_Input_Size_262144.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/MPI/StrongScaling/Comp_Large_Strong_Scaling:_Input_Size_268435456.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/MPI/StrongScaling/Comp_Large_Strong_Scaling:_Input_Size_4194304.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/MPI/StrongScaling/Comp_Large_Strong_Scaling:_Input_Size_65536.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/MPI/StrongScaling/Comp_Large_Strong_Scaling:_Input_Size_67108864.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/MPI/StrongScaling/Main_Strong_Scaling:_Input_Size_1048576.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/MPI/StrongScaling/Main_Strong_Scaling:_Input_Size_16777216.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/MPI/StrongScaling/Main_Strong_Scaling:_Input_Size_262144.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/MPI/StrongScaling/Main_Strong_Scaling:_Input_Size_268435456.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/MPI/StrongScaling/Main_Strong_Scaling:_Input_Size_4194304.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/MPI/StrongScaling/Main_Strong_Scaling:_Input_Size_65536.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/MPI/StrongScaling/Main_Strong_Scaling:_Input_Size_67108864.png)
+
+By looking at the plots for the comp_large region, we can see that there is certainly a decrease in time as the number of processors increases. Interestingly, the communication time seems to be increasing with the number of processors, but it then drops back down past 2^5 processors. I did notice that the communication overhead is the dominating factor in the runtime as the input size gets large and the number of processors gets large as well. Overall, the MPI mergesort algorithm seems to strong scale very well.
+
+#### CUDA
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/CUDA/StrongScaling/Comm_Strong_Scaling:_Input_Size_1048576.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/CUDA/StrongScaling/Comm_Strong_Scaling:_Input_Size_16777216.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/CUDA/StrongScaling/Comm_Strong_Scaling:_Input_Size_262144.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/CUDA/StrongScaling/Comm_Strong_Scaling:_Input_Size_268435456.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/CUDA/StrongScaling/Comm_Strong_Scaling:_Input_Size_4194304.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/CUDA/StrongScaling/Comm_Strong_Scaling:_Input_Size_65536.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/CUDA/StrongScaling/Comm_Strong_Scaling:_Input_Size_67108864.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/CUDA/StrongScaling/Comp_Large_Strong_Scaling:_Input_Size_1048576.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/CUDA/StrongScaling/Comp_Large_Strong_Scaling:_Input_Size_16777216.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/CUDA/StrongScaling/Comp_Large_Strong_Scaling:_Input_Size_262144.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/CUDA/StrongScaling/Comp_Large_Strong_Scaling:_Input_Size_268435456.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/CUDA/StrongScaling/Comp_Large_Strong_Scaling:_Input_Size_4194304.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/CUDA/StrongScaling/Comp_Large_Strong_Scaling:_Input_Size_65536.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/CUDA/StrongScaling/Comp_Large_Strong_Scaling:_Input_Size_67108864.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/CUDA/StrongScaling/Main_Strong_Scaling:_Input_Size_1048576.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/CUDA/StrongScaling/Main_Strong_Scaling:_Input_Size_16777216.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/CUDA/StrongScaling/Main_Strong_Scaling:_Input_Size_262144.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/CUDA/StrongScaling/Main_Strong_Scaling:_Input_Size_268435456.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/CUDA/StrongScaling/Main_Strong_Scaling:_Input_Size_4194304.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/CUDA/StrongScaling/Main_Strong_Scaling:_Input_Size_65536.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/CUDA/StrongScaling/Main_Strong_Scaling:_Input_Size_67108864.png)
+
+My CUDA mergesort algorithm seems to be quite interesting. It seems to be running suspicously fast; on the largest input size, it seems to take a fraction of a second to sort everyting. All of my runs did pass the correctness check, but I still not sure if my code is working quite right. It just seems too fast to be true. With this very fast runtime, it does not seem to strong scale since it is already so fast. The runtime of my CUDA implementation is pretty much all communication between the GPU and the CPU. It is interesting to note that the communication time seems to decrease with the number of threads; I am not sure what would cause this kind of trend.
+
+### Strong Scaling Speedup
+
+I used the plots for 1% perturbed for my analysis below. This was not for any particular reason as all the input types showed similar trends.
+
+#### MPI
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/MPI/Speedup/Comm_Speedup_MergeMPIPerturbed.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/MPI/Speedup/Comm_Speedup_MergeMPIRandom.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/MPI/Speedup/Comm_Speedup_MergeMPIReverse.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/MPI/Speedup/Comm_Speedup_MergeMPISorted.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/MPI/Speedup/Comp_Large_Speedup_MergeMPIPerturbed.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/MPI/Speedup/Comp_Large_Speedup_MergeMPIRandom.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/MPI/Speedup/Comp_Large_Speedup_MergeMPIReverse.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/MPI/Speedup/Comp_Large_Speedup_MergeMPISorted.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/MPI/Speedup/Main_Speedup_MergeMPIPerturbed.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/MPI/Speedup/Main_Speedup_MergeMPIRandom.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/MPI/Speedup/Main_Speedup_MergeMPIReverse.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/MPI/Speedup/Main_Speedup_MergeMPISorted.png)
+
+The MPI mergesort algorithm shows great speedup for the comp_large region. It actually seems that the computation still has lots of room to grow as it hasn't started plateauing; however, the speedup for the main region does show that the algorithm has reached its highest speedup of about 4.5 for the largest input size. This is because the main region includes input generation, computation, and correctness check. The correctness check and input generation are not non-parallel regions which causes the speedup to flatten out.
+
+#### CUDA
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/CUDA/Speedup/Comm_Speedup_MergeCUDAPerturbed.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/CUDA/Speedup/Comm_Speedup_MergeCUDARandom.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/CUDA/Speedup/Comm_Speedup_MergeCUDAReverse.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/CUDA/Speedup/Comm_Speedup_MergeCUDASorted.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/CUDA/Speedup/Comp_Large_Speedup_MergeCUDAPerturbed.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/CUDA/Speedup/Comp_Large_Speedup_MergeCUDARandom.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/CUDA/Speedup/Comp_Large_Speedup_MergeCUDAReverse.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/CUDA/Speedup/Comp_Large_Speedup_MergeCUDASorted.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/CUDA/Speedup/Main_Speedup_MergeCUDAPerturbed.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/CUDA/Speedup/Main_Speedup_MergeCUDARandom.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/CUDA/Speedup/Main_Speedup_MergeCUDAReverse.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/CUDA/Speedup/Main_Speedup_MergeCUDASorted.png)
+
+The speedup for the CUDA version does not look very good. It hardly gets above 1 at some thread counts, but I don't think that this is the whole story. Since the algorithm is taking a fraction of a second already, it doesn't show any speedup. However, this doesn't really matter since it is already incredibly fast. I wonder if running on larger input sizes would cause it to take longer and show more of a speedup, but with the data I collected there isn't much to look at.
+
+### Weak Scaling
+
+For weak scaling, I again looked at the perturbed data plots. This was not for any particular reason as all the input types showed similar trends.
+
+#### MPI
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/MPI/WeakScaling/Comm_Weak_Scaling_MergeMPIPerturbed.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/MPI/WeakScaling/Comm_Weak_Scaling_MergeMPIRandom.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/MPI/WeakScaling/Comm_Weak_Scaling_MergeMPIReverse.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/MPI/WeakScaling/Comm_Weak_Scaling_MergeMPISorted.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/MPI/WeakScaling/Comp_Large_Weak_Scaling_MergeMPIPerturbed.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/MPI/WeakScaling/Comp_Large_Weak_Scaling_MergeMPIRandom.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/MPI/WeakScaling/Comp_Large_Weak_Scaling_MergeMPIReverse.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/MPI/WeakScaling/Comp_Large_Weak_Scaling_MergeMPISorted.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/MPI/WeakScaling/Main_Weak_Scaling_MergeMPIPerturbed.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/MPI/WeakScaling/Main_Weak_Scaling_MergeMPIRandom.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/MPI/WeakScaling/Main_Weak_Scaling_MergeMPIReverse.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/MPI/WeakScaling/Main_Weak_Scaling_MergeMPISorted.png)
+
+The computation region weak scales very well as the plot is almost a perfect straight line. However, the communication and main regions do not weak scale at all. The main region shouldn't weak scale since it has to do more comparisons when running the correctness check and generates more data. It also makes sense that the communication region does not weak scale because it the amount of communication is directly tied to the size of the problem.
+
+#### CUDA
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/CUDA/WeakScaling/Comm_Weak_Scaling_MergeCUDAPerturbed.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/CUDA/WeakScaling/Comm_Weak_Scaling_MergeCUDARandom.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/CUDA/WeakScaling/Comm_Weak_Scaling_MergeCUDAReverse.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/CUDA/WeakScaling/Comm_Weak_Scaling_MergeCUDASorted.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/CUDA/WeakScaling/Comp_Large_Weak_Scaling_MergeCUDAPerturbed.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/CUDA/WeakScaling/Comp_Large_Weak_Scaling_MergeCUDARandom.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/CUDA/WeakScaling/Comp_Large_Weak_Scaling_MergeCUDAReverse.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/CUDA/WeakScaling/Comp_Large_Weak_Scaling_MergeCUDASorted.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/CUDA/WeakScaling/Main_Weak_Scaling_MergeCUDAPerturbed.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/CUDA/WeakScaling/Main_Weak_Scaling_MergeCUDARandom.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/CUDA/WeakScaling/Main_Weak_Scaling_MergeCUDAReverse.png)
+
+![png](PerformanceEval/Plots/MergeSortPlotting_files/CUDA/WeakScaling/Main_Weak_Scaling_MergeCUDASorted.png)
+
+For CUDA, the computation region weak scales very well but the main and comm regions do not. The main region acts the same as in MPI, and the amount of data being sent to/from the GPU increases with the problem size so it wouldn't weak scale either.
+
 ## Bitonic Sort Plots
 
 This section will have all plots for our Bitonic Sorting Algorithm, including both MPI and CUDA implementations for Random, Sorted, Reversed, and 1% Perturbed input types. The plots are grouped by strong scaling, speedup, and weak scaling for Main, Comm, and Comp_Large Caliper regions.  
@@ -538,7 +756,7 @@ Our CUDA implementation of bitonic sort had a much smaller differential than MPI
 
 #### MPI
 
-For the MPI implementation on a weak scaling front, we see nearly identical, strong performance across all input types and processor numbers. All input types start at around .5 and end at around 3.5 for the same problem size with more processors. Comm and Comp_Large weak scaling measures remain negligible, but with an upward trend, across all input types. 
+For the MPI implementation on a weak scaling front, we see nearly identical, strong performance across all input types and processor numbers. All input types start at around a time of .5 and end at around 3.5 for the same problem size with more processors. Comm and Comp_Large weak scaling measures remain negligible, but with an upward trend, across all input types. 
     
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_24_0.png)
     
@@ -597,43 +815,143 @@ Our CUDA implementation had weaker weak scaling than our MPI implementation, whi
 
 ## Quick Sort Plots
 
-### Overrall:
+### Overall: 
+There are a few disclaimers. My CUDA implementation was not able to achieve the problem sizes that we were initially given. As a result, I used problem sizes from $2^{10}$ to $2^{16}$, increasing in increments of powers of 2. For my MPI implementation, however, I was able to get everything working, so I used the problem sizes from $2^{16}$ to $2^{28}$, increasing in increments of powers of 2.
 
 
 ### Strong Scaling
 
-#### MPI
+#### Analysis:
+**Strong scaling** is when you increase the number of processses, but keep the problem size the same. As you can see, this MPI implementation scales pretty well across all of the different kinds of inputs. Between problem sizes $2^{16}$ and $2^{20}$, you can see that time taken to run the entire algorithm actually increases with process size increase. It is only after $2^{22}$ that it actually decreases. This is due to the fact that it takes a lot more time to communicate between the higher process sizes and there is a lot of organizational overhead. It is only on large input sizes that the communication time is dwarfed by the actual computation time, so increased process size actually helps. The same behavior can be seen in the graphs measuring communication. The same explanation can be used for these graphs. The communication time is actually increasing with process size until the input size is large enough that the communication time is dwarfed by the computation time. However, something peculiar is seen in Comm. On random input types with large problem sizes, there is an inverted graph that is logarithmic in nature compared to the other graphs. I think that for smaller process counts in random inputs with large problem sizes, it takes a long time to communicate and merge chunks of data on small process sizes during the ```MPI_Send``` and ```MPI_Recv``` calls. However, as the process size increases, the communication time decreases. We can support these arguments by looking at the computation graphs, in which the computation time decreases with process size increase, which makes sense since without taking in communication time, the computation time should decrease with process size increase exponentially.
 
-    
+#### MPI
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_10_0.png)
     
+
+
+
+    
+![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_10_1.png)
+    
+
+
 
     
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_10_2.png)
     
 
+
+
+    
+![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_10_3.png)
+    
+
+
+
+    
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_10_4.png)
-   
+    
+
+
+
+    
+![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_10_5.png)
+    
+
+
 
     
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_10_6.png)
     
 
+
+
+    
+![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_10_7.png)
+    
+
+
+
     
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_10_8.png)
     
+
+
+
+    
+![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_10_9.png)
+    
+
+
 
     
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_10_10.png)
     
 
+
+
+    
+![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_10_11.png)
+    
+
+
+
     
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_10_12.png)
     
 
-#### CUDA
 
 
+    
+![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_10_13.png)
+    
+
+
+
+    
+![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_10_14.png)
+    
+
+
+
+    
+![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_10_15.png)
+    
+
+
+
+    
+![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_10_16.png)
+    
+
+
+
+    
+![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_10_17.png)
+    
+
+
+
+    
+![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_10_18.png)
+    
+
+
+
+    
+![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_10_19.png)
+    
+
+
+
+    
+![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_10_20.png)
+    
+
+### CUDA
+
+#### Analysis:
+There are a few observations to make with this CUDA implementation. It takes much longer time on all thread counts to run the algorithm for reverse sorted input types, as well as communication and computation. This is because the pivot is always chosen to be the first element in the array, so if the array is reverse sorted, then the pivot will always be the largest element in the array. This means that the array will be split into two subarrays of size 1 and size n-1, which is the worst case for quicksort. This is why the reverse sorted input types take much longer to run. The random input types take the least amount of time to run, which makes sense since the pivot will be chosen randomly on random input, so the array will be split into two subarrays of size n/2 and n/2, which is the best case for quicksort. There are hills and valleys in communication times for all input times, with sorted input doing the worst in terms of communication. Brute computation seems to be pretty constant across all input types, however, I am not sure if this is a product of my earlier disclaimer that I was not able to get the CUDA implementation to work for large problem sizes without timing out.
     
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_12_0.png)
     
@@ -665,7 +983,8 @@ Our CUDA implementation had weaker weak scaling than our MPI implementation, whi
 
 #### MPI
 
-
+#### Analysis:
+When measing **speedup**, we are measuring the improvement in parallelization versus time taken sequentially. For large input sizes in all input types for total runtime, we see a similar trend in speedup. There is an almost parabolic route with $2^{28}$, the largest input size, where there is the highest speedup. However, with smaller input sizes, we actually see a gradual decrease in speedup due to process organizational overhead. In brute computation time, we see exponentially increasing speedup as process count increases, which makes sense since as process count increases, computation time decreases. With communication, we see similar graphs to main in input types of 1% perturbed. However, for the other three input types we see a gradual decrease in speedup as process count increases, which makes sense because of the organizational overhead mentioned before.
 
     
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_16_0.png)
@@ -697,8 +1016,10 @@ Our CUDA implementation had weaker weak scaling than our MPI implementation, whi
 #### CUDA
 
 
+#### Analysis:
+For the CUDA implementation, we actually see a few polar opposites from the MPI implementation. First of all, the speedup gradually decreases for all input types for entire runtime. This is because the CUDA implementation was not able to achieve the same problem sizes as the MPI implementation without taking a long time. For brute computation on random input types, speedup becomes 0 on any process count higher than 64. I believe that this is also because of the problem size limitation. For communication, the trends are almost identical to the graphs for the entire algorithm runtime. This is of organizational overhad, as mentioned before.
 
-    
+
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_18_0.png)
     
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_18_1.png)
@@ -731,7 +1052,8 @@ Our CUDA implementation had weaker weak scaling than our MPI implementation, whi
 
 
 #### MPI
-
+#### Analysis:
+When talking about **weak scaling**, we are talking about increasing the problem size and the process size proportionally. For the MPI implementation, we see that the total runtime increases exponentially with problem size increase when testing full algorithmic runtimes. Something to note is that on Random input types, the scale goes from 1-8 seconds, however for the other 3 input types, it goes from 0.5 to 3.0-3.5 seconds. With graphs measuring communication, we see a similar trend as well as similar scale differences. However, with the brute computation, we see a parabolic route. This is because until a certain point, the problem size is too large for the proportional increase in process size. There is a saddle point, however, where the problem size is large enough that the process size increase is proportional and we start to see a decrease in time. With 1% Perturbed, we see a linear decrease in time as problem size and process count increases. However, the scale is so small that we can consider these almost constant lines.
     
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_22_0.png)
     
@@ -761,7 +1083,9 @@ Our CUDA implementation had weaker weak scaling than our MPI implementation, whi
 
 #### CUDA
 
-    
+#### Analysis:
+With CUDA implementation, we see almost identical trends as the MPI implementation. However, the scale is much, much larger. This is because the CUDA implementation was not able to achieve the same problem sizes as the MPI implementation without timing out. We see the same trends as before though. We see a linear increase in time taken in both full algorithm runtime as well as communication. We do see a parabolic graph in brute computational time, but it is an inverted parabola. For Random and Reverse-Sorted. However, with Sorted and 1% Perturbed, we see a linear increase and a somewhat zig-zag shape. However, due to the difference in scale being so small, we can consider these constant lines as well.
+
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_24_0.png)
     
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_24_1.png)
