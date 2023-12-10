@@ -379,6 +379,10 @@ You may also find it at this [link](https://docs.google.com/document/d/1r1xJd--Y
 ![png](PerformanceEval/Plots/AlgorithmComparisons_files/AlgorithmComparisons_11_5.png)
     
 ![png](PerformanceEval/Plots/AlgorithmComparisons_files/AlgorithmComparisons_11_6.png)
+
+
+We observe that overall, the worst performer is MergeCUDA in regards to communication. This is then followed by QuicksortMPI and MergeMPI. The fastest performer is consistenlty MergeCUDA and BitonicCUDA. It is interesting that the MergeCUDA is so poor, indicating that it communicates a lot more throughout its code runtime than any other algorithm.
+
     
 
 ### Speedup
