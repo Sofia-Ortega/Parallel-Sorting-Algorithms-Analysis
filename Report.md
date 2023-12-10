@@ -538,7 +538,7 @@ Our CUDA implementation of bitonic sort had a much smaller differential than MPI
 
 #### MPI
 
-For the MPI implementation on a weak scaling front, we see nearly identical, strong performance across all input types and processor numbers. All input types start at around .5 and end at around 3.5 for the same problem size with more processors. Comm and Comp_Large weak scaling measures remain negligible, but with an upward trend, across all input types. 
+For the MPI implementation on a weak scaling front, we see nearly identical, strong performance across all input types and processor numbers. All input types start at around a time of .5 and end at around 3.5 for the same problem size with more processors. Comm and Comp_Large weak scaling measures remain negligible, but with an upward trend, across all input types. 
     
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_24_0.png)
     
