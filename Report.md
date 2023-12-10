@@ -475,6 +475,7 @@ For CUDA, all input types behaved the same (mostly the same with negligible diff
 
 #### MPI
 
+For MPI, we see that the main function's speedup has the same trend across all input types. However, the scale of the speedup changes dramatically with input type. Random input experienced the highest speedup at the higher processor counts, achieving up to around 9, with a drop off at 1024 processors. This is likely due to there being a much higher amount of computations that are needed ot sort a random array, which will benefit from more processors way more than mostly pattern sorted arrays like 1% perturbed, sorted, and reverse input types.  We also see that for smaller input sizes, the speedup is actually negative as processor numbers increase. The decrease in speedup at the highest levels for smaller input sizes, and at 1024 for the largest input size, is likely caused by increases in communication overheads, which stays constant in the begining despite exponentially increasing processor counts. Comp_Large exponentially increases across all input types, which further corroborates that slowdowns were likely caused by communication overheads. 
     
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_18_0.png)
     
@@ -502,9 +503,9 @@ For CUDA, all input types behaved the same (mostly the same with negligible diff
     
 
 
-### CUDA
+#### CUDA
 
-
+Our CUDA implementation of bitonic sort had a much smaller differential than MPI, with a max speedup of 2. This can likely be explained by GPUs' nature being much more focused on parallelism, data locality, and much higher throughout. We don't believe the low speedup is due to the algorithm, as there is some speedup, and the comp_large and comm times stay largely flat across all input sizes. 
     
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_20_0.png)
     
@@ -537,6 +538,7 @@ For CUDA, all input types behaved the same (mostly the same with negligible diff
 
 #### MPI
 
+For the MPI implementation on a weak scaling front, we see nearly identical, strong performance across all input types and processor numbers. All input types start at around .5 and end at around 3.5 for the same problem size with more processors. Comm and Comp_Large weak scaling measures remain negligible, but with an upward trend, across all input types. 
     
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_24_0.png)
     
@@ -566,6 +568,7 @@ For CUDA, all input types behaved the same (mostly the same with negligible diff
 
 #### CUDA
 
+Our CUDA implementation had weaker weak scaling than our MPI implementation, which can likely be explained by the high levels of parallelism that GPUs have already, corroborated by very negligible comm and comp_large times across all input types.
     
 ![png](PerformanceEval/Plots/BitonicSortPlotting_files/BitonicSortPlotting_26_0.png)
     
