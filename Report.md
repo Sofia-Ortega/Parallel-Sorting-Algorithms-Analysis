@@ -623,6 +623,32 @@ Below are the remaining Strong Scaling plots
 
 The CUDA Radix Sort implementation weak scales only moderately well, with the difference between 2^6 threads and 2^10 threads only benign about 0.5 for both comp_large and comm. This again, is due to all the shuffling needed between blocks as the number of threads increases.
 
+Below is the remaining plots for Weak scaling
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/5c578d2b-af00-4ce8-825e-ef035dfde7f5)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/b96056d7-4f05-43a4-84b6-0d194fa7e6e9)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/ddf9ca74-7d73-4c29-ad6e-ca781380b51a)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/7239dc20-de78-4316-961b-069bfbf179a6)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/39541da1-c9bc-4647-a6bf-ec7913ccf745)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/7908f0c8-d527-4e8b-b78f-51d165e53f8e)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/3d8faf55-c785-4863-bf70-41f8a2f94246)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/7cd119dd-85db-46c3-a69a-0b23d011eeaa)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/0862fc6d-bd66-4f53-9e33-6f941e2ca629)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/0ed29767-20a3-459e-8bc9-e434419b8ac1)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/91f6e157-556c-4363-abe5-58410e3bdc74)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/24c9616f-85a1-4da4-95f9-af75b5890af9)
+
 
 #### Speedup
 
@@ -632,6 +658,38 @@ The CUDA Radix Sort implementation weak scales only moderately well, with the di
 
 
 In the speedup, we see the same trend observed with strong scaling. That is, that the best speedup occurs from 2^6 to 2^7, followed by only diminishing returns. From 2^6 to 2^7 the speedup is only moderately good for comp_large, with the speedup resulting in 1.3, which is close to 2.The comm shows poor speedup, and the the main function demonstrates moderate speedup for 2^6 to 2^7 processors. Main is a poor measure as it includes data correction and input generation. Poor speedup in comm makes sense as the time to communicate will only increase rather than decrease as we add more threads.
+
+Below are the remaining plots for Speedup
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/b0f6f832-3da9-45f6-ac03-45455fecfdc2)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/951e8dc4-3777-49f9-8a90-77f7b1882ba7)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/34c5c688-d8aa-4369-a235-5f509a6d5fc5)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/2ec15469-695f-4f4b-8ef2-15e3366a773f)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/358b5bc0-9625-4728-9909-f7bd6634044a)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/e9e2b341-60b8-4496-afcd-790578c33d02)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/432dd49d-5357-403b-90b0-902bf23f5a8d)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/ec6381c0-fcde-4d0e-bad8-ac91feb79565)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/3de25304-9100-4a17-b6df-ecc81214a21d)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/cd5148b3-fa16-4d45-baee-17b18f0b404b)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/ed3ab1df-e115-4c7b-a08b-8eb2f6372514)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/3bdf477b-ac6d-4303-adc8-55480c76a93b)
+
+
+
+
+
+
 
 ## Mergesort Analysis and PerformanceEval/Plots
 
