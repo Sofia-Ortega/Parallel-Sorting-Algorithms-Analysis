@@ -492,6 +492,8 @@ In the speedup, we see the same trend observed with strong scaling. That is, tha
 
 ## Mergesort Analysis and PerformanceEval/Plots
 
+**We realized too late that the Merge Sort Plots have transparent axis backgrounds - if you're unable to view it, please try viewing the plots by turning on light mode in your browser or IDE, as this should resolve the problem. We apologize for any inconvenience this may cause.**
+
 ### Strong Scaling
 
 I used the strong scaling PerformanceEval/Plots for the input size of 2^28 for my analysis. I wanted to look at the largest input size to get the best understanding of how well the algorithm scales.
