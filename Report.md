@@ -383,7 +383,14 @@ You may also find it at this [link](https://docs.google.com/document/d/1r1xJd--Y
 
 We observe that overall, the worst performer is MergeCUDA in regards to communication. This is then followed by QuicksortMPI and MergeMPI. The fastest performer is consistenlty MergeCUDA and BitonicCUDA. It is interesting that the MergeCUDA is so poor, indicating that it communicates a lot more throughout its code runtime than any other algorithm.
 
-    
+### Weak Scaling
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/c527a236-691b-48c3-a4ec-c2f017462406)
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/f5a633c2-5cf6-4306-8769-ac4cdc959e36)
+
+We observe that MergeMPIRandom is the worst performer in regards to weak scaling. This is then followed by RadixMPI, BitonicMPI, and QuicksortMPI. Interestingly, although RadixMPIRandom is the 2nd worst performer for weak scaling at less processes, we see that when we increase the number of processes, it becomes a better weak scaler than all the other algorithms.
+
 
 ### Speedup
 
