@@ -354,13 +354,8 @@ sbatch quicksort.grace_job <n> <p>
 * Source Code: https://github.com/saigowri/CUDA/blob/master/quicksort.cu
 * Author: Sai Gowri
 
-# 4. Performance Evaluation
+# 4. Performance Evaluation & Report
 
-Please see our pdf file attached. Called **Parallel Computing PerformanceEval/Plots.pdf**
-
-You may also find it at this [link](https://docs.google.com/document/d/1r1xJd--YJmMYDUgpxQBdYJppri3Gfnrgwj0WtUlYIFU/edit)
-
-# 5. Report
 
 ## Algorithm Comparisons
 
