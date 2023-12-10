@@ -597,43 +597,143 @@ Our CUDA implementation had weaker weak scaling than our MPI implementation, whi
 
 ## Quick Sort Plots
 
-### Overrall:
+### Overall: 
+There are a few disclaimers. My CUDA implementation was not able to achieve the problem sizes that we were initially given. As a result, I used problem sizes from $2^{10}$ to $2^{16}$, increasing in increments of powers of 2. For my MPI implementation, however, I was able to get everything working, so I used the problem sizes from $2^{16}$ to $2^{28}$, increasing in increments of powers of 2.
 
 
 ### Strong Scaling
 
-#### MPI
+#### Analysis:
+**Strong scaling** is when you increase the number of processses, but keep the problem size the same. As you can see, this MPI implementation scales pretty well across all of the different kinds of inputs. Between problem sizes $2^{16}$ and $2^{20}$, you can see that time taken to run the entire algorithm actually increases with process size increase. It is only after $2^{22}$ that it actually decreases. This is due to the fact that it takes a lot more time to communicate between the higher process sizes and there is a lot of organizational overhead. It is only on large input sizes that the communication time is dwarfed by the actual computation time, so increased process size actually helps. The same behavior can be seen in the graphs measuring communication. The same explanation can be used for these graphs. The communication time is actually increasing with process size until the input size is large enough that the communication time is dwarfed by the computation time. However, something peculiar is seen in Comm. On random input types with large problem sizes, there is an inverted graph that is logarithmic in nature compared to the other graphs. I think that for smaller process counts in random inputs with large problem sizes, it takes a long time to communicate and merge chunks of data on small process sizes during the ```MPI_Send``` and ```MPI_Recv``` calls. However, as the process size increases, the communication time decreases. We can support these arguments by looking at the computation graphs, in which the computation time decreases with process size increase, which makes sense since without taking in communication time, the computation time should decrease with process size increase exponentially.
 
-    
+#### MPI
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_10_0.png)
     
+
+
+
+    
+![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_10_1.png)
+    
+
+
 
     
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_10_2.png)
     
 
+
+
+    
+![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_10_3.png)
+    
+
+
+
+    
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_10_4.png)
-   
+    
+
+
+
+    
+![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_10_5.png)
+    
+
+
 
     
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_10_6.png)
     
 
+
+
+    
+![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_10_7.png)
+    
+
+
+
     
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_10_8.png)
     
+
+
+
+    
+![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_10_9.png)
+    
+
+
 
     
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_10_10.png)
     
 
+
+
+    
+![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_10_11.png)
+    
+
+
+
     
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_10_12.png)
     
 
-#### CUDA
 
 
+    
+![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_10_13.png)
+    
+
+
+
+    
+![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_10_14.png)
+    
+
+
+
+    
+![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_10_15.png)
+    
+
+
+
+    
+![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_10_16.png)
+    
+
+
+
+    
+![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_10_17.png)
+    
+
+
+
+    
+![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_10_18.png)
+    
+
+
+
+    
+![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_10_19.png)
+    
+
+
+
+    
+![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_10_20.png)
+    
+
+### CUDA
+
+#### Analysis:
+There are a few observations to make with this CUDA implementation. It takes much longer time on all thread counts to run the algorithm for reverse sorted input types, as well as communication and computation. This is because the pivot is always chosen to be the first element in the array, so if the array is reverse sorted, then the pivot will always be the largest element in the array. This means that the array will be split into two subarrays of size 1 and size n-1, which is the worst case for quicksort. This is why the reverse sorted input types take much longer to run. The random input types take the least amount of time to run, which makes sense since the pivot will be chosen randomly on random input, so the array will be split into two subarrays of size n/2 and n/2, which is the best case for quicksort. There are hills and valleys in communication times for all input times, with sorted input doing the worst in terms of communication. Brute computation seems to be pretty constant across all input types, however, I am not sure if this is a product of my earlier disclaimer that I was not able to get the CUDA implementation to work for large problem sizes without timing out.
     
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_12_0.png)
     
@@ -665,7 +765,8 @@ Our CUDA implementation had weaker weak scaling than our MPI implementation, whi
 
 #### MPI
 
-
+#### Analysis:
+When measing **speedup**, we are measuring the improvement in parallelization versus time taken sequentially. For large input sizes in all input types for total runtime, we see a similar trend in speedup. There is an almost parabolic route with $2^{28}$, the largest input size, where there is the highest speedup. However, with smaller input sizes, we actually see a gradual decrease in speedup due to process organizational overhead. In brute computation time, we see exponentially increasing speedup as process count increases, which makes sense since as process count increases, computation time decreases. With communication, we see similar graphs to main in input types of 1% perturbed. However, for the other three input types we see a gradual decrease in speedup as process count increases, which makes sense because of the organizational overhead mentioned before.
 
     
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_16_0.png)
@@ -697,8 +798,10 @@ Our CUDA implementation had weaker weak scaling than our MPI implementation, whi
 #### CUDA
 
 
+#### Analysis:
+For the CUDA implementation, we actually see a few polar opposites from the MPI implementation. First of all, the speedup gradually decreases for all input types for entire runtime. This is because the CUDA implementation was not able to achieve the same problem sizes as the MPI implementation without taking a long time. For brute computation on random input types, speedup becomes 0 on any process count higher than 64. I believe that this is also because of the problem size limitation. For communication, the trends are almost identical to the graphs for the entire algorithm runtime. This is of organizational overhad, as mentioned before.
 
-    
+
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_18_0.png)
     
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_18_1.png)
@@ -731,7 +834,8 @@ Our CUDA implementation had weaker weak scaling than our MPI implementation, whi
 
 
 #### MPI
-
+#### Analysis:
+When talking about **weak scaling**, we are talking about increasing the problem size and the process size proportionally. For the MPI implementation, we see that the total runtime increases exponentially with problem size increase when testing full algorithmic runtimes. Something to note is that on Random input types, the scale goes from 1-8 seconds, however for the other 3 input types, it goes from 0.5 to 3.0-3.5 seconds. With graphs measuring communication, we see a similar trend as well as similar scale differences. However, with the brute computation, we see a parabolic route. This is because until a certain point, the problem size is too large for the proportional increase in process size. There is a saddle point, however, where the problem size is large enough that the process size increase is proportional and we start to see a decrease in time. With 1% Perturbed, we see a linear decrease in time as problem size and process count increases. However, the scale is so small that we can consider these almost constant lines.
     
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_22_0.png)
     
@@ -761,7 +865,9 @@ Our CUDA implementation had weaker weak scaling than our MPI implementation, whi
 
 #### CUDA
 
-    
+#### Analysis:
+With CUDA implementation, we see almost identical trends as the MPI implementation. However, the scale is much, much larger. This is because the CUDA implementation was not able to achieve the same problem sizes as the MPI implementation without timing out. We see the same trends as before though. We see a linear increase in time taken in both full algorithm runtime as well as communication. We do see a parabolic graph in brute computational time, but it is an inverted parabola. For Random and Reverse-Sorted. However, with Sorted and 1% Perturbed, we see a linear increase and a somewhat zig-zag shape. However, due to the difference in scale being so small, we can consider these constant lines as well.
+
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_24_0.png)
     
 ![png](PerformanceEval/plots/QuickSortPlotting_files/QuickSortPlotting_24_1.png)
