@@ -360,6 +360,90 @@ Please see our pdf file attached. Called **Parallel Computing Plots.pdf**
 
 You may also find it at this [link](https://docs.google.com/document/d/1r1xJd--YJmMYDUgpxQBdYJppri3Gfnrgwj0WtUlYIFU/edit)
 
+# 5. Report
+
+## Radix Sort Analysis and Plots
+
+### MPI
+
+#### Strong Scaling
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/65bd3abb-765c-40b5-ada6-386aae98d0b3)
+
+We see that for Radix Sort, the Comparisons Strong Scale rather well. We do note that there are diminishing returns. Ideally, the graph should be a straight line down, as the number of processes are in log2 scale. We observe that from 2 to 4 processes gives us the most advantage as the slope is the steepest, indicating a pronounced acceleration in efficiency.
+
+| RadixMPI Random | Strong Scaling MPI Reverse |
+| --------------- | --------------- |
+| ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/9fecf0ed-7927-4cdd-879d-578aee3b8a8d)    | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/56211e51-bed2-4fc3-8f0f-7ba17388306e) |
+| ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/20540a19-46b0-4ccb-a14e-a8c35676ad5e) | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/5994e730-58de-49f0-9f08-9b03aa71c106) |
+
+
+One interesting observation to note within strong scaling is the difference between the sorting of random values versus reverse values. Observe the first row, where we see that given an input of random values, the algorithm scales relatively well, especially for higher inputs. However, with an input of reverse input there is virtually no strong scaling observed.
+
+
+Upon further investigation, we see that the culprit is the communication overhead. We see on the left with random input that as we increase the number of processes, the time trends downward. With reverse input, we observe that on increasing the number of processors, the time actually increases.
+The reason for this phenomenon lies in the inner workings of my MPI Radix Sort. Within the code, each process is given a section of the array to sort. After each pass, where the algorithm sorts by 8 bits at a time, the processes communicate amongst each other to determine where in the array their numbers belong. If the process realizes that the value it "owns" belongs in another section of the array, it will communicate as such, and send it off to the process it belongs to. 
+
+With reverse sorted output, we know that the values that a process "owns" will all have to be sent to another process. This results in each process having to both send and receive the entirety array that it owns. Thus, it is no surprise that with a reverse sorted input, the more processes we add, the more time it takes to communicate between processes, and the worse the overall runtime.
+
+#### Weak Scaling
+
+| Comp Large | Comm |
+| --------------- | --------------- |
+| ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/3aeb583f-a3a9-45fe-a89f-84f9160e2ff0) |  ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/43a3c104-4adf-419a-923c-31966304bd66) |
+
+   With Random Input, we observe that both comp_large and comm weak scale quite well. Although the lines seem to trend upwards, we see that the y axis scale is quite small, and so we may consider both of these trends as practically straight lines, with comp large weak scaling the best.
+
+
+#### Speedup
+
+| Comp Large | Comm |
+| --------------- | --------------- |
+| ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/e672d180-6960-4234-8178-fb0989e3223d) | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/e4b578b1-a5f5-405b-ba64-84fe85e15877) |
+
+The speedup for comp_large is relatively decent. That is, we do see an upward trend, as we increase the number of processes. However, the speedup is not ideal by any means. We see that the highest speedup is achieved with an input of 2^22, where at 2^8 processors, we have a speedup of 120. Ideally, 2^8 processors would give us a speedup of 2^7. This is not so. One possible explanation is that as we increase the number of processors, there is just more overhead. Right before every processor prepares to receive values from other processors, each individual processor has to determine if it has enough space to receive x number of values. Thus, with more processors, more communication follows, meaning more computation as each processor takes more time to compute the size of the array it should be prepared to receive.
+
+We also observe that communication has extremely poor speedup. In fact, we see a downward trend. This makes sense as we increase the number of processors, we increase the communication time, leading to poor and even negative speedup. 
+
+
+
+### CUDA
+
+#### Strong Scaling
+
+| All Input Types | Random Input Type |
+| --------------- | --------------- |
+|![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/698235a6-0bae-45d7-8c79-9dd70e8e333f) | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/e3aa3d62-148a-4c6f-a0cc-d3d572c82070) |
+
+
+ We observe the table on the left. We see that from worst to best performance based on input type is as follows: random, perturbed, sorted, reverse. Most surprising is the fact that reverse performed the best. I believe this may be due to the block shuffle that occurs. After each thread appropriately sorts its own block, there is a function that shuffles the block to its correct space. As the sorting algorithm looks at only 2 bits at a time, in a sorted input, a lot more shuffling may occur. 1, 2, … 10, 11, 12, … 20, … 40 would shuffle first to 1, 11, 21, … 2, 12, 22, … which involves much more unnecessary shuffling than if the input is in reverse order. In reverse order, although there is shuffling, the shuffling brings you closer to the sorted output, versus in sorted order, the shuffling brings you further away from sorted order. 
+
+By observing just an input of 2^28, we see that after 2^7 threads, the overhead becomes too much, and we see a diminishing returns trend.
+
+![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/9ed5e6dd-4cea-4f51-959e-84c8235b445a)
+
+This exact same trend can be observed through comp_large. After 2^7 processors, the overhead becomes too large to give much benefit.
+
+
+#### Weak Scaling
+
+| Comp Large | Comm |
+| --------------- | --------------- |
+| ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/4e1e40ea-0ed7-4435-9b0c-cb41f983aa8d) | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/32a6ad14-a783-4428-a419-2216843d9ba3) |
+
+
+The CUDA Radix Sort implementation weak scales only moderately well, with the difference between 2^6 threads and 2^10 threads only benign about 0.5 for both comp_large and comm. This again, is due to all the shuffling needed between blocks as the number of threads increases.
+
+
+#### Speedup
+
+| Comp Large | Comm | Main |
+| --------------- | --------------- | --------------- |
+| ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/7d38b1c7-e6d8-4222-a65f-f8cc202fefe8) | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/92eaf742-ae49-4e7a-850d-347ead196b96) | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/bdfe0d4f-73c3-41fe-add8-447c3f4c06c2) |
+
+
+In the speedup, we see the same trend observed with strong scaling. That is, that the best speedup occurs from 2^6 to 2^7, followed by only diminishing returns. From 2^6 to 2^7 the speedup is only moderately good for comp_large, with the speedup resulting in 1.3, which is close to 2.The comm shows poor speedup, and the the main function demonstrates moderate speedup for 2^6 to 2^7 processors. Main is a poor measure as it includes data correction and input generation. Poor speedup in comm makes sense as the time to communicate will only increase rather than decrease as we add more threads.
+
 ## Mergesort Analysis and Plots
 
 ### Strong Scaling
