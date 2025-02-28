@@ -45,17 +45,16 @@ In addition, the slideshow displaying the comparisons between the algorithms can
 Below is the work of the main contributors and the files they mainly worked on 
 
 Sofia Ortega:
-- Radix Sort Implementation (`Algorithms/radix/`)
-- Algorithm Comparisions for Strong Scaling (`PerformanceEval/AlgorithmComparisons.ipynb`)
-- Algorithm Comparison for Speedup (`PerformanceEval/AlgorithmComparisons.ipynb`)
+- [Radix Sort Implementation](./Algorithms/radix/)
+- [Algorithm Comparisons for Strong Scaling](./PerformanceEval/AlgorithmComparisons.ipynb)
+- [Algorithm Comparison for Speedup](./PerformanceEval/AlgorithmComparisons.ipynb)
 
 Will Thompson: 
-- Merge Sort Implementation (`Algorithms/MergeSort/`)
-- Algorithm Comparisons for Weak Scaling (`PerformanceEval/WeakScalingComp.ipynb`)
-
+- [Merge Sort Implementation](./Algorithms/MergeSort/)
+- [Algorithm Comparisons for Weak Scaling](./PerformanceEval/WeakScalingComp.ipynb)
 
 Krithivel Ramesh: 
-- Bitonic Sort Implementation (`Algorithms/Bitonic/`)
+- [Bitonic Sort Implementation](./Algorithms/Bitonic/)
 
 Sriabhinandan Venkataraman: 
-- Quick Sort Implementation (`Algorithms/quicksort/`)
+- [Quick Sort Implementation](./Algorithms/quicksort/)
