@@ -78,6 +78,7 @@ The performance evaluation includes strong scaling, weak scaling, and speedup an
 - [Algorithm Comparison for Speedup](./PerformanceEval/AlgorithmComparisons.ipynb) 
 
 **Will Thompson**: 
+- [Input Generation](./InputGeneration/)
 - [Merge Sort Implementation](./Algorithms/MergeSort/)
 - [Algorithm Comparisons for Weak Scaling](./PerformanceEval/WeakScalingComp.ipynb)
 

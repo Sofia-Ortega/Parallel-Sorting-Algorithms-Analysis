@@ -50,6 +50,7 @@ Sofia Ortega:
 - [Algorithm Comparison for Speedup](./PerformanceEval/AlgorithmComparisons.ipynb)
 
 Will Thompson: 
+- [Input Generation](./InputGeneration/)
 - [Merge Sort Implementation](./Algorithms/MergeSort/)
 - [Algorithm Comparisons for Weak Scaling](./PerformanceEval/WeakScalingComp.ipynb)
 
