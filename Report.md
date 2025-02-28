@@ -493,7 +493,7 @@ Below are the remaining Strong Scaling plots
 |------------------|------|---------------|------------|
 | 2^16             | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/a78da7b0-a2b7-4296-a5db-34c31a885847) | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/b0664bad-4410-4f79-917f-f51fb8b77891) | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/721df98a-93ab-494d-909e-1becdd38b0a0) |
 | 2^18             | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/578052f5-d8c4-4c52-a383-ff9d6dde6735) | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/7aa4c301-0128-43df-9ec0-c61fc0e1ab9e) | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/2af7ea5e-38dd-4b55-b616-50c1e445a338) |
-| 2^20             | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/3247a9ec-4f86-48b4-be8c-817bc21c381f) | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/f461388f-6ec1-4c8a-84bf-9b968b8b893e) | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/37ca5b3d-857d-4887-865f-4ba1eae282ec) |
+| 2^20             |  | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/f461388f-6ec1-4c8a-84bf-9b968b8b893e) | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/37ca5b3d-857d-4887-865f-4ba1eae282ec) |
 | 2^22             | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/3247a9ec-4f86-48b4-be8c-817bc21c381f) | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/ad70d1af-badb-4ca4-b636-40ec97ef9815) | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/ee10595e-e848-4771-9eb7-5a94b004bf16) |
 | 2^24             | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/246644a0-4e94-4d43-8b36-b8dbbb4c4aa2) | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/f8d83e89-b14a-49e9-a9c4-a8e288edb716) | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/f016af68-2d8e-410d-a852-a36d36a565fd) |
 | 2^26             | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/cf4ad9d3-c47c-40ef-ba5a-93510826d94a) | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/55fb2fa3-78fa-4f92-b393-edd70d25e651) | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/1b76df98-e372-4f34-abfe-e4b9b9e0dedd) |
@@ -511,29 +511,12 @@ The CUDA Radix Sort implementation weak scales only moderately well, with the di
 
 Below is the remaining plots for Weak scaling
 
-![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/5c578d2b-af00-4ce8-825e-ef035dfde7f5)
-
-![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/b96056d7-4f05-43a4-84b6-0d194fa7e6e9)
-
-![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/ddf9ca74-7d73-4c29-ad6e-ca781380b51a)
-
-![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/7239dc20-de78-4316-961b-069bfbf179a6)
-
-![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/39541da1-c9bc-4647-a6bf-ec7913ccf745)
-
-![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/7908f0c8-d527-4e8b-b78f-51d165e53f8e)
-
-![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/3d8faf55-c785-4863-bf70-41f8a2f94246)
-
-![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/7cd119dd-85db-46c3-a69a-0b23d011eeaa)
-
-![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/0862fc6d-bd66-4f53-9e33-6f941e2ca629)
-
-![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/0ed29767-20a3-459e-8bc9-e434419b8ac1)
-
-![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/91f6e157-556c-4363-abe5-58410e3bdc74)
-
-![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/24c9616f-85a1-4da4-95f9-af75b5890af9)
+| Input Type | Main | Comm | Comp Large |
+|------------|------|------|------------|
+| Random     | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/5c578d2b-af00-4ce8-825e-ef035dfde7f5) | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/39541da1-c9bc-4647-a6bf-ec7913ccf745) | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/0862fc6d-bd66-4f53-9e33-6f941e2ca629) |
+| Sorted     | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/b96056d7-4f05-43a4-84b6-0d194fa7e6e9) | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/7908f0c8-d527-4e8b-b78f-51d165e53f8e) | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/0ed29767-20a3-459e-8bc9-e434419b8ac1) |
+| Reversed   | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/ddf9ca74-7d73-4c29-ad6e-ca781380b51a) | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/3d8faf55-c785-4863-bf70-41f8a2f94246) | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/91f6e157-556c-4363-abe5-58410e3bdc74) |
+| Perturbed  | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/7239dc20-de78-4316-961b-069bfbf179a6) | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/7cd119dd-85db-46c3-a69a-0b23d011eeaa) | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/24c9616f-85a1-4da4-95f9-af75b5890af9) |
 
 
 #### Speedup
@@ -547,27 +530,62 @@ In the speedup, we see the same trend observed with strong scaling. That is, tha
 
 Below are the remaining plots for Speedup
 
+
+| Input Type | Main | Comm | Comp Large |
+|------------|------|------|------------|
+| Random     | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/b0f6f832-3da9-45f6-ac03-45455fecfdc2) |  | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/3de25304-9100-4a17-b6df-ecc81214a21d) |
+| Sorted     | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/951e8dc4-3777-49f9-8a90-77f7b1882ba7) | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/e9e2b341-60b8-4496-afcd-790578c33d02) | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/cd5148b3-fa16-4d45-baee-17b18f0b404b) |
+| Reversed   | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/34c5c688-d8aa-4369-a235-5f509a6d5fc5) | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/432dd49d-5357-403b-90b0-902bf23f5a8d) | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/ed3ab1df-e115-4c7b-a08b-8eb2f6372514) |
+| Perturbed  | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/2ec15469-695f-4f4b-8ef2-15e3366a773f) | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/ec6381c0-fcde-4d0e-bad8-ac91feb79565) | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/3bdf477b-ac6d-4303-adc8-55480c76a93b) |
+
+#### Main
+
+Random
+
 ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/b0f6f832-3da9-45f6-ac03-45455fecfdc2)
+
+Sorted
 
 ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/951e8dc4-3777-49f9-8a90-77f7b1882ba7)
 
+Reversed
+
 ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/34c5c688-d8aa-4369-a235-5f509a6d5fc5)
+
+Perturbed
 
 ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/2ec15469-695f-4f4b-8ef2-15e3366a773f)
 
-![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/358b5bc0-9625-4728-9909-f7bd6634044a)
+
+#### Comm
+
+Sorted
 
 ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/e9e2b341-60b8-4496-afcd-790578c33d02)
 
+Reversed
+
 ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/432dd49d-5357-403b-90b0-902bf23f5a8d)
+
+Perturbed
 
 ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/ec6381c0-fcde-4d0e-bad8-ac91feb79565)
 
+#### Comp Large 
+
+Random
+
 ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/3de25304-9100-4a17-b6df-ecc81214a21d)
+
+Sorted
 
 ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/cd5148b3-fa16-4d45-baee-17b18f0b404b)
 
+Reversed
+
 ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/ed3ab1df-e115-4c7b-a08b-8eb2f6372514)
+
+Perturbed
 
 ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/3bdf477b-ac6d-4303-adc8-55480c76a93b)
 
