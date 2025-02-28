@@ -32,11 +32,11 @@ In addition, this is a link to a [slideshow](https://docs.google.com/presentatio
 ## Jupyter Notebooks
 The jupyter notebooks used to generate our plots are as follows: 
 
-- `PerformanceEval/AlgorithmComparisons.ipynb` and `PerformanceEval/WeakScalingComp.ipynb` are the notebooks we used to compare all of our algorithms together 
-- `PerformanceEval/BitonicSortPlotting.ipynb` is the notebook we used to plot results for our Bitonic Sort Algorithm
-- `PerformanceEval/MergeSortPlotting.ipynb` is the notebook we used to plot results for our Merge Sort Algorithm
-- `PerformanceEval/RadixSortPlotting.ipynb` is the notebook we used to plot results for our Radix Sort Algorithm
-- `PerformanceEval/QuickSortPlotting.ipynb` is the notebook we used to plot results for our Quick Sort Algorithm
+- [PerformanceEval/AlgorithmComparisons.ipynb](./PerformanceEval/AlgorithmComparisons.ipynb) and [PerformanceEval/WeakScalingComp.ipynb](./PerformanceEval/WeakScalingComp.ipynb) are the notebooks we used to compare all of our algorithms together 
+- [PerformanceEval/BitonicSortPlotting.ipynb](./PerformanceEval/BitonicSortPlotting.ipynb) is the notebook we used to plot results for our Bitonic Sort Algorithm
+- [PerformanceEval/MergeSortPlotting.ipynb](./PerformanceEval/MergeSortPlotting.ipynb) is the notebook we used to plot results for our Merge Sort Algorithm
+- [PerformanceEval/RadixSortPlotting.ipynb](./PerformanceEval/RadixSortPlotting.ipynb) is the notebook we used to plot results for our Radix Sort Algorithm
+- [PerformanceEval/QuickSortPlotting.ipynb](./PerformanceEval/QuickSortPlotting.ipynb) is the notebook we used to plot results for our Quick Sort Algorithm
 
 
 In addition, the slideshow displaying the comparisons between the algorithms can be found [here](https://docs.google.com/presentation/d/1xVNeRjE2JDYVoHVwIL6yXYmSHAhrraA6gHH12zjqB2k/edit?usp=sharing)

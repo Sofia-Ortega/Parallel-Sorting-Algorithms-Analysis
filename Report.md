@@ -78,14 +78,14 @@ The performance evaluation includes strong scaling, weak scaling, and speedup an
 - [Algorithm Comparison for Speedup](./PerformanceEval/AlgorithmComparisons.ipynb) 
 
 **Will Thompson**: 
-- Merge Sort Implementation
-- Algorithm Comparisons for Weak Scaling 
+- [Merge Sort Implementation](./Algorithms/MergeSort/)
+- [Algorithm Comparisons for Weak Scaling](./PerformanceEval/WeakScalingComp.ipynb)
 
 **Krithivel Ramesh**: 
-- Bitonic Sort Implementation
+- [Bitonic Sort Implementation](./Algorithms/Bitonic/)
 
 **Sriabhinandan Venkataraman**: 
-- Quick Sort Implementation
+- [Quick Sort Implementation](./Algorithms/quicksort/)
 
 
 ## Algorithm Description + Pseudo-code 
