@@ -24,6 +24,8 @@ Go to [Report.md](./Report.md) to find final **data analysis**
 ## Data
 All performance profiling data files can be found in the `PerformanceEval/dataFiles` directory as Caliper Trace files. 
 
+## Data Analysis
+Go to [Report.md](./Report.md) to find final **data analysis**
 
 ## Jupyter Notebooks
 The jupyter notebooks used to generate our plots are as follows: 
