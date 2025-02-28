@@ -27,6 +27,8 @@ All performance profiling data files can be found in the `PerformanceEval/dataFi
 ## Data Analysis
 Go to [Report.md](./Report.md) to find final **data analysis**
 
+In addition, this is a link to a [slideshow](https://docs.google.com/presentation/d/1xVNeRjE2JDYVoHVwIL6yXYmSHAhrraA6gHH12zjqB2k/edit?usp=sharing) where we presented our findings
+
 ## Jupyter Notebooks
 The jupyter notebooks used to generate our plots are as follows: 
 
