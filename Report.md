@@ -73,9 +73,9 @@ The performance evaluation includes strong scaling, weak scaling, and speedup an
 
 ## Contributors:
 **Sofia Ortega**:
-- Radix Sort Implementation
-- Algorithm Comparisions for Strong Scaling 
-- Algorithm Comparison for Speedup 
+- [Radix Sort Implementation](./Algorithms/radix/)
+- [Algorithm Comparisions for Strong Scaling](./PerformanceEval/AlgorithmComparisons.ipynb) 
+- [Algorithm Comparison for Speedup](./PerformanceEval/AlgorithmComparisons.ipynb) 
 
 **Will Thompson**: 
 - Merge Sort Implementation
