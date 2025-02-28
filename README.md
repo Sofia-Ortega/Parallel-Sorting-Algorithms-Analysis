@@ -1,15 +1,24 @@
-# CSCE435 Project
+# Parallel Computing (CSCE435) Project
 
-Our root directory contains 4 algorithms, a folder with all our Performance Evaluation work, and in input generation program
+This project evaluates the performance of four parallel sorting algorithms across different input types, levels of parallelization, and parallelization frameworks. Each algorithm was tested with four input types (random, reversed, sorted, and perturbed) and implemented using both CUDA and MPI to compare their efficiency and scalability.
 
-## Algorithms
-- `Bitonic/`
-- `MergeSort/`
-- `quicksort/`
-- `radix/`
+### Algorithms:
+- Bitonic Sort
+- Merge Sort
+- Quick Sort
+- Radix Sort
+
+### Input Types:
+- Random
+- Reversed
+- Sorted
+- Perturbed (sorted data with slight modifications)
+
+### Parallelization Frameworks
+- CUDA
+- MPI 
 
 
-##### While we do have an OETSort/ directory, this was not an algorithm we ultimatley chose. However, we chose to leave it in to show the progress we were able to make before we were forced to abandoned it. This was not considered in the final report. 
 
 ## Data
 All `.cali` files can be found in the `PerformanceEval/dataFiles` directory. 
@@ -23,6 +32,27 @@ The jupyter notebooks used to generate our plots are as follows:
 - `PerformanceEval/RadixSortPlotting.ipynb` is the notebook we used to plot results for our Radix Sort Algorithm
 - `PerformanceEval/QuickSortPlotting.ipynb` is the notebook we used to plot results for our Quick Sort Algorithm
 
-## Report
+# Report
 
 The final report can be found in `Report.md`. A pdf version of the same report can be found in `Report.pdf`.
+
+In addition, the slideshow displaying the comparisons between the algorithms can be found [here](https://docs.google.com/presentation/d/1xVNeRjE2JDYVoHVwIL6yXYmSHAhrraA6gHH12zjqB2k/edit?usp=sharing)
+
+# Contributors
+Below is the work of the main contributors and the files they mainly worked on 
+
+Sofia Ortega:
+- Radix Sort Implementation
+- Algorithm Comparisions for Strong Scaling (`PerformanceEval/AlgorithmComparisons.ipynb`)
+- Algorithm Comparison for Speedup (`PerformanceEval/AlgorithmComparisons.ipynb`)
+
+Will Thompson: 
+- Merge Sort Implementation
+- Algorithm Comparisons for Weak Scaling (`PerformanceEval/WeakScalingComp.ipynb`)
+
+
+Krithivel Ramesh: 
+- Bitonic Sort Implementation
+
+Sriabhinandan Venkataraman: 
+- Quick Sort Implementation

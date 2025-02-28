@@ -1,25 +1,37 @@
-# CSCE 435 Group project
+# Parallel Computing (CSCE 435) Group project
 
-## 1. Group members:
-1. Will Thompson
-2. Kirthivel Ramesh
-3. Sofia Ortega
-4. Sriabhinandan Venkatarama
+This project involves comparing the performance of various parallel sorting algorithms using different array inputs. The inputs include sorted, reversed, and randomly selected values. The algorithms are implemented using both MPI and CUDA to measure their scalability and performance. The algorithms studied are:
 
-The team will be communicating primarily through **Discord**. 
+- Parallel Radix Sort (MPI + CUDA)
+- Parallel Merge Sort (MPI + CUDA)
+- Parallel Quick Sort (MPI + CUDA)
+- Bitonic Sort (MPI + CUDA)
+
+The performance evaluation includes strong scaling, weak scaling, and speedup analysis. The results are presented with detailed plots and analysis for each algorithm and input type.
 
 
----
+## Contributors:
+**Sofia Ortega**:
+- Radix Sort Implementation
+- Algorithm Comparisions for Strong Scaling 
+- Algorithm Comparison for Speedup 
 
-## 2. Project topic
+**Will Thompson**: 
+- Merge Sort Implementation
+- Algorithm Comparisons for Weak Scaling 
 
-Sorting Algorithms
+**Krithivel Ramesh**: 
+- Bitonic Sort Implementation
 
-### 2. Brief project description 
+**Sriabhinandan Venkataraman**: 
+- Quick Sort Implementation
 
-We will be comparing the performance of the following algorithms with a variety of differing array inputs. These array input will either be sorted, reversed, or randomly selected values. We will also be measuring how well each algorithm scales. We plan to implement each algorithm using MPI to serve the data amongst multiple GPUs that will then use CUDA. Once each part gets sorted on the GPUs, they will be merged either sequentially or in parallel.
 
-- __Parallel Radix Sort (MPI + CUDA)__
+## Algorithm Description + Pseudo-code 
+
+The sources referenced to implement the algorithms
+
+### Parallel Radix Sort (MPI + CUDA)
 
   Note: Radix sort only works with integers
 
@@ -43,44 +55,8 @@ parallel_for part in 0..K-1
     out[Cnt[part][bucket]++] = a[i]
 ```
   
-- Odd-Even Transposition Sort (MPI + CUDA)
-  
-  Pseudo-code: [Source](https://ethz.ch/content/dam/ethz/special-interest/infk/chair-program-method/pm/documents/Verify%20This/challenge3.pdf)
 
-```
-process ODD-EVEN-PAR(n, id, myvalue)
- // n … the length of the array to sort
- // id … processors label (0 .. n-1)
- // myvalue … the value in this process
-begin
- for i := 0 to n-1 do
- begin
-   // alternate between left and right partner
-   if i+id is even then
-     if id has a right neighbour
-       sendToRight(myvalue);
-       othervalue = receiveFromRight();
-       myvalue = min(myvalue, othervalue);
-     else
-       if id has a left neighbour
-         sendToLeft(myvalue);
-         othervalue = receiveFromLeft();
-         myvalue = max(myvalue, othervalue);
-  end for
-end ODD-EVEN-PAR
-
-for i := 0 to array.length-1
- process[i] := new ODD-EVEN-PAR(n, i, array[i])
-end for
-
-start processes and wait for them to finish
-
-for i := 0 to array.length-1
- array[i] := process[i].myvalue
-end for
-```
-
-- Parallel Merge Sort (MPI + CUDA)
+### Parallel Merge Sort (MPI + CUDA)
   
   Pseudo-code: [Source](https://en.wikipedia.org/wiki/Merge_sort)
 
@@ -95,7 +71,7 @@ join
 merge(A, lo, mid, hi)
 ```
   
-- Parallel Quick Sort (MPI + CUDA)
+### Parallel Quick Sort (MPI + CUDA)
   
   Pseudo-code: [Source](https://www3.cs.stonybrook.edu/~rezaul/Spring-2019/CSE613/CSE613-lecture-8.pdf)
 
@@ -130,16 +106,16 @@ where each quicksort call and each partition call are done in parallel.
 
 
 # Algorithm Documentation
+This section will review how each algorithm was implemented in the project and how to run each algorithm
 
 ## Radix Sort
-
 
 ### MPI
 
 #### Summary
 
 Implemented Radix Sort with MPI. 
-We initialize the array with `inputgen.cpp` to generate the input in parallel.
+We initialize the array with `InputGeneration/inputgen.cpp` to generate the input in parallel.
 Each MPI process receives a sub array of the input to sort independently. 
 Throughout the runtime, the MPI processes communicate the counts and elements between each other in order for each process to know where to correctly place their own elements in relation to the entire array. 
 
@@ -197,10 +173,6 @@ sbatch radix.grace_job  <n> <p>
  * Date: December 20, 2012
 
 
- # Questions
-
- 1. For Radix sort, I was a bit confused on what was considered a comp_small vs a comp_large. I would love clarification to see if I marked the correct areas correctly.
-
 ## Mergesort
 
 
@@ -256,11 +228,6 @@ sbatch mergesort.grace_job <n> <p> <option>
 * Source Code: [https://github.com/ym720/p_radix_sort_mpi/tree/master/p_radix_sort_mpi](https://github.com/54kevinalbert/gpu-mergesort)
  * Author: Kevin Albert
 
-
- # Questions
-
- 1. I was also confused on comp_small and comm_small for mergesort. I feel that everything is a large computation and a large communication.
- 2. Would you guys have any good resources on how the CUDA verson of mergesort works that goes into the details. I was unable to find any great resources and find the code a little bit confusing.
 
 ## Bitonic Sort
 
@@ -354,59 +321,63 @@ sbatch quicksort.grace_job <n> <p>
 * Source Code: https://github.com/saigowri/CUDA/blob/master/quicksort.cu
 * Author: Sai Gowri
 
-# 4. Performance Evaluation & Report
+# Performance Evaluation & Report
 
 
 ## Algorithm Comparisons
 
 ### Strong Scaling
 
-![png](PerformanceEval/Plots/AlgorithmComparisons_files/AlgorithmComparisons_11_0.png)
-    
-![png](PerformanceEval/Plots/AlgorithmComparisons_files/AlgorithmComparisons_11_1.png)
-    
-![png](PerformanceEval/Plots/AlgorithmComparisons_files/AlgorithmComparisons_11_2.png)
-    
-![png](PerformanceEval/Plots/AlgorithmComparisons_files/AlgorithmComparisons_11_3.png)
-    
-![png](PerformanceEval/Plots/AlgorithmComparisons_files/AlgorithmComparisons_11_4.png)
-    
-![png](PerformanceEval/Plots/AlgorithmComparisons_files/AlgorithmComparisons_11_5.png)
-    
-![png](PerformanceEval/Plots/AlgorithmComparisons_files/AlgorithmComparisons_11_6.png)
+The below table represents the time consumed communicating between the different threads given a set of random data
+
+
+| Number of Values | Plot |
+|------------------|------|
+| 2^16             | <img src="PerformanceEval/Plots/AlgorithmComparisons_files/AlgorithmComparisons_11_0.png" width="400"> |
+| 2^18             | <img src="PerformanceEval/Plots/AlgorithmComparisons_files/AlgorithmComparisons_11_1.png" width="400"> |
+| 2^20             | <img src="PerformanceEval/Plots/AlgorithmComparisons_files/AlgorithmComparisons_11_2.png" width="400"> |
+| 2^22             | <img src="PerformanceEval/Plots/AlgorithmComparisons_files/AlgorithmComparisons_11_3.png" width="400"> |
+| 2^24             | <img src="PerformanceEval/Plots/AlgorithmComparisons_files/AlgorithmComparisons_11_4.png" width="400"> |
+| 2^26             | <img src="PerformanceEval/Plots/AlgorithmComparisons_files/AlgorithmComparisons_11_5.png" width="400"> |
+| 2^28             | <img src="PerformanceEval/Plots/AlgorithmComparisons_files/AlgorithmComparisons_11_6.png" width="400"> |
 
 
 We observe that overall, the worst performer is MergeCUDA in regards to communication. This is then followed by QuicksortMPI and MergeMPI. The fastest performer is consistenlty MergeCUDA and BitonicCUDA. It is interesting that the MergeCUDA is so poor, indicating that it communicates a lot more throughout its code runtime than any other algorithm.
 
 ### Weak Scaling
 
-![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/c527a236-691b-48c3-a4ec-c2f017462406)
+The table below compares the execution time of different algorithms performance as workload and resources scale proportionally. Ideally, the graph should be a straight horizontal line. 
 
-![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/f5a633c2-5cf6-4306-8769-ac4cdc959e36)
+| Implementation | Plot |
+|------------------|------|
+| MPI            | <img src="https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/c527a236-691b-48c3-a4ec-c2f017462406" width="400"> |
+| CUDA             | <img src="https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/f5a633c2-5cf6-4306-8769-ac4cdc959e36" width="400"> |
 
 We observe that MergeMPIRandom is the worst performer in regards to weak scaling. This is then followed by RadixMPI, BitonicMPI, and QuicksortMPI. Interestingly, although RadixMPIRandom is the 2nd worst performer for weak scaling at less processes, we see that when we increase the number of processes, it becomes a better weak scaler than all the other algorithms.
 
 
 ### Speedup
 
-**The y-axis for these plots should say Speedup, not Time(s). By the time we caught this error, it was too late and we had to submit. We apologize for any inconvenience this may cause.**
+**Speedup**: Execution time with p processors / execution time with 1 processor
 
-With speedup as it relates to comm, we noticed that for lower input sizes, the speedup was much lower, and as processor count increased, communication speedup decreased for MPI, and stayed flat for CUDA. This is likely due to unnecessary communications creating an overhead when there's too many processors for such a small problem size. As the input size increases, comm speedup slowly flattens, then trends upwards, which can likely be explained by additional communications being useful with higher input sizes, increasing processor utilization. CUDA likely remains flat across all input sizes due to GPUs being highly optimized for parallel workloads at a hardware level. 
+The tables below compares speedup of communication between processors / threads against the number of processors / threads used for varying amounts of input. Ideally, we should a linear upward trend
 
-![png](PerformanceEval/Plots/AlgorithmComparisons_files/AlgorithmComparisons_12_0.png)
-    
-![png](PerformanceEval/Plots/AlgorithmComparisons_files/AlgorithmComparisons_12_1.png)
-    
-![png](PerformanceEval/Plots/AlgorithmComparisons_files/AlgorithmComparisons_12_2.png)
-    
-![png](PerformanceEval/Plots/AlgorithmComparisons_files/AlgorithmComparisons_12_3.png)
-    
-![png](PerformanceEval/Plots/AlgorithmComparisons_files/AlgorithmComparisons_12_4.png)
-    
-![png](PerformanceEval/Plots/AlgorithmComparisons_files/AlgorithmComparisons_12_5.png)
-    
-![png](PerformanceEval/Plots/AlgorithmComparisons_files/AlgorithmComparisons_12_6.png)
-    
+**The y-axis for these plots should say Speedup, not Time(s). By the time we caught this error**
+
+
+| Number of Values | Plot |
+|------------------|------|
+| 2^16             | ![png](PerformanceEval/Plots/AlgorithmComparisons_files/AlgorithmComparisons_12_0.png) |
+| 2^18             | ![png](PerformanceEval/Plots/AlgorithmComparisons_files/AlgorithmComparisons_12_1.png) |
+| 2^20             | ![png](PerformanceEval/Plots/AlgorithmComparisons_files/AlgorithmComparisons_12_2.png) |
+| 2^22             | ![png](PerformanceEval/Plots/AlgorithmComparisons_files/AlgorithmComparisons_12_3.png) |
+| 2^24             | ![png](PerformanceEval/Plots/AlgorithmComparisons_files/AlgorithmComparisons_12_4.png) |
+| 2^26             | ![png](PerformanceEval/Plots/AlgorithmComparisons_files/AlgorithmComparisons_12_5.png) |
+| 2^28             | ![png](PerformanceEval/Plots/AlgorithmComparisons_files/AlgorithmComparisons_12_6.png) |
+
+With speedup as it relates to communication between processors / threads, we noticed that for lower input sizes, the speedup was much lower, and as processor count increased, communication speedup decreased for MPI, and stayed flat for CUDA. 
+
+This is likely due to unnecessary communications creating an overhead when there's too many processors for such a small problem size. As the input size increases, speedup slowly flattens, then trends upwards, which can likely be explained by communications being useful with higher input sizes, increasing processor utilization. CUDA likely remains flat across all input sizes due to GPUs being highly optimized for parallel workloads at a hardware level. 
 
 ## Radix Sort Analysis and PerformanceEval/Plots
 
@@ -434,46 +405,20 @@ With reverse sorted output, we know that the values that a process "owns" will a
 
 Below are the rest of the strong scaling files
 
-![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/ab9a1f24-256c-4b3b-8bb4-5c5947df38d5)
+**Labels**: 
+- Main: The overall execution time
+- Communication (Comm): The time taken to communicate between processors
+- Comparisons (Comp): The time taken to compare the values as you sort 
 
-![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/b05dd462-35fc-4ce9-9f95-7900dc5dbcac)
-
-![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/20b5f851-2906-484b-b5aa-39839e41db90)
-
-![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/feee5dd3-7ad1-4a06-bf55-50d7780f3cc7)
-
-![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/aee4e9d8-972c-4982-a1c1-7157f5055a49)
-
-![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/b7e07a46-ca44-4bb0-b47a-ef33809bc871)
-
-![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/ae11bc54-e6dc-49d4-b4a9-27451108614b)
-
-![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/7a5dcf4f-e1e2-4477-a7dc-d7ff77904c30)
-
-![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/5f39e6b5-c9dc-4190-9885-c36ec3aae964)
-
-![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/754a4192-8d3a-4d7a-bac9-01d8bbcc644e)
-
-![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/b76fd6c2-658d-49f7-afe3-b8d47c412152)
-
-![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/b0c591cb-3900-489e-afbe-0f615a249e7f)
-
-![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/3c3849c4-46e5-4afe-b99a-064e7870bdb5)
-
-![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/366fcabb-84d1-43ec-9da6-032e13a19af4)
-
-![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/f160ee3a-4cd6-4ffb-832a-43bc5b3426a8)
-
-![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/72474e1a-8366-4e90-bfc0-a1633ff123e4)
-
-
-![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/f59dccc6-62c6-4e93-b4e0-cd7f71d07ee9)
-
-![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/c8cef387-1681-4c89-a437-99e2cba36ced)
-
-![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/a59d8f9f-7769-4d40-9bc2-d1520153cbed)
-
-![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/39a32a23-0c5d-4f76-9de5-7ee8ce5d1618)
+| Number of Values | Main | Communication | Comparison |
+|------------------|------|---------------|------------|
+| 2^16             | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/ab9a1f24-256c-4b3b-8bb4-5c5947df38d5) | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/b05dd462-35fc-4ce9-9f95-7900dc5dbcac) | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/20b5f851-2906-484b-b5aa-39839e41db90) |
+| 2^18             | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/feee5dd3-7ad1-4a06-bf55-50d7780f3cc7) | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/aee4e9d8-972c-4982-a1c1-7157f5055a49) | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/b7e07a46-ca44-4bb0-b47a-ef33809bc871) |
+| 2^20             | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/ae11bc54-e6dc-49d4-b4a9-27451108614b) | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/7a5dcf4f-e1e2-4477-a7dc-d7ff77904c30) | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/5f39e6b5-c9dc-4190-9885-c36ec3aae964) |
+| 2^22             | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/754a4192-8d3a-4d7a-bac9-01d8bbcc644e) | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/b76fd6c2-658d-49f7-afe3-b8d47c412152) | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/b0c591cb-3900-489e-afbe-0f615a249e7f) |
+| 2^24             | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/3c3849c4-46e5-4afe-b99a-064e7870bdb5) | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/366fcabb-84d1-43ec-9da6-032e13a19af4) |  |
+| 2^26             | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/f160ee3a-4cd6-4ffb-832a-43bc5b3426a8) | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/72474e1a-8366-4e90-bfc0-a1633ff123e4) | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/f59dccc6-62c6-4e93-b4e0-cd7f71d07ee9) |
+| 2^28             | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/c8cef387-1681-4c89-a437-99e2cba36ced) | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/a59d8f9f-7769-4d40-9bc2-d1520153cbed) | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/39a32a23-0c5d-4f76-9de5-7ee8ce5d1618) |
 
 
 
@@ -487,30 +432,20 @@ Below are the rest of the strong scaling files
 
 Below are the remaining Weak Scaling files
 
-![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/ee7b4b82-6df8-4b7c-9be9-7300fee5eda2)
 
-![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/b0145d46-66ed-40da-a360-254b174db7f8)
+**Labels**: 
+- Main: The overall execution time
+- Communication (Comm): The time taken to communicate between processors
+- Comparisons (Comp): The time taken to compare the values as you sort 
 
-![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/2d0cdacc-34a3-413a-9205-f18f05184c74)
+#### Main
 
-![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/57280eb1-eff8-4cdd-8a55-52ea1a2dbc6d)
-
-![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/fbdca2b8-9547-42f7-bc41-ebed4668c88e)
-
-![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/371dd889-6c58-4744-ab58-efed79158e98)
-
-![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/4717d98b-a5a4-40b3-a2c7-305c4e21978b)
-
-![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/544df122-4d32-42c9-a8cb-3b7c086688d6)
-
-![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/c938646c-bd2b-423b-b2ee-ff421761d059)
-
-![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/200a7d75-19c3-4480-863e-1fe39455109b)
-
-![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/11cda8ef-89d1-4395-8d68-c1aa97432096)
-
-![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/8690a6cf-6f94-4522-9adc-694c15d2ecf7)
-
+| Input Type | Main | Comm | Comp Large |
+|------------|------|------|------------|
+| Random     | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/ee7b4b82-6df8-4b7c-9be9-7300fee5eda2) | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/fbdca2b8-9547-42f7-bc41-ebed4668c88e) | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/c938646c-bd2b-423b-b2ee-ff421761d059) |
+| Sorted     | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/b0145d46-66ed-40da-a360-254b174db7f8) | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/371dd889-6c58-4744-ab58-efed79158e98) | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/200a7d75-19c3-4480-863e-1fe39455109b) |
+| Reversed   | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/2d0cdacc-34a3-413a-9205-f18f05184c74) | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/4717d98b-a5a4-40b3-a2c7-305c4e21978b) | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/11cda8ef-89d1-4395-8d68-c1aa97432096) |
+| Perturbed  | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/57280eb1-eff8-4cdd-8a55-52ea1a2dbc6d) | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/544df122-4d32-42c9-a8cb-3b7c086688d6) | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/8690a6cf-6f94-4522-9adc-694c15d2ecf7) |
 
 
 #### Speedup
@@ -525,29 +460,12 @@ We also observe that communication has extremely poor speedup. In fact, we see a
 
 Below are the remaining Speedup Plots
 
-![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/cde53e79-1465-4cfc-823d-0503dd3440a1)
-
-![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/f0008580-cbef-4980-9f9a-9a29ebd0f1b1)
-
-![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/8f4500a7-807a-4935-baca-4ae2e02dedad)
-
-![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/c0afcae7-3ab3-4058-9a23-c5c01ee25045)
-
-![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/02e29163-d22d-41ea-8409-afb213d02ff9)
-
-![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/42212d63-26ac-4fba-ab78-330c05143286)
-
-![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/8ad46a2e-fc02-4fa4-82b0-1b28441fd7d5)
-
-![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/4f6ca8df-0283-497b-b223-28b26b24b4f8)
-
-![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/118b065d-bbfd-473b-b69e-76331a8f762b)
-
-![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/f03ac0ea-c03a-4c7c-9b10-187e51833eb0)
-
-![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/cab9b7b1-a1e0-404a-873f-d1a78c2f3fbd)
-
-![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/bd8c463e-9341-43a6-98fd-235dcda99acf)
+| Input Type | Main | Comm | Comp Large |
+|------------|------|------|------------|
+| Random     | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/cde53e79-1465-4cfc-823d-0503dd3440a1) | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/42212d63-26ac-4fba-ab78-330c05143286) |  |
+| Sorted     | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/f0008580-cbef-4980-9f9a-9a29ebd0f1b1) | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/8ad46a2e-fc02-4fa4-82b0-1b28441fd7d5) | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/f03ac0ea-c03a-4c7c-9b10-187e51833eb0) |
+| Reversed   |  | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/4f6ca8df-0283-497b-b223-28b26b24b4f8) | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/cab9b7b1-a1e0-404a-873f-d1a78c2f3fbd) |
+| Perturbed  | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/c0afcae7-3ab3-4058-9a23-c5c01ee25045) | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/118b065d-bbfd-473b-b69e-76331a8f762b) | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/bd8c463e-9341-43a6-98fd-235dcda99acf) |
 
 
 ### CUDA
@@ -569,49 +487,17 @@ This exact same trend can be observed through comp_large. After 2^7 processors, 
 
 Below are the remaining Strong Scaling plots
 
-![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/a78da7b0-a2b7-4296-a5db-34c31a885847)
 
-![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/b0664bad-4410-4f79-917f-f51fb8b77891)
 
-![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/721df98a-93ab-494d-909e-1becdd38b0a0)
-
-![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/578052f5-d8c4-4c52-a383-ff9d6dde6735)
-
-![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/7aa4c301-0128-43df-9ec0-c61fc0e1ab9e)
-
-![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/2af7ea5e-38dd-4b55-b616-50c1e445a338)
-
-![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/2fc4eda9-65b1-4836-b48e-32a4d94b2746)
-
-![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/f461388f-6ec1-4c8a-84bf-9b968b8b893e)
-
-![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/37ca5b3d-857d-4887-865f-4ba1eae282ec)
-
-![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/3247a9ec-4f86-48b4-be8c-817bc21c381f)
-
-![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/ad70d1af-badb-4ca4-b636-40ec97ef9815)
-
-![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/ee10595e-e848-4771-9eb7-5a94b004bf16)
-
-![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/246644a0-4e94-4d43-8b36-b8dbbb4c4aa2)
-
-![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/f8d83e89-b14a-49e9-a9c4-a8e288edb716)
-
-![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/f016af68-2d8e-410d-a852-a36d36a565fd)
-
-![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/1bdc5864-29ad-4c9e-b3b6-e2631f148da8)
-
-![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/cf4ad9d3-c47c-40ef-ba5a-93510826d94a)
-
-![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/55fb2fa3-78fa-4f92-b393-edd70d25e651)
-
-![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/1b76df98-e372-4f34-abfe-e4b9b9e0dedd)
-
-![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/d07583fb-625d-490f-96a8-29107d364b6a)
-
-![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/a052bef2-957b-4f63-b159-2d2fe219131d)
-
-![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/e56e7fdd-f9ed-482d-a755-50da2f6358fa)
+| Number of Values | Main | Communication | Comparison |
+|------------------|------|---------------|------------|
+| 2^16             | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/a78da7b0-a2b7-4296-a5db-34c31a885847) | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/b0664bad-4410-4f79-917f-f51fb8b77891) | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/721df98a-93ab-494d-909e-1becdd38b0a0) |
+| 2^18             | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/578052f5-d8c4-4c52-a383-ff9d6dde6735) | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/7aa4c301-0128-43df-9ec0-c61fc0e1ab9e) | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/2af7ea5e-38dd-4b55-b616-50c1e445a338) |
+| 2^20             | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/3247a9ec-4f86-48b4-be8c-817bc21c381f) | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/f461388f-6ec1-4c8a-84bf-9b968b8b893e) | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/37ca5b3d-857d-4887-865f-4ba1eae282ec) |
+| 2^22             | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/3247a9ec-4f86-48b4-be8c-817bc21c381f) | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/ad70d1af-badb-4ca4-b636-40ec97ef9815) | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/ee10595e-e848-4771-9eb7-5a94b004bf16) |
+| 2^24             | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/246644a0-4e94-4d43-8b36-b8dbbb4c4aa2) | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/f8d83e89-b14a-49e9-a9c4-a8e288edb716) | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/f016af68-2d8e-410d-a852-a36d36a565fd) |
+| 2^26             | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/cf4ad9d3-c47c-40ef-ba5a-93510826d94a) | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/55fb2fa3-78fa-4f92-b393-edd70d25e651) | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/1b76df98-e372-4f34-abfe-e4b9b9e0dedd) |
+| 2^28             | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/d07583fb-625d-490f-96a8-29107d364b6a) | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/a052bef2-957b-4f63-b159-2d2fe219131d) | ![image](https://github.com/Sofia-Ortega/ParallelComputingProject/assets/40405324/e56e7fdd-f9ed-482d-a755-50da2f6358fa) |
 
 
 #### Weak Scaling
