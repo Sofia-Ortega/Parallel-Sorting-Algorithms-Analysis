@@ -2,7 +2,7 @@
 
 This project evaluates the performance of four parallel sorting algorithms across different input types, levels of parallelization, and parallelization frameworks. Each algorithm was tested with four input types (random, reversed, sorted, and perturbed) and implemented using both CUDA and MPI to compare their efficiency and scalability.
 
-Jump to [Report](#report) to find final **data analysis**
+Go to [Report.md](./Report.md) to find final **data analysis**
 
 ### Algorithms:
 - Bitonic Sort
@@ -21,12 +21,8 @@ Jump to [Report](#report) to find final **data analysis**
 - MPI 
 
 
-
 ## Data
-All data files can be found in the `PerformanceEval/dataFiles` directory as Caliper Trace files. 
-
-Caliper Trace Files are used for performance profiling and analysis
-
+All performance profiling data files can be found in the `PerformanceEval/dataFiles` directory as Caliper Trace files. 
 
 
 ## Jupyter Notebooks
@@ -38,13 +34,10 @@ The jupyter notebooks used to generate our plots are as follows:
 - `PerformanceEval/RadixSortPlotting.ipynb` is the notebook we used to plot results for our Radix Sort Algorithm
 - `PerformanceEval/QuickSortPlotting.ipynb` is the notebook we used to plot results for our Quick Sort Algorithm
 
-# Report
-
-The final report can be found in `Report.md`. A pdf version of the same report can be found in `Report.pdf`.
 
 In addition, the slideshow displaying the comparisons between the algorithms can be found [here](https://docs.google.com/presentation/d/1xVNeRjE2JDYVoHVwIL6yXYmSHAhrraA6gHH12zjqB2k/edit?usp=sharing)
 
-# Contributors
+## Contributors
 Below is the work of the main contributors and the files they mainly worked on 
 
 Sofia Ortega:
