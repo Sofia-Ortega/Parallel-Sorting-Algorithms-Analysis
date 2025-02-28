@@ -175,6 +175,8 @@ This section will review how each algorithm was implemented in the project and h
 
 #### Summary
 
+**Code**: `Algorithms/radix/mpi`
+
 Implemented Radix Sort with MPI. 
 We initialize the array with `InputGeneration/inputgen.cpp` to generate the input in parallel.
 Each MPI process receives a sub array of the input to sort independently. 
@@ -196,14 +198,15 @@ sbatch radix.grace_job  <t> <n>
 
 #### Adapted From 
 
-
-* Source Code: https://github.com/jackfly/radix-sort-cuda/tree/master
+ * Source Code: https://github.com/jackfly/radix-sort-cuda/tree/master
  * Author: Jack Liu
  * Date: December 18, 2017
 
 ### CUDA
 
 #### Summary
+
+**Code**: `Algorithms/radix/cuda`
 
 This MPI implementation was created with CUDA. 
 In this implementation of radix, multiple passes are done on the array.

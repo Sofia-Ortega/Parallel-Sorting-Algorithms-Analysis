@@ -2,6 +2,8 @@
 
 This project evaluates the performance of four parallel sorting algorithms across different input types, levels of parallelization, and parallelization frameworks. Each algorithm was tested with four input types (random, reversed, sorted, and perturbed) and implemented using both CUDA and MPI to compare their efficiency and scalability.
 
+Jump to [Report](#report) to find final **data analysis**
+
 ### Algorithms:
 - Bitonic Sort
 - Merge Sort
@@ -21,7 +23,11 @@ This project evaluates the performance of four parallel sorting algorithms acros
 
 
 ## Data
-All `.cali` files can be found in the `PerformanceEval/dataFiles` directory. 
+All data files can be found in the `PerformanceEval/dataFiles` directory as Caliper Trace files. 
+
+Caliper Trace Files are used for performance profiling and analysis
+
+
 
 ## Jupyter Notebooks
 The jupyter notebooks used to generate our plots are as follows: 
@@ -42,17 +48,17 @@ In addition, the slideshow displaying the comparisons between the algorithms can
 Below is the work of the main contributors and the files they mainly worked on 
 
 Sofia Ortega:
-- Radix Sort Implementation
+- Radix Sort Implementation (`Algorithms/radix/`)
 - Algorithm Comparisions for Strong Scaling (`PerformanceEval/AlgorithmComparisons.ipynb`)
 - Algorithm Comparison for Speedup (`PerformanceEval/AlgorithmComparisons.ipynb`)
 
 Will Thompson: 
-- Merge Sort Implementation
+- Merge Sort Implementation (`Algorithms/MergeSort/`)
 - Algorithm Comparisons for Weak Scaling (`PerformanceEval/WeakScalingComp.ipynb`)
 
 
 Krithivel Ramesh: 
-- Bitonic Sort Implementation
+- Bitonic Sort Implementation (`Algorithms/Bitonic/`)
 
 Sriabhinandan Venkataraman: 
-- Quick Sort Implementation
+- Quick Sort Implementation (`Algorithms/quicksort/`)
